@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EntityError } from "@/lib/https";
-import { TicketKind } from "@/schemaValidations/tour-operator.shema";
+import { EntityError } from "@/lib/http";
 import { clsx, type ClassValue } from "clsx";
 import { UseFormSetError } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
+import { TicketKind } from "@/types/tours";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
