@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import useServiceSectionStore from "@/store/client/tour-detail-service-store";
+import useServiceSectionStore from "@/store/tourDetailServiceStore";
 import { TourDetail } from "@/types/tours";
 import {tourApiRequest} from "@/apiRequests/tour";
 import { toast } from "sonner";
