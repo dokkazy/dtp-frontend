@@ -30,6 +30,7 @@ export const apiEndpoint = {
 
     //tour
     tours: "/api/tour",
+    odataTours: "/odata/tour",
     getTourCount: "/odata/tour/$count",
     odataTour: "/odata/tour",
     tourScheduleTicket: "/api/tour/scheduleticket",

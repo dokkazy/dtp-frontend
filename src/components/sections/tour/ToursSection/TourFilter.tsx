@@ -19,8 +19,6 @@ import {
 } from "@/components/ui/select";
 
 interface TourFilterProps {
-  selectedFilter: string;
-  onSelectFilter?: (filterId: string) => void;
   tourCount: number;
 }
 
@@ -28,7 +26,6 @@ const MIN = 0;
 const MAX = 100000000;
 
 export default function TourFilter({
-  selectedFilter,
   tourCount,
 }: TourFilterProps) {
   const [values, setValues] = useState([MIN, MAX]);

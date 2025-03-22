@@ -1,54 +1,43 @@
 "use client";
-import React, {  useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 
 import TourCategory from "./TourCategory";
 import TourList from "./TourList";
 import TourMap from "./TourMap";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import TourCard from "@/components/cards/TourCard";
 import { Button } from "@/components/ui/button";
-import { TourList as Tours } from "@/types/tours";
-import {links} from "@/configs/routes";
+import { links } from "@/configs/routes";
+import useTourFilterStore from "@/store/tourFilterStore";
+import { tourApiRequest } from "@/apiRequests/tour";
+import useDebounce from "@/hooks/use-debounce";
 
-interface ToursSectionProps {
-  data: Tours;
-}
-
-export default function ToursSection({ data }: ToursSectionProps) {
-  const [selectedFilter, setSelectedFilter] = useState("all");
+export default function ToursSection() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [loading, setLoading] = React.useState(false);
+  const { tours, setTours, query } = useTourFilterStore((state) => state);
+  const debouncedValue = useDebounce(query, 500);
 
-  // Filter tours based on selected filter and category
-  // const filteredTours = useMemo(() => {
-  //   return data.filter((tour) => {
-  //     // First, apply category filter
-  //     if (selectedCategory !== "all" && tour.category !== selectedCategory) {
-  //       return false;
-  //     }
-
-  //     // Then, apply other filters
-  //     switch (selectedFilter) {
-  //       case "free-cancel":
-  //         return tour.freeCancel;
-  //       case "top-rated":
-  //         return tour.rating >= 4.5;
-  //       default:
-  //         return true;
-  //     }
-  //   });
-  // }, [selectedFilter, selectedCategory]);
-
-  // // Handler for filter selection
-  // const handleSelectFilter = (filterId: string) => {
-  //   setSelectedFilter(filterId);
-  // };
-
-  // // Handler for category selection
-  // const handleSelectCategory = (categoryId: string) => {
-  //   setSelectedCategory(categoryId);
-  // };
+  React.useEffect(() => {
+    const params = {
+      "$filter": `contains(title, '${debouncedValue.trim()}')`,
+      "$top": 5,
+    };
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await tourApiRequest.getOdataTour(params);
+        setTours(response.payload.value || []);
+        console.log("Tours fetched:", response.payload.value);
+      } catch (error) {
+        setTours([]);
+        console.error("Error fetching tours:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [debouncedValue, setTours]);
 
   return (
     <>
@@ -64,20 +53,19 @@ export default function ToursSection({ data }: ToursSectionProps) {
               >
                 {/*Tour Category*/}
                 <TourMap />
-                <TourCategory
-                  selectedCategory={selectedCategory}
-                  // onSelectCategory={handleSelectCategory}
-                />
+                <TourCategory />
               </div>
             </div>
 
             {/*Right section*/}
             <div className="lg:basis-[70%]">
-              <TourList
-                tours={data}
-                selectedFilter={selectedFilter}
-                // onSelectFilter={handleSelectFilter}
-              />
+              {loading ? (
+                <div className="grid grid-cols-1 gap-4 px-12 sm:grid-cols-2 sm:px-0 lg:grid-cols-3"></div>
+              ) : (
+                <>
+                  <TourList tours={tours} />
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -92,11 +80,11 @@ export default function ToursSection({ data }: ToursSectionProps) {
         <ScrollArea className="w-full rounded-md">
           {/* First row */}
           <div className="flex w-fit gap-4">
-            {data.map((tour) => (
+            {/* {tours.map((tour) => (
               <div key={tour.id} className="min-w-[250px] max-w-[300px] flex-1">
                 <TourCard key={tour.id} tour={tour} />
               </div>
-            ))}
+            ))} */}
           </div>
           <ScrollBar orientation="horizontal" className="h-2.5" />
         </ScrollArea>
@@ -106,7 +94,7 @@ export default function ToursSection({ data }: ToursSectionProps) {
             variant="outline"
             className="w-full"
           >
-            Xem {data.length} ở Quy Nhơn
+            {/* Xem {tours.length} ở Quy Nhơn */}
           </Button>
         </div>
       </section>

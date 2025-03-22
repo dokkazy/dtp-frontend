@@ -17,14 +17,11 @@ import { TourList as Tours } from "@/types/tours";
 
 interface TourListProps {
   tours: Tours;
-  selectedFilter: string;
-  onSelectFilter?: (filterId: string) => void;
   isLoading?: boolean;
 }
 
 export default function TourList({
   tours,
-  selectedFilter,
   isLoading,
 }: TourListProps) {
   const listRef = useRef<HTMLDivElement>(null);
@@ -32,8 +29,6 @@ export default function TourList({
   return (
     <div ref={listRef} className="w-full">
       <TourFilter
-        selectedFilter={selectedFilter}
-        // onSelectFilter={onSelectFilter}
         tourCount={tours.length}
       />
 

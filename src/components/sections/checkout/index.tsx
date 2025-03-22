@@ -47,7 +47,7 @@ export default function CheckoutPage() {
         if (!response.payload.success) {
           console.error("Failed to fetch user info:", response);
           toast.error(response.payload.message);
-          router.push(links.login.href);
+          // router.push(links.login.href);
         }
         // console.log(response);
         setUser(response.payload.data);
@@ -58,12 +58,90 @@ export default function CheckoutPage() {
     getUserInfo();
   }, []);
 
-  console.log(user);
+  // if (!user) {
+  //   return (
+  //     <div className="flex h-screen items-center justify-center">
+  //       <svg
+  //         className="mr-3 h-5 w-5 animate-spin text-black"
+  //         xmlns="http://www.w3.org/2000/svg"
+  //         fill="none"
+  //         viewBox="0 0 24 24"
+  //       >
+  //         <circle
+  //           className="opacity-25"
+  //           cx="12"
+  //           cy="12"
+  //           r="10"
+  //           stroke="currentColor"
+  //           strokeWidth="4"
+  //         ></circle>
+  //         <path
+  //           className="opacity-75"
+  //           fill="currentColor"
+  //           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+  //         ></path>
+  //       </svg>
+  //     </div>
+  //   );
+  // }
 
   // const handleAddContact = (contact: Contact) => {
   //   setIsContactSheetOpen(false);
   // };
-
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f5f5] p-4">
+        <Card className="mx-auto w-full max-w-md">
+          <CardHeader className="space-y-1 text-center">
+            <h2 className="text-2xl font-bold text-core">Vui lòng đăng nhập</h2>
+            <p className="text-muted-foreground">
+              Bạn cần đăng nhập để tiếp tục thanh toán
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-4 p-6">
+            <div className="rounded-full bg-yellow-100 p-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-yellow-500"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <p className="text-center text-sm text-gray-600">
+              Để đặt vé và thanh toán, bạn cần có tài khoản đăng nhập. Thông tin
+              này giúp chúng tôi xác nhận và gửi chi tiết đơn hàng cho bạn.
+            </p>
+          </CardContent>
+          <CardFooter className="flex flex-col gap-2">
+            <Button
+              variant="core"
+              className="w-full"
+              onClick={() => router.push(links.login.href)}
+            >
+              Đăng nhập ngay
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => router.push(links.home.href)}
+            >
+              Quay lại trang chủ
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
   const handlePayment = async () => {
     const orderData = {
       tourScheduleId: paymentItem?.tourScheduleId,
@@ -157,7 +235,7 @@ export default function CheckoutPage() {
                   <div className="flex w-full justify-between rounded-lg border border-gray-300 p-4">
                     {user === null ? (
                       <svg
-                        className="mr-3 h-5 w-5 mx-auto animate-spin text-black"
+                        className="mx-auto mr-3 h-5 w-5 animate-spin text-black"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -284,7 +362,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-{/* 
+          {/* 
           <AddContactSheet
             open={isContactSheetOpen}
             user={user}
