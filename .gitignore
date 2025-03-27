@@ -19,7 +19,6 @@ google-credentials.json
 /out/
 /src/app/story
 /src/app/api/sheets
-/src/app/test
 
 # production
 /build
@@ -43,3 +42,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+*storybook.log

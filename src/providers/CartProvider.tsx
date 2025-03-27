@@ -3,7 +3,7 @@
 import { type ReactNode, createContext, useRef, useContext } from 'react'
 import { useStore } from 'zustand'
 
-import { CartStoreType, createCartStore } from '@/store/cartStore'
+import { CartStoreType, createCartStore } from '@/stores/cartStore'
 
 
 export type CartStoreApi = ReturnType<typeof createCartStore>

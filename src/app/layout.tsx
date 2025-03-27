@@ -1,4 +1,5 @@
-  import type { Metadata } from "next";
+/* eslint-disable @next/next/no-sync-scripts */
+import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
@@ -9,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import LoadingScreen from "@/components/common/loading/LoadingScreen";
 import AuthProvider from "@/providers/AuthProvider";
 import { CartProvider } from "@/providers/CartProvider";
+import UserInitializer from "@/hooks/use-initialize-user";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -29,27 +31,30 @@ export default function RootLayout({
 }>) {
   const cookieStore = cookies();
   const sessionToken = cookieStore.get("sessionToken");
-  const role = cookieStore.get("role");
   const refreshToken = cookieStore.get("refreshToken");
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
       </head>
       <body className={`${ibmPlexSans.className} antialiased`}>
         <AuthProvider
           initialSessionToken={sessionToken?.value}
-          initialRole={role?.value}
           initialRefreshToken={refreshToken?.value}
         >
+          <UserInitializer />
           <CartProvider>
-          <LoadingScreen>
-            <LoadingBar />
-            <PageLoader />
-            {children}
-            <Toaster closeButton richColors position="top-right" />
-          </LoadingScreen>
+            <LoadingScreen>
+              <LoadingBar />
+              <PageLoader />
+              {children}
+              <Toaster closeButton richColors position="top-right" />
+            </LoadingScreen>
           </CartProvider>
         </AuthProvider>
       </body>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLoadingStore } from "@/store/loadingStore";
+import { useLoadingStore } from "@/stores/loadingStore";
 import { motion } from "framer-motion";
 
 const LoadingBar = () => {

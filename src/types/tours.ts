@@ -7,9 +7,16 @@ export interface Tour {
   avgStar: number;
   totalRating: number;
   onlyFromCost: number;
+  isDeleted: boolean;
 }
 
 export type TourList = Tour[];
+
+export enum TourSortBy {
+  Recommended = "recommended",
+  PriceAsc = "priceAsc",
+  PriceDesc = "priceDesc",
+}
 
 /*--------------TourDetail-----------------------*/
 

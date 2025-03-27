@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DailyTicketSchedule } from "@/types/tours";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";

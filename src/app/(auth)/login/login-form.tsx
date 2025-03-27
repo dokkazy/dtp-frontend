@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { cn, handleErrorApi } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,14 +21,16 @@ import {
 } from "@/components/ui/form";
 import { loginSchema, LoginSchemaType } from "@/schemaValidations/auth.schema";
 import LoadingButton from "@/components/common/loading/LoadingButton";
-import { useState } from "react";
 import authApiRequest from "@/apiRequests/auth";
+import { useUserStore } from "@/stores/userStore";
+import userApiRequest from "@/apiRequests/user";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
   const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser);
   const [loading, setLoading] = useState(false);
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -49,13 +52,21 @@ export function LoginForm({
         await authApiRequest.setToken(response);
 
       if (responseFromNextServer.payload.success) {
+        try {
+          const userResponse: any = await userApiRequest.me();
+          if (userResponse.payload.success) {
+            setUser(userResponse.payload.data);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
         toast.success("Đăng nhập thành công");
         router.push(links.home.href);
-        router.refresh();
+        return;
       }
+      setLoading(false);
     } catch (error: any) {
       handleErrorApi(error);
-    } finally {
       setLoading(false);
     }
   };

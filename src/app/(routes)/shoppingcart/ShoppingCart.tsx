@@ -1,8 +1,10 @@
 "use client";
-
+import * as React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { AlertTriangle, Check, Minus, Plus } from "lucide-react";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +17,9 @@ import {
 import { links } from "@/configs/routes";
 import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/providers/CartProvider";
-import { getTicketKind, isDateInPast } from "@/lib/utils";
+import { formatCurrency, getTicketKind, isDateInPast } from "@/lib/utils";
+import { useSyncCartAcrossTabs } from "@/hooks/useSyncCartAcrossTabs";
+import { Input } from "@/components/ui/input";
 
 export default function ShoppingCart() {
   const router = useRouter();
@@ -26,24 +30,122 @@ export default function ShoppingCart() {
     paymentItem,
     removeFromCart,
     updateQuantity,
+    removeTicket,
     selectItem,
     removeSelectedItems,
     selectForPayment,
     removePaymentItem,
-    getTotalPricePaymentItem,
     toggleSelectAll,
+    setQuantityDirectly,
   } = useCartStore((state) => state);
 
   console.log("cart", cart);
+  useSyncCartAcrossTabs();
 
-  // Format price
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("vi-VN").format(price);
+  const handleQuantityInputChange = (
+    tourScheduleId: string,
+    ticketTypeId: string,
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
+      setQuantityDirectly(tourScheduleId, ticketTypeId, value);
+    }
   };
 
   const handleCheckout = () => {
     if (paymentItem) {
       router.push(`${links.checkout.href}/${paymentItem.tourScheduleId}`);
+    }
+  };
+
+  const handleRemoveSelectedItems = () => {
+    Swal.fire({
+      title: "Xóa tour khỏi giỏ hàng?",
+      html: `Các tour đã chọn sẽ bị xóa khỏi giỏ hàng của bạn.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#00bba7",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeSelectedItems();
+
+        Swal.fire({
+          title: "Đã xóa!",
+          text: "Tour đã được xóa khỏi giỏ hàng.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  const handleRemoveItem = (tourScheduleId: string, tourTitle: string) => {
+    Swal.fire({
+      title: "Xóa tour khỏi giỏ hàng?",
+      html: `Tour <strong>${tourTitle}</strong> sẽ bị xóa khỏi giỏ hàng của bạn.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#00bba7",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeFromCart(tourScheduleId);
+
+        Swal.fire({
+          title: "Đã xóa!",
+          text: "Tour đã được xóa khỏi giỏ hàng.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
+  const handleUpdateQuantity = (
+    tourScheduleId: string,
+    ticketTypeId: string,
+    action: "increase" | "decrease",
+  ) => {
+    const result = updateQuantity(tourScheduleId, ticketTypeId, action);
+
+    if (result && result.needConfirmation) {
+      Swal.fire({
+        title: "Xóa vé khỏi giỏ hàng?",
+        html: result.isLastTicket
+          ? `Tour <strong>${result.tourTitle}</strong> sẽ bị xóa khỏi giỏ hàng của bạn.`
+          : `Vé <strong>${getTicketKind(result.ticketType)}</strong> sẽ bị xóa khỏi tour <strong>${result.tourTitle}</strong>.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#00bba7", // Màu teal/core
+        cancelButtonColor: "#6B7280", // Màu gray
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          removeTicket(tourScheduleId, ticketTypeId);
+          Swal.fire({
+            title: "Đã xóa!",
+            text: "Vé đã được xóa khỏi giỏ hàng.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        }
+      });
+    }
+    if (result && result.isExceeded) {
+      toast.error("Số lượng vé không được vượt quá số lượng tối đa cho phép.");
     }
   };
 
@@ -86,7 +188,7 @@ export default function ShoppingCart() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={removeSelectedItems}
+                    onClick={handleRemoveSelectedItems}
                     disabled={selectedItems.length === 0}
                     className="text-sm"
                   >
@@ -122,7 +224,7 @@ export default function ShoppingCart() {
                             <div className="flex-shrink-0">
                               <Image
                                 src={
-                                  item.tour.tourDestinations[0].imageUrls[0] ||
+                                  /*item.tour.tourDestinations[0].imageUrls[0] ||*/
                                   "/images/eo-gio.jpg"
                                 }
                                 alt={""}
@@ -145,50 +247,78 @@ export default function ShoppingCart() {
                           </div>
 
                           <div className="flex basis-[30%] flex-col items-end gap-4">
-                            {item.tickets.map((ticket) => (
-                              <div
-                                key={ticket.ticketTypeId}
-                                className="flex items-center gap-2"
-                              >
-                                <span className="text-nowrap text-sm">
-                                  {getTicketKind(ticket.ticketKind)} -{" "}
-                                  {ticket.netCost}₫
-                                </span>
-                                <div className="flex items-center">
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-md"
-                                    onClick={() =>
-                                      updateQuantity(
-                                        item.tourScheduleId,
-                                        ticket.ticketTypeId,
-                                        "decrease",
-                                      )
-                                    }
-                                  >
-                                    <Minus className="h-3 w-3" />
-                                  </Button>
-                                  <span className="w-8 text-center">
-                                    {ticket.quantity}
+                            {!isExpired &&
+                              item.tickets.map((ticket) => (
+                                <div
+                                  key={ticket.ticketTypeId}
+                                  className="flex items-center gap-2"
+                                >
+                                  <span className="text-nowrap text-sm">
+                                    {getTicketKind(ticket.ticketKind)} -{" "}
+                                    {ticket.netCost}₫
                                   </span>
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-md"
-                                    onClick={() =>
-                                      updateQuantity(
-                                        item.tourScheduleId,
-                                        ticket.ticketTypeId,
-                                        "increase",
-                                      )
-                                    }
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </Button>
+                                  <div className="flex items-center">
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-7 w-7 rounded-md"
+                                      onClick={() =>
+                                        handleUpdateQuantity(
+                                          item.tourScheduleId,
+                                          ticket.ticketTypeId,
+                                          "decrease",
+                                        )
+                                      }
+                                    >
+                                      <Minus className="h-3 w-3" />
+                                    </Button>
+                                    {/* <span className="w-8 text-center mx-2">
+                                      {ticket.quantity}
+                                    </span> */}
+                                    <Input
+                                      type="number"
+                                      className="mx-2 h-7 w-fit text-center text-sm"
+                                      min="1"
+                                      max={ticket.availableTicket}
+                                      value={ticket.quantity}
+                                      onChange={(e) =>
+                                        handleQuantityInputChange(
+                                          item.tourScheduleId,
+                                          ticket.ticketTypeId,
+                                          e,
+                                        )
+                                      }
+                                      onBlur={(e) => {
+                                        // Đảm bảo giá trị hợp lệ khi focus ra khỏi input
+                                        if (
+                                          e.target.value === "" ||
+                                          parseInt(e.target.value) < 1
+                                        ) {
+                                          setQuantityDirectly(
+                                            item.tourScheduleId,
+                                            ticket.ticketTypeId,
+                                            1,
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-7 w-7 rounded-md"
+                                      onClick={() =>
+                                        handleUpdateQuantity(
+                                          item.tourScheduleId,
+                                          ticket.ticketTypeId,
+                                          "increase",
+                                        )
+                                      }
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
 
                             <div className="flex items-center">
                               {isExpired ? (
@@ -207,7 +337,10 @@ export default function ShoppingCart() {
                                   size="sm"
                                   className={`rounded-full ${paymentItem?.tourScheduleId === item.tourScheduleId ? "" : "text-gray-500"}`}
                                   onClick={() => {
-                                    if (paymentItem?.tourScheduleId === item.tourScheduleId) {
+                                    if (
+                                      paymentItem?.tourScheduleId ===
+                                      item.tourScheduleId
+                                    ) {
                                       // If this item is already selected, remove it
                                       removePaymentItem();
                                     } else {
@@ -244,7 +377,12 @@ export default function ShoppingCart() {
                             variant="ghost"
                             size="sm"
                             className="h-8 text-gray-500"
-                            onClick={() => removeFromCart(item.tourScheduleId)}
+                            onClick={() =>
+                              handleRemoveItem(
+                                item.tourScheduleId,
+                                item.tour.tour.title,
+                              )
+                            }
                           >
                             Xóa
                           </Button>
@@ -252,7 +390,7 @@ export default function ShoppingCart() {
 
                         <div className="text-right">
                           <div className="font-medium">
-                            ₫ {formatPrice(item.totalPrice)}
+                            ₫ {formatCurrency(item.totalPrice)}
                           </div>
                         </div>
                       </CardFooter>
@@ -279,7 +417,7 @@ export default function ShoppingCart() {
                   <div className="text-2xl font-bold">
                     ₫{" "}
                     {paymentItem
-                      ? formatPrice(getTotalPricePaymentItem())
+                      ? formatCurrency(paymentItem.totalPrice)
                       : "0.00"}
                   </div>
                 </CardContent>

@@ -71,7 +71,7 @@ export default function TourDetail({ data }: { data: Tour }) {
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">10K+ Đã đặt</span>
         </div>
-        <GallerySection data={data}/>
+        {/* <GallerySection data={data}/> */}
         <div className="container">
           <div className="flex gap-6">
             {/* Tour Description */}

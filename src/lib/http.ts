@@ -73,25 +73,8 @@ class RefreshToken {
   }
 }
 
-class UserRole {
-  private role = "";
-
-  get value() {
-    return this.role;
-  }
-
-  set value(role: string) {
-    // Check if calling from client side or server side
-    if (typeof window === "undefined") {
-      throw new Error("Cannot set role on server side");
-    }
-    this.role = role;
-  }
-}
-
 // Only manipulate on client side
 export const sessionToken = new SessionToken();
-export const userRole = new UserRole();
 export const refreshToken = new RefreshToken();
 
 export type MethodType = "GET" | "POST" | "PUT" | "DELETE";
@@ -187,7 +170,6 @@ const request = async <Response>(
           });
           await clientLogoutRequest;
           sessionToken.value = "";
-          userRole.value = "";
           refreshToken.value = "";
           clientLogoutRequest = null;
           location.href = "/login";
@@ -207,11 +189,11 @@ const request = async <Response>(
       sessionToken.value = (
         payload as LoginResponseSchemaType
       ).data?.accessToken;
-      userRole.value = (payload as LoginResponseSchemaType).data?.role;
-      refreshToken.value = (payload as LoginResponseSchemaType).data?.refreshToken;
+      refreshToken.value = (
+        payload as LoginResponseSchemaType
+      ).data?.refreshToken;
     } else if ([apiEndpoint.logout].includes(url)) {
       sessionToken.value = "";
-      userRole.value = "";
       refreshToken.value = "";
     }
   }

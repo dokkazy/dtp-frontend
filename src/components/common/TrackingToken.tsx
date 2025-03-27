@@ -1,7 +1,7 @@
 "use client"
 import authApiRequest from '@/apiRequests/auth'
 import { Button } from '@/components/ui/button'
-import { refreshToken, sessionToken, userRole } from '@/lib/http'
+import { refreshToken, sessionToken } from '@/lib/http'
 import React from 'react'
 import Swal from 'sweetalert2'
 
@@ -11,7 +11,6 @@ export default function TrackingToken() {
     console.log(response);
     sessionToken.value = response?.payload?.data?.accessToken as string;
     refreshToken.value = response?.payload?.data?.refreshToken as string;
-    userRole.value = response?.payload?.data?.role as string;
   }
     return (
     <>

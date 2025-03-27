@@ -8,12 +8,21 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import useTourFilterStore from "@/store/tourFilterStore";
+
+interface TourCategoryProps {
+  query: string;
+  setQuery: (query: string) => void;
+  onResetAllFilters: () => void;
+}
 
 
-export default function TourCategory() {
-  const { query, setQuery } = useTourFilterStore((state) => state);
 
+export default function TourCategory({ query, setQuery, onResetAllFilters }: TourCategoryProps) {
+  const handleResetAll = () => {
+    // Reset the query
+    setQuery("");
+    onResetAllFilters();
+  };
   return (
     <Card className="border-t">
       <CardContent className="space-y-3 py-4">
@@ -39,6 +48,9 @@ export default function TourCategory() {
             ))}
           </div>
         </div> */}
+        <div className="float-right" onClick={handleResetAll}>
+          <h3 className="underline hover:cursor-pointer">Xóa tất cả</h3>
+        </div>
         <div>
           <h3 className="mb-4 text-lg font-bold">Tìm kiếm</h3>
           <div className="relative">
@@ -47,8 +59,6 @@ export default function TourCategory() {
               placeholder="địa điểm..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => {}}
-              /*onBlur={() => setTimeout(() => setIsFocused(false), 200)}*/
               className="h-9 rounded-lg py-1.5 pl-3 pr-9 text-sm focus-visible:ring-offset-0"
             />
             <div className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2">
@@ -79,12 +89,9 @@ export default function TourCategory() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex items-center justify-between px-4">
-        <Button variant="outline">
+      <CardFooter className="flex items-center justify-start px-4">
+        <Button variant="outline" onClick={() => setQuery("")}>
           Xóa <RotateCcw className="ml-auto h-4 w-4 opacity-50" />
-        </Button>
-        <Button variant="core">
-          Lọc <SlidersHorizontal className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </CardFooter>
     </Card>
