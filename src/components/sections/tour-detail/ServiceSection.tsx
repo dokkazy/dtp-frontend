@@ -1,22 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
-import { Calendar, Minus, Plus } from "lucide-react";
+import { Calendar, Minus, Plus, ShieldAlert } from "lucide-react";
+import { vi } from "date-fns/locale";
+import { StyledElement } from "react-day-picker";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn, formatCurrency, formatDateToDDMMYYYY, getTicketKind } from "@/lib/utils";
+import {
+  cn,
+  formatCurrency,
+  formatDateToDDMMYYYY,
+  getTicketKind,
+} from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import useServiceSectionStore from "@/store/tourDetailServiceStore";
+import useServiceSectionStore from "@/stores/tourDetailServiceStore";
 import { TourDetail } from "@/types/tours";
-import {tourApiRequest} from "@/apiRequests/tour";
+import { tourApiRequest } from "@/apiRequests/tour";
 import { toast } from "sonner";
 import { useCartStore } from "@/providers/CartProvider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function ServiceSection({ data }: { data: TourDetail }) {
   const [loading, setLoading] = React.useState(false);
@@ -35,6 +48,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
     handleQuantityChange,
     clearAll,
     togglePackage,
+    
   } = useServiceSectionStore();
 
   const addToCart = useCartStore((state) => state.addToCart);
@@ -60,7 +74,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
       }
     };
     fetchData();
-  }, []);
+  }, [data.tour.id, setTicketSchedule, clearAll]);
 
   const handleAddToCart = () => {
     if (!date || selectedDayTickets.length === 0) {
@@ -68,13 +82,15 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
       return;
     }
 
-      // Check if at least one ticket has quantity > 0
-  const hasSelectedTickets = Object.values(ticketQuantities).some(qty => qty > 0);
-  
-  if (!hasSelectedTickets) {
-    toast.warning("Vui lòng chọn ít nhất một vé");
-    return;
-  }
+    // Check if at least one ticket has quantity > 0
+    const hasSelectedTickets = Object.values(ticketQuantities).some(
+      (qty) => qty > 0,
+    );
+
+    if (!hasSelectedTickets) {
+      toast.warning("Vui lòng chọn ít nhất một vé");
+      return;
+    }
 
     // Find the current selected day data
     const selectedDay = ticketSchedule.find(
@@ -102,7 +118,11 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
   console.log(ticketSchedule);
 
   const availableDates = React.useMemo(() => {
-    return ticketSchedule.map((day) => new Date(day.day));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return ticketSchedule
+      .map((day) => new Date(day.day))
+      // .filter((date) => date > today);
   }, [ticketSchedule]);
 
   const isDateAvailable = React.useCallback(
@@ -110,7 +130,6 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       return (
-        date >= today &&
         availableDates.some(
           (availableDate) =>
             availableDate.toDateString() === date.toDateString(),
@@ -119,6 +138,18 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
     },
     [availableDates],
   );
+
+  const modifiers = React.useMemo(() => {
+    return {
+      available: availableDates,
+    };
+  }, [availableDates]);
+
+  const modifiersClassNames = React.useMemo(() => {
+    return {
+      available: "available-day after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-teal-500 after:content-['']",
+    } as Partial<StyledElement<string>> & { available: string };
+  }, []);
 
   return (
     <div id="tour-detail-service" className="space-y-8">
@@ -131,7 +162,12 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
             <h3 className="text-xl font-semibold">
               Vui lòng chọn ngày và gói dịch vụ
             </h3>
-            <h3 className="underline hover:cursor-pointer" onClick={() => {clearAll();}}>
+            <h3
+              className="underline hover:cursor-pointer"
+              onClick={() => {
+                clearAll();
+              }}
+            >
               Xóa tất cả
             </h3>
           </div>
@@ -146,7 +182,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                 >
                   {loading ? (
                     <svg
-                      className="mr-3 h-5 w-5 animate-spin text-white"
+                      className="h-5 w-5 animate-spin text-white"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -166,7 +202,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                       ></path>
                     </svg>
                   ) : (
-                    <Calendar className="mr-1 h-4 w-4" />
+                    <Calendar className="h-4 w-4" />
                   )}
                   <span>Xem trạng thái dịch vụ</span>
                 </Button>
@@ -178,8 +214,31 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                   selected={date}
                   onSelect={handleDateSelect}
                   initialFocus
+                  locale={vi}
+                  modifiers={modifiers}
+                  modifiersClassNames={modifiersClassNames}
                 />
-                <div className="mt-2 flex justify-between">
+                <div className="mt-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block h-2 w-2 rounded-full bg-teal-500"></span>
+                    <span>Sẵn sàng khởi hành</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <ShieldAlert className="h-4 w-4" />
+                        </TooltipTrigger>
+                        <TooltipContent className="whitespace-normal bg-white text-sm text-black shadow-sm w-72">
+                          <p>
+                            Hoạt động sẽ diễn ra vào thời gian đã chọn. (Nhà
+                            điều hành chỉ có thể hủy hoạt động trong trường hợp
+                            không lường trước như thời tiết xấu, v.v.)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-between">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -268,7 +327,9 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
             ))}
 
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold">{formatCurrency(totalPrice)}₫</h3>
+              <h3 className="text-xl font-bold">
+                {formatCurrency(totalPrice)}₫
+              </h3>
               <div className="space-x-4">
                 <Button
                   onClick={() => {

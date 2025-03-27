@@ -52,7 +52,7 @@ export default function Footer() {
           </svg>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 md:mt-0">
         <h2 className="font-semibold md:mb-6 md:text-lg">Khám phá</h2>
         <div className="flex gap-4 text-sm text-gray-600 md:flex-col md:text-base">
           <Link href={links.home.href}>{links.home.label}</Link>
@@ -60,7 +60,7 @@ export default function Footer() {
           <Link href={links.tour.href}>Điểm đến</Link>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 md:mt-0">
         <h2 className="mb-2 font-semibold md:mb-6 md:text-lg">
           Liên kết nhanh
         </h2>
@@ -70,7 +70,7 @@ export default function Footer() {
           <p>Liên hệ</p>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="mt-6 md:mt-0">
         <h2 className="mb-2 font-semibold md:mb-6 md:text-lg">Liên hệ</h2>
         <div className="flex gap-4 text-sm text-gray-600 md:flex-col md:text-base">
           <p>Email: example@gmail.com</p>

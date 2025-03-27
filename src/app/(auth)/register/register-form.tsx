@@ -61,9 +61,9 @@ export function RegisterForm({
       await authApiRequest.register(SubmitData);
       toast.success("Đăng ký thành công");
       router.push(links.login.href);
+      setLoading(false);
     } catch (error) {
       handleErrorApi(error);
-    } finally {
       setLoading(false);
     }
   };

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useLoadingStore } from "@/store/loadingStore";
+import { useLoadingStore } from "@/stores/loadingStore";
 
 const PageLoader = () => {
   const pathname = usePathname();

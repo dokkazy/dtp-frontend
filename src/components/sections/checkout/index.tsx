@@ -17,13 +17,15 @@ import {
 import { Steps } from "./Steps";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/providers/CartProvider";
-import { links } from "@/configs/routes";
 import { formatCurrency, getTicketKind } from "@/lib/utils";
-import envConfig from "@/configs/envConfig";
-import { UserProfile } from "@/types/user";
-import { sessionToken } from "@/lib/http";
-import userApiRequest from "@/apiRequests/user";
 import { toast } from "sonner";
+import { OrderRequest } from "@/types/order";
+import { orderApiRequest } from "@/apiRequests/order";
+import Spinner from "@/components/common/Spinner";
+import { links } from "@/configs/routes";
+import envConfig from "@/configs/envConfig";
+import { useUserStore } from "@/stores/userStore";
+import { PaymentRequest } from "@/types/checkout";
 
 // type Contact = {
 //   id: string;
@@ -33,71 +35,100 @@ import { toast } from "sonner";
 //   email: string;
 // };
 
-export default function CheckoutPage() {
+export default function Checkout({ itemId }: { itemId: string }) {
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { user } = useUserStore((state) => state);
   // const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
-  // const selectedTour = getPaymentItem();
-  const { paymentItem, removePaymentItem } = useCartStore((state) => state);
+  const { paymentItem } = useCartStore((state) => state);
 
   useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const response: any = await userApiRequest.me();
-        if (!response.payload.success) {
-          console.error("Failed to fetch user info:", response);
-          toast.error(response.payload.message);
-          router.push(links.login.href);
-        }
-        // console.log(response);
-        setUser(response.payload.data);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-    getUserInfo();
-  }, []);
+    // const getUserInfo = async () => {
+    //   try {
+    //     const response: any = await userApiRequest.me();
+    //     if (!response.payload.success) {
+    //       console.error("Failed to fetch user info:", response);
+    //     }
+    //     setUser(response.payload.data);
+    //   } catch (error) {
+    //     console.error("Error fetching user info:", error);
+    //   }
+    // };
+    // getUserInfo();
+    if (paymentItem?.tourScheduleId != itemId) {
+      router.push(links.shoppingCart.href);
+    }
+  }, [itemId, paymentItem?.tourScheduleId, router]);
 
-  console.log(user);
-
-  // const handleAddContact = (contact: Contact) => {
-  //   setIsContactSheetOpen(false);
-  // };
+  if (!user || paymentItem?.tourScheduleId !== itemId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner className="text-core" />
+      </div>
+    );
+  }
 
   const handlePayment = async () => {
-    const orderData = {
-      tourScheduleId: paymentItem?.tourScheduleId,
-      name: user?.name,
-      phoneNumber: user?.phoneNumber,
-      email: user?.email,
-      voucherCode: "",
-      tickets: paymentItem?.tickets.map((ticket) => ({
-        ticketTypeId: ticket.ticketTypeId,
-        quantity: ticket.quantity,
-      })),
-    };
-    const response = await fetch(
-      `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/api/order`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionToken.value}`,
-        },
-        body: JSON.stringify(orderData),
-      },
-    );
-    const result = await response.json();
-    if (!response.ok) {
-      console.error("Error creating order:", result.message);
-      return;
-    }
-    console.log(result);
+    setLoading(true);
+    try {
+      if (paymentItem === null) {
+        toast.error("Không có đơn hàng nào để thanh toán");
+        return;
+      }
+      const orderData: OrderRequest = {
+        tourScheduleId: paymentItem.tourScheduleId,
+        name: user?.name,
+        phoneNumber: user?.phoneNumber,
+        email: user?.email,
+        voucherCode: "",
+        tickets: paymentItem.tickets.map((ticket) => ({
+          ticketTypeId: ticket.ticketTypeId,
+          quantity: ticket.quantity,
+        })),
+      };
+      const orderResponse = await orderApiRequest.order(orderData);
+      if (orderResponse.status !== 201) {
+        console.error("Error creating order:", orderResponse);
+        toast.error("Có lỗi xảy ra trong quá trình thanh toán");
+        return;
+      }
+      localStorage.setItem("lastOrderId", orderResponse.payload.id);
 
-    alert(result);
-    window.location.href = links.home.href;
-    removePaymentItem();
-    // router.push("/payment");
+      const paymentData: PaymentRequest = {
+        bookingId: orderResponse.payload.id,
+        responseUrl: {
+          returnUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.paymentSuccess.href}/${orderResponse.payload.id}`,
+          cancelUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.paymentCancel.href}`,
+        },
+      };
+
+      const paymentResponse = await orderApiRequest.checkout(paymentData);
+      console.log(paymentResponse);
+      if (paymentResponse.status !== 200) {
+        console.error("Error fetching payment data:", paymentResponse);
+        toast.error("Có lỗi xảy ra trong quá trình thanh toán");
+        return;
+      }
+      if (paymentResponse.payload.checkoutUrl) {
+        localStorage.setItem("isCheckoutProcessing", "true");
+        localStorage.setItem(
+          "checkoutUrl",
+          paymentResponse.payload.checkoutUrl,
+        );
+        localStorage.setItem("paymentStartTime", Date.now().toString());
+
+        document.cookie = "isCheckoutProcessing=true; path=/; max-age=3600";
+
+        window.location.href = paymentResponse.payload.checkoutUrl;
+      } else {
+        console.error("Không tìm thấy đường dẫn thanh toán");
+      }
+    } catch (error: any) {
+      console.error("Error during payment:", error?.title || error);
+      toast.error("Có lỗi xảy ra trong quá trình thanh toán");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -156,26 +187,7 @@ export default function CheckoutPage() {
                 <div className="px-8">
                   <div className="flex w-full justify-between rounded-lg border border-gray-300 p-4">
                     {user === null ? (
-                      <svg
-                        className="mr-3 h-5 w-5 mx-auto animate-spin text-black"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
+                      <Spinner />
                     ) : (
                       <>
                         <div className="flex gap-2">
@@ -217,15 +229,23 @@ export default function CheckoutPage() {
 
               <div className="mx-8 mt-8 flex justify-between">
                 <p className="basis-2/3 text-sm">
-                  Đơn hàng sẽ được gửi đi sau khi thanh toán. Bạn có thể chọn
-                  phương thức thanh toán ở bước tiếp theo.
+                  Đơn hàng sẽ được gửi đi sau khi thanh toán. Bạn sẽ thanh toán
+                  ở bước tiếp theo.
                 </p>
                 <Button
                   variant="core"
-                  className="py-6 text-lg"
+                  className="flex items-center justify-center gap-2 py-6 text-lg"
                   onClick={handlePayment}
+                  disabled={loading}
                 >
-                  Thanh toán
+                  {loading ? (
+                    <>
+                      <Spinner className="text-white" />
+                      Đang xử lý...
+                    </>
+                  ) : (
+                    "Thanh toán"
+                  )}
                 </Button>
               </div>
 
@@ -284,7 +304,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-{/* 
+          {/* 
           <AddContactSheet
             open={isContactSheetOpen}
             user={user}

@@ -30,13 +30,19 @@ export async function POST() {
     );
     const newSessionToken = response?.payload?.data?.accessToken as string;
     const newRefreshToken = response?.payload?.data?.refreshToken as string;
-    const role = response?.payload?.data?.role as string;
     const maxAge = response?.payload?.data?.expiresIn as string;
+
     console.log("res", response);
+
+    const cookies = [
+      `sessionToken=${newSessionToken}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Lax; Secure`,
+      `refreshToken=${newRefreshToken}; Max-Age=${60 * 60 * 7 * 24}; Path=/; HttpOnly; SameSite=Lax; Secure`,
+    ];
+
     return Response.json(response?.payload, {
       status: 200,
       headers: {
-        "Set-Cookie": `sessionToken=${newSessionToken}; Max-Age=${maxAge}; Path=/; HttpOnly, role=${role}; Max-Age=${maxAge}; Path=/; HttpOnly, refreshToken=${newRefreshToken}; Max-Age=${maxAge}; Path=/; HttpOnly`,
+        "Set-Cookie": cookies.join(", "),
       },
     });
   } catch (error) {

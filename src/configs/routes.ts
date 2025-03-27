@@ -9,8 +9,9 @@ export const links = {
     about: { href: "/about", label: "Về chúng tôi" },
     passenger: { href: "/passenger", label: "Khách hàng" },
     shoppingCart: { href: "/shoppingcart", label: "Giỏ hàng" },
-    checkout: { href: "payment/checkout", label: "Thanh toán" },
-
+    checkout: { href: "/checkout", label: "Thanh toán" },
+    paymentCancel: { href: "/payment/cancel", label: "Hủy thanh toán" },
+    paymentSuccess: { href: "/payment/success", label: "Thanh toán thành công" },
 }
 
 export const nextServer = {
@@ -30,12 +31,16 @@ export const apiEndpoint = {
 
     //tour
     tours: "/api/tour",
+    odataTours: "/odata/tour",
     getTourCount: "/odata/tour/$count",
     odataTour: "/odata/tour",
     tourScheduleTicket: "/api/tour/scheduleticket",
     tourSchedule: "/api/tour/schedule",
     basket: "/api/basket",
+
+    //order
     order: "/api/order",
+    payment: "/api/payment",
 
 }
 

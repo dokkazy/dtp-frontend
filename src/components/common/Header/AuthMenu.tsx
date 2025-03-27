@@ -213,8 +213,8 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent autoFocus={false} className="w-[240px] p-0">
-        {menuStack.length > 0 ? (
+      <PopoverContent autoFocus={false} className="w-[240px] p-0 z-[9999991]">
+        {menuStack.length > 0 && (
           <div className="flex items-center border-b p-2">
             <Button
               variant="ghost"
@@ -227,18 +227,6 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
             </Button>
             <span className="font-medium">{currentTitle}</span>
           </div>
-        ) : (
-          //   <div className="border-b p-3">
-          //     <div className="flex items-center gap-3">
-          //       <div className="flex flex-col">
-          //         <span className="font-medium">voconghuy</span>
-          //         <span className="text-xs text-muted-foreground">
-          //           voconghuy3011@gmail.com
-          //         </span>
-          //       </div>
-          //     </div>
-          //   </div>
-          <></>
         )}
 
         <div className="flex flex-col">

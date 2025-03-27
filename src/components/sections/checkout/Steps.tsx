@@ -26,7 +26,7 @@ type Props = {
               </span>
             </div>
             {index < steps.length - 1 && (
-              <div className={`w-60 h-0.5 mx-2 ${step.number < currentStep ? "bg-core" : "bg-gray-200"}`} />
+              <div className={`w-10 sm:w-20 md:w-40 lg:w-60 h-0.5 mx-2 ${step.number < currentStep ? "bg-core" : "bg-gray-200"}`} />
             )}
           </div>
         ))}

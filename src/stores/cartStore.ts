@@ -2,20 +2,7 @@ import { createStore } from "zustand/vanilla";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { TicketSchedule, TourDetail } from "@/types/tours";
 import { isDateInPast } from "@/lib/utils";
-
-// export interface CartItem {
-//     tourScheduleId: string;
-//     isTourScheduleAvailable: boolean;
-//     tickets: {
-//         availableTicket: number;
-//         hasAvailableTicket: boolean;
-//         quantity: number;
-//         netCost: number;
-//         tax: number;
-//         isAvailable: boolean;
-//         ticketKind: number;
-//     }[];
-// }
+import { PaymentStatus } from "@/types/checkout";
 
 interface CartItem {
   tour: TourDetail;
@@ -26,6 +13,7 @@ interface CartItem {
     ticketKind: number;
     netCost: number;
     quantity: number;
+    availableTicket: number;
   }[];
   totalPrice: number;
 }
@@ -38,6 +26,7 @@ type CartState = {
 };
 
 type CartActions = {
+  setCartState: (state: CartState) => void;
   addToCart: (
     tour: TourDetail,
     tourScheduleId: string,
@@ -51,17 +40,23 @@ type CartActions = {
     tourScheduleId: string,
     ticketTypeId: string,
     action: "increase" | "decrease",
-  ) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ) => any;
+  removeTicket: (tourScheduleId: string, ticketTypeId: string) => void;
   selectItem: (itemId: string, checked: boolean) => void;
   removeSelectedItems: () => void;
   selectForPayment: (itemId: string) => void;
-  removePaymentItem: () => void;
+  removePaymentItem: (cancel?: boolean, paymentStatus?: PaymentStatus) => void;
   toggleSelectAll: (checked: boolean) => void;
-  
+
   getItemById: (tourScheduleId: string) => CartItem | undefined;
-  getTotalPricePaymentItem: () => number;
   getCartTotal: () => number;
   getCartCount: () => number;
+  setQuantityDirectly: (
+    tourScheduleId: string,
+    ticketTypeId: string,
+    quantity: number,
+  ) => void;
 };
 
 export type CartStoreType = CartState & CartActions;
@@ -71,19 +66,25 @@ const SESSION_TIMEOUT_DURATION = 7200 * 60 * 1000; // 30 minutes
 let sessionTimeout: NodeJS.Timeout;
 
 const initialState = {
-  cart:[],
+  cart: [],
   selectedItems: [],
   selectAll: false,
   paymentItem: null,
-}
-
-
+};
 
 export const createCartStore = (initState = initialState) => {
   return createStore<CartStoreType>()(
     persist(
       (set, get) => ({
         ...initState,
+        setCartState: (newState) => {
+          set({
+            cart: newState.cart || [],
+            selectedItems: newState.selectedItems || [],
+            selectAll: newState.selectAll || false,
+            paymentItem: newState.paymentItem || null,
+          });
+        },
         addToCart: (tour, tourScheduleId, day, tickets, quantities) => {
           const { cart } = get();
 
@@ -95,6 +96,7 @@ export const createCartStore = (initState = initialState) => {
               ticketKind: ticket.ticketKind,
               netCost: ticket.netCost,
               quantity: quantities[ticket.ticketTypeId],
+              availableTicket: ticket.availableTicket,
             }));
 
           // Calculate total price
@@ -150,7 +152,7 @@ export const createCartStore = (initState = initialState) => {
           resetSessionTimeout();
         },
         updateQuantity: (tourScheduleId, ticketTypeId, action) => {
-          const { cart } = get();
+          const { cart, paymentItem } = get();
 
           // Find the cart item
           const updatedCart = [...cart];
@@ -165,7 +167,6 @@ export const createCartStore = (initState = initialState) => {
           const ticketIndex = item.tickets.findIndex(
             (ticket) => ticket.ticketTypeId === ticketTypeId,
           );
-
           if (ticketIndex === -1) return; // Ticket not found
 
           // Update the quantity
@@ -173,37 +174,83 @@ export const createCartStore = (initState = initialState) => {
           const currentQuantity = ticket.quantity;
 
           if (action === "decrease" && currentQuantity <= 1) {
-            // If there's only one ticket left and we're decreasing, consider removing the ticket
-            if (item.tickets.length === 1) {
-              // If it's the only ticket type, remove the entire item
-              set({
-                cart: cart.filter(
-                  (item) => item.tourScheduleId !== tourScheduleId,
-                ),
-              });
-              return;
-            } else {
-              // Remove just this ticket type
-              item.tickets.splice(ticketIndex, 1);
-            }
-          } else {
-            // Update the quantity
-            const newQuantity =
-              action === "increase" ? currentQuantity + 1 : currentQuantity - 1;
-            item.tickets[ticketIndex] = {
-              ...ticket,
-              quantity: newQuantity,
+            return {
+              needConfirmation: true,
+              isLastTicket: item.tickets.length === 1,
+              tourTitle: item.tour.tour.title,
+              ticketType: ticket.ticketKind,
+              tourScheduleId,
+              ticketTypeId,
             };
           }
+          if (action === "increase") {
+            if (currentQuantity >= ticket.availableTicket) {
+              return {
+                isExceeded: true,
+              };
+            }
+          }
+          // Update the quantity
+          const newQuantity =
+            action === "increase" ? currentQuantity + 1 : currentQuantity - 1;
+          item.tickets[ticketIndex] = {
+            ...ticket,
+            quantity: newQuantity,
+          };
 
           // Recalculate the total price for the item
           item.totalPrice = item.tickets.reduce(
             (sum, ticket) => sum + ticket.netCost * ticket.quantity,
             0,
           );
+          //check if cart item updated is the same as payment item
+          if (paymentItem && paymentItem.tourScheduleId === tourScheduleId) {
+            set({
+              cart: updatedCart,
+              paymentItem: updatedCart[itemIndex],
+            });
+          } else {
+            // Only update the cart
+            set({ cart: updatedCart });
+          }
 
-          // Update the cart
-          set({ cart: updatedCart });
+          resetSessionTimeout();
+          return false;
+        },
+        removeTicket(tourScheduleId, ticketTypeId) {
+          const { cart } = get();
+
+          const updatedCart = [...cart];
+          const itemIndex = updatedCart.findIndex(
+            (item) => item.tourScheduleId === tourScheduleId,
+          );
+          if (itemIndex === -1) return; // Item not found
+
+          const item = updatedCart[itemIndex];
+          const ticketIndex = item.tickets.findIndex(
+            (ticket) => ticket.ticketTypeId === ticketTypeId,
+          );
+          if (ticketIndex === -1) return; // Ticket not found
+
+          if (item.tickets.length === 1) {
+            // If it's the only ticket type, remove the entire item
+            set({
+              cart: cart.filter(
+                (item) => item.tourScheduleId !== tourScheduleId,
+              ),
+            });
+          } else {
+            // Remove just this ticket type
+            item.tickets.splice(ticketIndex, 1);
+
+            // Recalculate total price
+            item.totalPrice = item.tickets.reduce(
+              (sum, ticket) => sum + ticket.netCost * ticket.quantity,
+              0,
+            );
+            set({ cart: updatedCart });
+          }
+
           resetSessionTimeout();
         },
         selectItem: (itemId, checked) => {
@@ -233,10 +280,11 @@ export const createCartStore = (initState = initialState) => {
               (item) => !state.selectedItems.includes(item.tourScheduleId),
             );
             // Clear payment item if it was among the removed items
-            const updatedPaymentItem = state.paymentItem && 
-            state.selectedItems.includes(state.paymentItem.tourScheduleId)
-            ? null
-            : state.paymentItem;
+            const updatedPaymentItem =
+              state.paymentItem &&
+              state.selectedItems.includes(state.paymentItem.tourScheduleId)
+                ? null
+                : state.paymentItem;
             return {
               cart: updatedItems,
               selectedItems: [],
@@ -245,6 +293,7 @@ export const createCartStore = (initState = initialState) => {
             };
           });
         },
+
         selectForPayment: (itemId) => {
           const { cart } = get();
           const item = cart.find((item) => item.tourScheduleId === itemId);
@@ -259,7 +308,26 @@ export const createCartStore = (initState = initialState) => {
             paymentItem: item,
           });
         },
-        removePaymentItem: () => {
+        removePaymentItem: (cancel, paymentStatus) => {
+          const { cart, paymentItem } = get();
+          if (cancel && paymentItem) {
+            const updatedCart = cart.filter(
+              (item) => item.tourScheduleId !== paymentItem.tourScheduleId,
+            );
+            set({
+              cart: updatedCart,
+            });
+          }
+          if (!cancel && paymentItem && paymentStatus === PaymentStatus.PAID) {
+            const updatedCart = cart.filter(
+              (item) => item.tourScheduleId !== paymentItem.tourScheduleId,
+            );
+            set({
+              cart: updatedCart,
+            });
+            return;
+          }
+
           set({
             paymentItem: null,
           });
@@ -283,10 +351,6 @@ export const createCartStore = (initState = initialState) => {
           const { cart } = get();
           return cart.find((item) => item.tourScheduleId === tourScheduleId);
         },
-        getTotalPricePaymentItem: () => {
-          const { paymentItem } = get();
-          return paymentItem ? paymentItem.totalPrice : 0;
-        },
         getCartTotal: () => {
           const { cart } = get();
           return cart.reduce((total, item) => total + item.totalPrice, 0);
@@ -296,11 +360,78 @@ export const createCartStore = (initState = initialState) => {
           const { cart } = get();
           return cart.length;
         },
+        setQuantityDirectly: (tourScheduleId, ticketTypeId, quantity) => {
+          const { cart, paymentItem } = get();
+
+          // Tìm item trong giỏ hàng
+          const updatedCart = [...cart];
+          const itemIndex = updatedCart.findIndex(
+            (item) => item.tourScheduleId === tourScheduleId,
+          );
+
+          if (itemIndex === -1) return;
+
+          // Tìm ticket cụ thể
+          const item = updatedCart[itemIndex];
+          const ticketIndex = item.tickets.findIndex(
+            (ticket) => ticket.ticketTypeId === ticketTypeId,
+          );
+
+          if (ticketIndex === -1) return;
+
+          const ticket = item.tickets[ticketIndex];
+
+          // Kiểm tra giá trị nhập vào
+          const safeQuantity = Math.max(1, quantity); // Tối thiểu là 1
+          const isExceeded = safeQuantity > ticket.availableTicket;
+
+          // Giới hạn số lượng không vượt quá vé có sẵn
+          const finalQuantity = isExceeded
+            ? ticket.availableTicket
+            : safeQuantity;
+
+          // Hiển thị thông báo nếu vượt quá
+          if (isExceeded) {
+            if (typeof window !== "undefined") {
+              const toast = import("sonner").then((module) => {
+                module.toast.error(
+                  `Số lượng vé không được vượt quá số lượng tối đa cho phép.`,
+                );
+              });
+            }
+          }
+
+          // Cập nhật số lượng
+          item.tickets[ticketIndex] = {
+            ...ticket,
+            quantity: finalQuantity,
+          };
+
+          // Tính lại tổng giá
+          item.totalPrice = item.tickets.reduce(
+            (sum, ticket) => sum + ticket.netCost * ticket.quantity,
+            0,
+          );
+
+          // Cập nhật cart và payment item nếu cần
+          if (paymentItem && paymentItem.tourScheduleId === tourScheduleId) {
+            set({
+              cart: updatedCart,
+              paymentItem: updatedCart[itemIndex],
+            });
+          } else {
+            set({ cart: updatedCart });
+          }
+
+          resetSessionTimeout();
+        },
       }),
       {
         name: "cart-store",
         storage: createJSONStorage(() => localStorage),
-        onRehydrateStorage: () => resetSessionTimeout(),
+        onRehydrateStorage: () => {
+          resetSessionTimeout();
+        },
       },
     ),
   );

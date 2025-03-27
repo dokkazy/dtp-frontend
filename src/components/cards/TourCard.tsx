@@ -15,7 +15,12 @@ export default function TourCard({ tour }: TourCardProps) {
   };
 
   return (
-    <Link href={`${links.tour.href}/${tour.id}`} className="group">
+    <Link
+      href={`${links.tour.href}/${tour.id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group"
+    >
       <div
         className={`h-full transform animate-fade-up overflow-hidden rounded-xl border border-core bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
         id={`tour-${tour.id}`}
@@ -30,12 +35,15 @@ export default function TourCard({ tour }: TourCardProps) {
             height={300}
           />
         </div>
-  
+
         <div className="p-3">
-          <h3 title={tour.title} className="mb-2 line-clamp-2 h-10 text-sm font-semibold">
+          <h3
+            title={tour.title}
+            className="mb-2 line-clamp-2 h-10 text-sm font-semibold"
+          >
             {tour.title}
           </h3>
-  
+
           <div className="mb-2 flex items-center text-xs">
             <div className="inline-flex items-center text-yellow-500">
               <svg
@@ -52,20 +60,20 @@ export default function TourCard({ tour }: TourCardProps) {
               <span className="text-gray-600">100+ Đã đặt</span>
             </div>
           </div>
-  
+
           <div className="flex items-end justify-between">
             <div className="flex gap-2">
               <span className="text-xs text-gray-500">Từ</span>
               <div className="inline-flex items-center text-sm font-semibold text-core">
-                $ {tour.onlyFromCost * 2}
+              ₫ {tour.onlyFromCost}
                 {tour.onlyFromCost && (
                   <span className="ml-2 text-xs text-gray-400 line-through">
-                    ₫ {formatCurrency(tour.onlyFromCost)}
+                    ₫ {formatCurrency(tour.onlyFromCost * 2)}
                   </span>
                 )}
               </div>
             </div>
-  
+
             <button className="bg-tour-primary rounded-lg px-2 py-1 text-xs font-medium text-white transition-all hover:bg-opacity-90">
               Đặt
             </button>

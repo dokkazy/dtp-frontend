@@ -8,18 +8,21 @@ import Image from "next/image";
 import { sessionToken as clientSessionToken } from "@/lib/http";
 import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
+import { useUserStore } from "@/stores/userStore";
 
 export default function LogoutPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const sessionToken = searchParams.get("sessionToken");
   const [isLoading, setIsLoading] = useState(true);
+  const clearUser = useUserStore((state) => state.clearUser);
   console.log("sessionToken", sessionToken);
 
   useLayoutEffect(() => {
     if (sessionToken === clientSessionToken.value) {
       setIsLoading(true);
       authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
+        clearUser();
         setIsLoading(false);
         setTimeout(() => {
           window.location.replace(
@@ -28,7 +31,7 @@ export default function LogoutPage() {
         }, 2000);
       });
     }
-  }, [sessionToken, pathname]);
+  }, [sessionToken, pathname, clearUser]);
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
