@@ -5,11 +5,14 @@ import { cookies } from "next/headers";
 export type RefreshTokenRequestType = {
   refreshToken: string;
 };
+const convertToDate = (maxAge: number) =>
+  new Date(Date.now() + maxAge * 1000).toUTCString();
 
 export async function POST() {
   const cookieStore = cookies();
-  const refreshToken = cookieStore.get("refreshToken");
-  const sessionToken = cookieStore.get("sessionToken");
+  const sessionToken = cookieStore.get("_auth");
+  const refreshToken = cookieStore.get("cont_auth");
+
   if (!sessionToken || !refreshToken) {
     return Response.json(
       {
@@ -22,21 +25,21 @@ export async function POST() {
   }
   try {
     const body: RefreshTokenRequestType = {
-      refreshToken: refreshToken.value,
+      refreshToken: refreshToken?.value || "",
     };
     const response = await authApiRequest.refreshFromNextServerToServer(
       body,
-      sessionToken.value,
+      sessionToken?.value || "",
     );
     const newSessionToken = response?.payload?.data?.accessToken as string;
     const newRefreshToken = response?.payload?.data?.refreshToken as string;
-    const maxAge = response?.payload?.data?.expiresIn as string;
+    const newMaxAge = response?.payload?.data?.expiresIn;
 
     console.log("res", response);
 
     const cookies = [
-      `sessionToken=${newSessionToken}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Lax; Secure`,
-      `refreshToken=${newRefreshToken}; Max-Age=${60 * 60 * 7 * 24}; Path=/; HttpOnly; SameSite=Lax; Secure`,
+      `_auth=${newSessionToken}; Max-Age=${newMaxAge}; Expires=${convertToDate(newMaxAge)}; Path=/; HttpOnly; SameSite=Lax; Secure`,
+      `cont_auth=${newRefreshToken}; Max-Age=${60 * 60 * 24 * 7 /*7 days*/}; Expires=${convertToDate(60 * 60 * 24 * 7 /*7 days*/)}; Path=/; HttpOnly; SameSite=Lax; Secure`,
     ];
 
     return Response.json(response?.payload, {

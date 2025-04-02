@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { UserProfile } from "@/types/user";
+import { isProduction } from "@/lib/utils";
 
 interface UserType {
   user: UserProfile | null;
@@ -10,7 +11,6 @@ interface UserType {
 interface UserActions {
   setUser: (user: UserProfile) => void;
   clearUser: () => void;
-  updateUserProfile: (updatedData: Partial<UserProfile>) => void;
 }
 
 export type UserStoreType = UserType & UserActions;
@@ -21,20 +21,13 @@ export const useUserStore = create<UserStoreType>()(
       user: null,
       isAuthenticated: false,
       setUser: (user) => set({ user, isAuthenticated: true }, false, "setUser"),
-      clearUser: () => set({ user: null, isAuthenticated: false }, false, "clearUser"),
-      updateUserProfile: (updatedData) =>
-        set(
-          (state) => ({
-            user: state.user ? { ...state.user, ...updatedData } : null,
-          }),
-          false,
-          "updateUserProfile"
-        ),
+      clearUser: () =>
+        set({ user: null, isAuthenticated: false }, false, "clearUser"),
     }),
     {
       name: "User Store",
       // Optionally disable DevTools in production
-      enabled: process.env.NODE_ENV !== "production",
-    }
-  )
+      enabled: !isProduction(),
+    },
+  ),
 );

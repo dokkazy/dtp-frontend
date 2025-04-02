@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Spinner from "@/components/common/Spinner";
+import Spinner from "@/components/common/loading/Spinner";
 
 export default function ProcessCheckoutPage() {
   const router = useRouter();
@@ -10,8 +10,6 @@ export default function ProcessCheckoutPage() {
   const [paymentTimeout, setPaymentTimeout] = useState(false);
 
   useEffect(() => {
-    // document.cookie = "isCheckoutProcessing=true; path=/; max-age=3600";
-
     const paymentStartTime = localStorage.getItem("paymentStartTime");
     const startTime = paymentStartTime
       ? parseInt(paymentStartTime)
@@ -20,7 +18,9 @@ export default function ProcessCheckoutPage() {
     // Kiểm tra nếu còn URL thanh toán
     const checkoutUrl = localStorage.getItem("checkoutUrl");
     if (checkoutUrl) {
-      window.location.href = checkoutUrl;
+      setTimeout(() => {
+        window.location.href = checkoutUrl;
+      }, 3000);
       return;
     } else {
       // Nếu không có URL thanh toán, xóa cookie và localStorage
@@ -43,7 +43,9 @@ export default function ProcessCheckoutPage() {
       }
     }, 1000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [router]);
 
   // Hủy quá trình thanh toán

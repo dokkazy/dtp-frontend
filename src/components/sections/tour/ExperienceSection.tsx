@@ -70,7 +70,7 @@ export default function ExperienceSection() {
                     src={experience.image}
                     alt={experience.title}
                     fill
-                    className="transition-transform object-cover duration-300 hover:scale-105"
+                    className="size-full transition-transform object-cover duration-300 hover:scale-105"
                   />
                 </div>
               </div>

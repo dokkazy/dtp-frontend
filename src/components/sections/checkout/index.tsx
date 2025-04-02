@@ -21,46 +21,42 @@ import { formatCurrency, getTicketKind } from "@/lib/utils";
 import { toast } from "sonner";
 import { OrderRequest } from "@/types/order";
 import { orderApiRequest } from "@/apiRequests/order";
-import Spinner from "@/components/common/Spinner";
+import Spinner from "@/components/common/loading/Spinner";
 import { links } from "@/configs/routes";
 import envConfig from "@/configs/envConfig";
-import { useUserStore } from "@/stores/userStore";
 import { PaymentRequest } from "@/types/checkout";
+import { AddContactSheet } from "./add-contact-sheet";
+import { useAuthContext } from "@/providers/AuthProvider";
 
-// type Contact = {
-//   id: string;
-//   lastName: string;
-//   firstName: string;
-//   phone: string;
-//   email: string;
-// };
+export type Contact = {
+  name: string;
+  phoneNumber: string;
+  email: string;
+};
 
 export default function Checkout({ itemId }: { itemId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { user } = useUserStore((state) => state);
-  // const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
-  const { paymentItem } = useCartStore((state) => state);
+  const {user} = useAuthContext();
+  const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
+  const [contact, setContact] = useState<Contact | null>(null);
+  const { paymentItem, directCheckoutItem } = useCartStore((state) => state);
+  const checkoutItem = directCheckoutItem || paymentItem;
 
   useEffect(() => {
-    // const getUserInfo = async () => {
-    //   try {
-    //     const response: any = await userApiRequest.me();
-    //     if (!response.payload.success) {
-    //       console.error("Failed to fetch user info:", response);
-    //     }
-    //     setUser(response.payload.data);
-    //   } catch (error) {
-    //     console.error("Error fetching user info:", error);
-    //   }
-    // };
-    // getUserInfo();
-    if (paymentItem?.tourScheduleId != itemId) {
+    if (!checkoutItem || checkoutItem?.tourScheduleId != itemId) {
       router.push(links.shoppingCart.href);
     }
-  }, [itemId, paymentItem?.tourScheduleId, router]);
+    if (user) {
+      setContact({
+        name: user.name,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+      });
+    }
+  }, [itemId, checkoutItem, router, user]);
 
-  if (!user || paymentItem?.tourScheduleId !== itemId) {
+  if (!user || !checkoutItem || checkoutItem?.tourScheduleId !== itemId) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Spinner className="text-core" />
@@ -71,21 +67,22 @@ export default function Checkout({ itemId }: { itemId: string }) {
   const handlePayment = async () => {
     setLoading(true);
     try {
-      if (paymentItem === null) {
+      if (!checkoutItem) {
         toast.error("Không có đơn hàng nào để thanh toán");
         return;
       }
       const orderData: OrderRequest = {
-        tourScheduleId: paymentItem.tourScheduleId,
+        tourScheduleId: checkoutItem.tourScheduleId,
         name: user?.name,
         phoneNumber: user?.phoneNumber,
         email: user?.email,
         voucherCode: "",
-        tickets: paymentItem.tickets.map((ticket) => ({
+        tickets: checkoutItem.tickets.map((ticket) => ({
           ticketTypeId: ticket.ticketTypeId,
           quantity: ticket.quantity,
         })),
       };
+      console.log("orderData", orderData);
       const orderResponse = await orderApiRequest.order(orderData);
       if (orderResponse.status !== 201) {
         console.error("Error creating order:", orderResponse);
@@ -102,24 +99,20 @@ export default function Checkout({ itemId }: { itemId: string }) {
         },
       };
 
-      const paymentResponse = await orderApiRequest.checkout(paymentData);
+      const paymentResponse: any = await orderApiRequest.checkout(paymentData);
       console.log(paymentResponse);
       if (paymentResponse.status !== 200) {
         console.error("Error fetching payment data:", paymentResponse);
         toast.error("Có lỗi xảy ra trong quá trình thanh toán");
         return;
       }
-      if (paymentResponse.payload.checkoutUrl) {
+      if (paymentResponse.payload.message) {
         localStorage.setItem("isCheckoutProcessing", "true");
-        localStorage.setItem(
-          "checkoutUrl",
-          paymentResponse.payload.checkoutUrl,
-        );
+        localStorage.setItem("checkoutUrl", paymentResponse.payload.message);
         localStorage.setItem("paymentStartTime", Date.now().toString());
 
         document.cookie = "isCheckoutProcessing=true; path=/; max-age=3600";
-
-        window.location.href = paymentResponse.payload.checkoutUrl;
+        window.location.href = paymentResponse.payload.message;
       } else {
         console.error("Không tìm thấy đường dẫn thanh toán");
       }
@@ -162,13 +155,13 @@ export default function Checkout({ itemId }: { itemId: string }) {
                         </div>
                         <div>
                           <h3 className="mb-1 text-base font-medium">
-                            {paymentItem?.tour.tour.title}
+                            {checkoutItem?.tour?.tour?.title}
                           </h3>
                           <p className="mb-1 line-clamp-2 text-sm text-gray-600">
-                            {paymentItem?.tour.tour.description}
+                            {/* {checkoutItem?.tour.tour.description} */}
                           </p>
                           <p className="text-sm text-gray-600">
-                            {paymentItem?.day}
+                            {checkoutItem?.day}
                           </p>
                         </div>
                       </div>
@@ -184,9 +177,14 @@ export default function Checkout({ itemId }: { itemId: string }) {
                 <p className="px-4 text-sm text-gray-600">
                   Chúng tôi sẽ thông báo mọi thay đổi về đơn hàng cho bạn
                 </p>
+                <div>
+                  <div>
+                    <p></p>
+                  </div>
+                </div>
                 <div className="px-8">
                   <div className="flex w-full justify-between rounded-lg border border-gray-300 p-4">
-                    {user === null ? (
+                    {contact === null ? (
                       <Spinner />
                     ) : (
                       <>
@@ -199,16 +197,20 @@ export default function Checkout({ itemId }: { itemId: string }) {
                             </span>
                           </p>
                           <p className="flex w-full flex-col gap-2 text-sm">
-                            <span className="font-semibold">{user.name}</span>
                             <span className="font-semibold">
-                              {user.phoneNumber}
+                              {contact.name}
                             </span>
-                            <span className="font-semibold">{user.email}</span>
+                            <span className="font-semibold">
+                              {contact.phoneNumber}
+                            </span>
+                            <span className="font-semibold">
+                              {contact.email}
+                            </span>
                           </p>
                         </div>
                         <div
                           className="flex items-end"
-                          // onClick={() => setIsContactSheetOpen(true)}
+                          onClick={() => setIsContactSheetOpen(true)}
                         >
                           <p className="text-sm font-medium underline hover:cursor-pointer">
                             Chỉnh sửa
@@ -258,17 +260,17 @@ export default function Checkout({ itemId }: { itemId: string }) {
                 <Card>
                   <CardContent className="space-y-4 py-4">
                     <p className="font-semibold">
-                      {paymentItem?.tour.tour.title}
+                      {checkoutItem?.tour.tour.title}
                     </p>
                     <Separator />
                     <div className="flex justify-between text-sm">
                       <p className="text-gray-500">Ngày</p>
-                      <p>{paymentItem?.day}</p>
+                      <p>{checkoutItem?.day}</p>
                     </div>
                     <div className="flex w-full justify-between text-sm">
                       <p className="text-gray-500">Đơn vị</p>
                       <div className="text-end">
-                        {paymentItem?.tickets.map((ticket) => (
+                        {checkoutItem?.tickets.map((ticket) => (
                           <p key={ticket.ticketTypeId}>
                             {getTicketKind(ticket.ticketKind)} x{" "}
                             {ticket.quantity}
@@ -281,7 +283,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   <CardFooter className="flex justify-between text-sm">
                     <p className="text-gray-500">Tổng cộng</p>
                     <p className="font-medium">
-                      ₫ {formatCurrency(paymentItem?.totalPrice ?? 0)}
+                      ₫ {formatCurrency(checkoutItem?.totalPrice ?? 0)}
                     </p>
                   </CardFooter>
                 </Card>
@@ -290,13 +292,13 @@ export default function Checkout({ itemId }: { itemId: string }) {
                     <div className="flex justify-between text-sm">
                       <p className="text-gray-500">Tổng cộng</p>
                       <p className="font-medium">
-                        ₫ {formatCurrency(paymentItem?.totalPrice ?? 0)}
+                        ₫ {formatCurrency(checkoutItem?.totalPrice ?? 0)}
                       </p>
                     </div>
                     <div className="flex justify-between text-sm">
                       <p className="text-gray-500">Số tiền phải thanh toán</p>
                       <p className="text-xl font-medium text-core">
-                        ₫ {formatCurrency(paymentItem?.totalPrice ?? 0)}
+                        ₫ {formatCurrency(checkoutItem?.totalPrice ?? 0)}
                       </p>
                     </div>
                   </CardContent>
@@ -304,15 +306,18 @@ export default function Checkout({ itemId }: { itemId: string }) {
               </div>
             </div>
           </div>
-          {/* 
-          <AddContactSheet
-            open={isContactSheetOpen}
-            user={user}
-            onOpenChange={setIsContactSheetOpen}
-            onSave={handleAddContact}
-          /> */}
+
+          {contact && (
+            <AddContactSheet
+              contact={contact}
+              open={isContactSheetOpen}
+              onOpenChange={setIsContactSheetOpen}
+              onSave={setContact}
+            />
+          )}
         </div>
       </div>
     </>
   );
+
 }

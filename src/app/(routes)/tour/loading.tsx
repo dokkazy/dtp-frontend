@@ -17,7 +17,7 @@ export default function Loading() {
           {/* Mobile Carousel Skeleton */}
           <ScrollArea className="w-full rounded-md md:hidden">
             <div className="flex w-fit gap-4 pb-4">
-              {[...Array(6)].map((_, index) => (
+              {[...Array(3)].map((_, index) => (
                 <div key={index} className="min-w-[250px] max-w-[300px] flex-1">
                   <Card className="overflow-hidden">
                     <Skeleton className="aspect-square h-40 w-full rounded-t-xl" />

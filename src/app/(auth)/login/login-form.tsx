@@ -4,10 +4,10 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { cn, handleErrorApi } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { links } from "@/configs/routes";
@@ -22,15 +22,15 @@ import {
 import { loginSchema, LoginSchemaType } from "@/schemaValidations/auth.schema";
 import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
-import { useUserStore } from "@/stores/userStore";
-import userApiRequest from "@/apiRequests/user";
+import { refreshToken, sessionToken } from "@/lib/http";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
   const router = useRouter();
-  const setUser = useUserStore((state) => state.setUser);
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || links.home.href;
   const [loading, setLoading] = useState(false);
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -40,33 +40,62 @@ export function LoginForm({
     },
   });
 
+  // const onSubmit = async (values: LoginSchemaType) => {
+  //   try {
+  //     setLoading(true);
+  //     const response: any = await authApiRequest.login({
+  //       userName: values.userName,
+  //       password: values.password,
+  //     });
+  //     const responseFromNextServer: any =
+  //       await authApiRequest.setToken(response);
+
+  //     if (responseFromNextServer.payload.success) {
+  //       try {
+  //         const userResponse: any = await userApiRequest.me();
+  //         if (userResponse.payload.success) {
+  //           setUser(userResponse.payload.data);
+  //           window.notifyAuthChange?.();
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching user data:", error);
+  //       }
+  //       toast.success("Đăng nhập thành công");
+  //       router.push(redirectUrl);
+  //       return;
+  //     }
+  //     setLoading(false);
+  //   } catch (error: any) {
+  //     handleErrorApi(error);
+  //     setLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (values: LoginSchemaType) => {
     try {
       setLoading(true);
-      const response: any = await authApiRequest.login({
-        userName: values.userName,
-        password: values.password,
-      });
-      console.log("response", response);
-      const responseFromNextServer: any =
-        await authApiRequest.setToken(response);
-
-      if (responseFromNextServer.payload.success) {
-        try {
-          const userResponse: any = await userApiRequest.me();
-          if (userResponse.payload.success) {
-            setUser(userResponse.payload.data);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
+      const response: any =
+        await authApiRequest.loginFromNextClientToNextServer({
+          userName: values.userName,
+          password: values.password,
+        });
+      if ((response.status = 200)) {
+        sessionToken.value = response.payload.data.accessToken as string;
+        refreshToken.value = response.payload.data.refreshToken as string;
+        window.notifyAuthChange?.();
         toast.success("Đăng nhập thành công");
-        router.push(links.home.href);
-        return;
+        // window.location.href = redirectUrl;
+        router.push(redirectUrl);
+        router.refresh();
       }
       setLoading(false);
     } catch (error: any) {
-      handleErrorApi(error);
+      if (error.status === 500) {
+        toast.error(error?.payload?.message);
+      }
+      if (error.status === 400) {
+        toast.error("Tài khoản hoặc mật khẩu không đúng");
+      }
       setLoading(false);
     }
   };

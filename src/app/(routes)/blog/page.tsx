@@ -1,5 +1,4 @@
 import Banner from "@/components/common/Banner";
-import Image from "next/image";
 
 export default function Blog() {
   return (

@@ -15,10 +15,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { OrderDetailResponse } from "@/types/order";
 import { orderApiRequest } from "@/apiRequests/order";
-import Spinner from "@/components/common/Spinner";
+import Spinner from "@/components/common/loading/Spinner";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useCartStore } from "@/providers/CartProvider";
 import { PaymentStatus } from "@/types/checkout";
+import { links } from "@/configs/routes";
 
 export default function PaymentSuccess() {
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
@@ -28,10 +29,13 @@ export default function PaymentSuccess() {
   const searchParams = useSearchParams();
   const cancel = searchParams.get("cancel");
   const status = searchParams.get("status");
-  const { removePaymentItem } = useCartStore((state) => state);
+  const { removePaymentItem, clearDirectCheckoutItem } = useCartStore(
+    (state) => state,
+  );
   const router = useRouter();
 
   useEffect(() => {
+    localStorage.removeItem("lastOrderId")
     localStorage.removeItem("isCheckoutProcessing");
     localStorage.removeItem("paymentStartTime");
     localStorage.removeItem("checkoutUrl");
@@ -39,7 +43,8 @@ export default function PaymentSuccess() {
     // Xóa cookie
     document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
     removePaymentItem(cancel as unknown as boolean, status as PaymentStatus);
-  }, [removePaymentItem, cancel, status, router]);
+    clearDirectCheckoutItem();
+  }, [removePaymentItem, cancel, status, router, clearDirectCheckoutItem]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +67,6 @@ export default function PaymentSuccess() {
       }
     };
     fetchData();
-
   }, [params.id, router, orderDetail]);
 
   if (!orderDetail) {
@@ -191,7 +195,7 @@ export default function PaymentSuccess() {
           {/* <ReceiptDownloadButton paymentData={paymentData} /> */}
           <div className="flex gap-3">
             <Button variant="outline" asChild>
-              <Link href="/my-order">Xem danh sách đặt tour</Link>
+              <Link href={links.orders.href}>Xem danh sách đặt tour</Link>
             </Button>
             <Button asChild variant="core">
               <Link href="/">

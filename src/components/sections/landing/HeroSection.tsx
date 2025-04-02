@@ -3,7 +3,6 @@ import { Dancing_Script } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { links } from "@/configs/routes";
 import Link from "next/link";
-import { BorderTrail } from "@/components/motion-primitives/border-trail";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
 
 const dancing = Dancing_Script({

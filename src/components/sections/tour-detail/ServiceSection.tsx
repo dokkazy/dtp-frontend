@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Calendar, Minus, Plus, ShieldAlert } from "lucide-react";
 import { vi } from "date-fns/locale";
 import { StyledElement } from "react-day-picker";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,9 +22,6 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import useServiceSectionStore from "@/stores/tourDetailServiceStore";
-import { TourDetail } from "@/types/tours";
-import { tourApiRequest } from "@/apiRequests/tour";
-import { toast } from "sonner";
 import { useCartStore } from "@/providers/CartProvider";
 import {
   Tooltip,
@@ -30,9 +29,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { links } from "@/configs/routes";
+import { sessionToken } from "@/lib/http";
+import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 
-export default function ServiceSection({ data }: { data: TourDetail }) {
+export default function ServiceSection({ data }: { data: TourDetailType }) {
+  const pathname = usePathname();
   const [loading, setLoading] = React.useState(false);
+  const [disabled, setDisabled] = React.useState(false);
+  const router = useRouter();
   const {
     showPackage,
     calendarOpen,
@@ -48,35 +53,69 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
     handleQuantityChange,
     clearAll,
     togglePackage,
-    
   } = useServiceSectionStore();
 
   const addToCart = useCartStore((state) => state.addToCart);
+  const setDirectCheckoutItem = useCartStore(
+    (state) => state.setDirectCheckoutItem,
+  );
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        clearAll();
-        setTicketSchedule([]);
-        setLoading(true);
-        const response: any = await tourApiRequest.getScheduleTicketByTourId(
-          data.tour.id,
-        );
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       clearAll();
+  //       setTicketSchedule([]);
+  //       setLoading(true);
+  //       const response: any = await tourApiRequest.getScheduleTicketByTourId(
+  //         data.tour.id,
+  //       );
 
-        if (!response.payload.success) {
-          throw new Error("Failed to fetch ticket schedule");
-        }
-        setTicketSchedule(response?.payload?.data);
-      } catch (error) {
-        console.error("Error fetching ticket schedule:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [data.tour.id, setTicketSchedule, clearAll]);
+  //       if (!response.payload.success) {
+  //         throw new Error("Failed to fetch ticket schedule");
+  //       }
+  //       setTicketSchedule(response?.payload?.data);
+  //     } catch (error) {
+  //       console.error("Error fetching ticket schedule:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [data.tour.id, setTicketSchedule, clearAll]);
+
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       clearAll();
+  //       setTicketSchedule([]);
+  //       setLoading(true);
+
+  //       // Use the new server route instead of direct API call
+  //       const response = await tourApiRequest.getTourScheduleTicket(
+  //         data.tour.id,
+  //       );
+  //       if (response.status === 200) {
+  //         setTicketSchedule(response.payload.data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching ticket schedule:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [data.tour.id, setTicketSchedule, clearAll]);
+
+  useEffect(() => {
+    clearAll();
+    setTicketSchedule([]);
+    setLoading(true);
+    setTicketSchedule(data.tourSchedule);
+    setLoading(false);
+  }, [data.tourSchedule, setTicketSchedule, clearAll]);
 
   const handleAddToCart = () => {
+    if(data.tourDetail == null) return;
     if (!date || selectedDayTickets.length === 0) {
       toast.warning("Vui lòng chọn ngày và số lượng vé");
       return;
@@ -105,7 +144,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
     const formattedDate = formatDateToDDMMYYYY(selectedDay.day);
     // Add to cart
     addToCart(
-      data,
+      data.tourDetail,
       tourScheduleId,
       formattedDate,
       selectedDayTickets,
@@ -115,25 +154,77 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
     toast.success("Đã thêm vào giỏ hàng");
   };
 
-  console.log(ticketSchedule);
+  const handleOrderDirectly = () => {
+    if(data.tourDetail == null) return;
+    if (!sessionToken.value) {
+      toast.warning("Vui lòng đăng nhập để tiếp tục đặt hàng");
+      router.push(`${links.login.href}?redirect=${pathname}`);
+      return;
+    }
+    if (!date || selectedDayTickets.length === 0) {
+      toast.warning("Vui lòng chọn ngày và số lượng vé");
+      return;
+    }
+
+    // Check if at least one ticket has quantity > 0
+    const hasSelectedTickets = Object.values(ticketQuantities).some(
+      (qty) => qty > 0,
+    );
+
+    if (!hasSelectedTickets) {
+      toast.warning("Vui lòng chọn ít nhất một vé");
+      return;
+    }
+
+    // Find the current selected day data
+    const selectedDay = ticketSchedule.find(
+      (day) => new Date(day.day).toDateString() === date.toDateString(),
+    );
+
+    if (!selectedDay) return;
+
+    // Get the tourScheduleId from the first ticket (they all share the same schedule ID)
+    const tourScheduleId = selectedDayTickets[0]?.tourScheduleId || "";
+
+    const formattedDate = formatDateToDDMMYYYY(selectedDay.day);
+    setDisabled(true);
+
+    setDirectCheckoutItem(
+      data.tourDetail,
+      tourScheduleId,
+      formattedDate,
+      selectedDayTickets,
+      ticketQuantities,
+    );
+
+    // Navigate directly to checkout
+    router.push(`${links.checkout.href}/${tourScheduleId}`);
+  };
 
   const availableDates = React.useMemo(() => {
+    if (!ticketSchedule) return [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return ticketSchedule
-      .map((day) => new Date(day.day))
-      // .filter((date) => date > today);
+      .map((day) => {
+        // Create new date and set to start of day
+        const date = new Date(day.day);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      })
+      .filter((date) => {
+        // Check if date is tomorrow or later
+        // Add 24 hours (in milliseconds) to today
+        return date.getTime() >= today.getTime() + 86400000;
+      });
   }, [ticketSchedule]);
 
   const isDateAvailable = React.useCallback(
     (date: Date) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return (
-        availableDates.some(
-          (availableDate) =>
-            availableDate.toDateString() === date.toDateString(),
-        )
+      return availableDates.some(
+        (availableDate) => availableDate.toDateString() === date.toDateString(),
       );
     },
     [availableDates],
@@ -147,13 +238,14 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
 
   const modifiersClassNames = React.useMemo(() => {
     return {
-      available: "available-day after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-teal-500 after:content-['']",
+      available:
+        "available-day after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-teal-500 after:content-['']",
     } as Partial<StyledElement<string>> & { available: string };
   }, []);
 
   return (
     <div id="tour-detail-service" className="space-y-8">
-      <h2 className="relative pl-3 text-3xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-8 before:w-1 before:-translate-y-1/2 before:bg-core before:content-['']">
+      <h2 className="relative pl-3 text-xl md:text-3xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 md:before:h-8 before:w-1 before:-translate-y-1/2 before:bg-core before:content-['']">
         Các gói dịch vụ
       </h2>
       <Card className="bg-[#f5f5f5]">
@@ -176,7 +268,9 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
-                  disabled={ticketSchedule.length === 0}
+                  disabled={
+                    ticketSchedule.length === 0 || availableDates.length === 0
+                  }
                   className="rounded-lg"
                   variant="core"
                 >
@@ -202,9 +296,15 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                       ></path>
                     </svg>
                   ) : (
-                    <Calendar className="h-4 w-4" />
+                    <>
+                      <Calendar className="h-4 w-4" />
+                      <span>
+                        {availableDates.length === 0
+                          ? "Không có ngày khả dụng"
+                          : "Xem trạng thái dịch vụ"}
+                      </span>
+                    </>
                   )}
-                  <span>Xem trạng thái dịch vụ</span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
@@ -227,7 +327,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                         <TooltipTrigger asChild>
                           <ShieldAlert className="h-4 w-4" />
                         </TooltipTrigger>
-                        <TooltipContent className="whitespace-normal bg-white text-sm text-black shadow-sm w-72">
+                        <TooltipContent className="w-72 whitespace-normal bg-white text-sm text-black shadow-sm">
                           <p>
                             Hoạt động sẽ diễn ra vào thời gian đã chọn. (Nhà
                             điều hành chỉ có thể hủy hoạt động trong trường hợp
@@ -332,6 +432,7 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
               </h3>
               <div className="space-x-4">
                 <Button
+                  disabled={disabled}
                   onClick={() => {
                     handleAddToCart();
                   }}
@@ -339,7 +440,11 @@ export default function ServiceSection({ data }: { data: TourDetail }) {
                 >
                   Thêm vào giỏ hàng
                 </Button>
-                <Button className="rounded-xl bg-[#fc7a09] p-6 text-base hover:bg-[#ff9537]">
+                <Button
+                  disabled={disabled}
+                  onClick={handleOrderDirectly}
+                  className="rounded-xl bg-[#fc7a09] p-6 text-base hover:bg-[#ff9537]"
+                >
                   Đặt ngay
                 </Button>
               </div>

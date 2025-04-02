@@ -15,6 +15,7 @@ import { TourList as Tours } from "@/types/tours";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import TourCardSkeleton from "@/components/common/loading/TourCardSkeleton";
 
 interface TourListProps {
   tours: Tours;
@@ -129,18 +130,16 @@ export default function TourList({
 
   return (
     <div className="w-full">
-     
-
       <div className="grid grid-cols-1 gap-4 px-12 sm:grid-cols-2 sm:px-0 lg:grid-cols-3">
         {isLoading ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-32">
-            <div className="mb-4 flex items-center justify-center">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
-            </div>
-            <p className="text-center text-lg text-gray-600">
-              Đang tải danh sách tour...
-            </p>
-          </div>
+          <>
+           {Array(9)
+            .fill(0)
+            .map((_, index) => (
+              <TourCardSkeleton key={index} />
+            ))}
+          </>
+         
         ) : tours.length > 0 ? (
           tours.map((tour) => <TourCard key={tour.id} tour={tour} />)
         ) : (
@@ -200,12 +199,12 @@ export default function TourList({
                         }}
                       >
                         <PopoverTrigger asChild>
-                          <button
+                          <Button variant="ghost"
                             className="flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground"
                             onClick={() => handleOpenPopover(page)}
                           >
                             <PaginationEllipsis />
-                          </button>
+                          </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-60">
                           <div className="space-y-2">

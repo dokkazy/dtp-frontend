@@ -13,12 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useCartStore } from "@/providers/CartProvider";
-import Spinner from "@/components/common/Spinner";
+import Spinner from "@/components/common/loading/Spinner";
 
 export default function CancelPaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { removePaymentItem } = useCartStore((state) => state);
+  const { removePaymentItem, clearDirectCheckoutItem } = useCartStore((state) => state);
   const cancel = searchParams.get("cancel");
   const isCheckoutProcessing = localStorage.getItem("isCheckoutProcessing");
 
@@ -27,14 +27,16 @@ export default function CancelPaymentPage() {
       router.push("/");
       return;
     }
-
+    localStorage.removeItem("lastOrderId");
     localStorage.removeItem("isCheckoutProcessing");
     localStorage.removeItem("paymentStartTime");
     localStorage.removeItem("checkoutUrl");
 
     document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
     removePaymentItem(cancel as unknown as boolean);
-  }, [removePaymentItem, router, cancel, isCheckoutProcessing]);
+    clearDirectCheckoutItem();
+    
+  }, [removePaymentItem, router, cancel, isCheckoutProcessing, clearDirectCheckoutItem]);
 
   if (cancel === null) {
     return (
