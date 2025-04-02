@@ -3,10 +3,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const privatePath = [
-  links.passenger.href,
+  links.profile.href,
   links.checkout.href,
   links.paymentCancel.href,
   links.paymentSuccess.href,
+  links.orders.href,
+  links.review.href,
+  links.shoppingCart.href,
+  "/checkout-processing",
 ];
 
 const authPath = [links.login.href, links.register.href];
@@ -15,7 +19,11 @@ const authPath = [links.login.href, links.register.href];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = NextResponse.next();
-  const sessionToken = request.cookies.get("sessionToken");
+  const sessionToken = request.cookies.get("_auth");
+
+  if (privatePath.some((path) => pathname.startsWith(path)) && !sessionToken) {
+    return NextResponse.redirect(new URL(links.login.href, request.url));
+  }
 
   if (
     request.nextUrl.pathname.startsWith("/api") ||
@@ -29,9 +37,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (privatePath.some((path) => pathname.startsWith(path)) && !sessionToken) {
-    return NextResponse.redirect(new URL(links.login.href, request.url));
-  }
   if (authPath.some((path) => pathname.startsWith(path)) && sessionToken) {
     return NextResponse.redirect(new URL(links.home.href, request.url));
   }

@@ -5,7 +5,7 @@ export default function Loading() {
     <div className="container mx-auto my-12">
       <div className="flex flex-col items-center justify-center py-32">
         <div className="mb-6 flex items-center justify-center">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-blue-500"></div>
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
         </div>
         <h2 className="mb-2 text-2xl font-semibold text-gray-700">
           Đang tải thông tin tour...

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const clearCookies = () => {
-  return ["sessionToken", "refreshToken", "role"]
+  return ["_auth", "cont_auth"]
     .map(
       (name) =>
         `${name}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict`,
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     );
   }
   const cookieStore = cookies();
-  const sessionToken = cookieStore.get("sessionToken");
+  const sessionToken = cookieStore.get("_auth");
 
   if (!sessionToken) {
     return NextResponse.json(
@@ -65,7 +65,12 @@ export async function POST(req: Request) {
         {
           success: false,
         },
-        { status: 401 },
+        {
+          status: 401,
+          headers: {
+            "Set-Cookie": clearCookies(),
+          },
+        },
       );
     }
   } catch (error) {

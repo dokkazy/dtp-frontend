@@ -238,7 +238,7 @@ export default function ShoppingCart() {
                                 {item.tour.tour.title}
                               </h3>
                               <p className="line-clamp-2 text-sm text-gray-600">
-                                {item.tour.tour.description}
+                                {/* {item.tour.tour.description} */}
                               </p>
                               <p className="text-sm text-gray-600">
                                 {item.day}

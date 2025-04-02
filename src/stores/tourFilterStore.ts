@@ -1,3 +1,4 @@
+import { isProduction } from "@/lib/utils";
 import { Tour, TourSortBy } from "@/types/tours";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
@@ -110,7 +111,7 @@ const useTourFilterStore = create<TourFilterStoreType>()(
 
     {
       name: "Tour Filter Store", 
-      enabled: process.env.NODE_ENV !== "production",
+      enabled: !isProduction(),
     },
   ),
 );

@@ -123,7 +123,6 @@ const request = async <Response>(
 
   const response = await fetch(fullUrl, {
     ...options,
-    cache: "no-store",
     headers: {
       ...baseHeaders,
       ...options?.headers,
@@ -131,7 +130,6 @@ const request = async <Response>(
     body,
     method,
   });
-  console.log("body: ", body);
   const contentType = response.headers.get("content-type");
   let payload: Response | any;
 
@@ -178,20 +176,17 @@ const request = async <Response>(
         const sessionToken = (options?.headers as any)?.Authorization?.split(
           "Bearer ",
         )[1];
-        redirect("/logout?sessionToken=" + sessionToken);
+        redirect("/logout?_auth=" + sessionToken);
       }
     }
   }
 
   //automatically set/remove session token and role when login or logout on client side
   if (typeof window !== "undefined") {
+    const parsePayload = payload as LoginResponseSchemaType;
     if ([apiEndpoint.login].includes(url)) {
-      sessionToken.value = (
-        payload as LoginResponseSchemaType
-      ).data?.accessToken;
-      refreshToken.value = (
-        payload as LoginResponseSchemaType
-      ).data?.refreshToken;
+      sessionToken.value = parsePayload.data?.accessToken;
+      refreshToken.value = parsePayload.data?.refreshToken;
     } else if ([apiEndpoint.logout].includes(url)) {
       sessionToken.value = "";
       refreshToken.value = "";

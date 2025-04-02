@@ -49,6 +49,12 @@ export interface TourDestination {
   startTime: string;
   endTime: string;
   sortOrder: number;
+  activities: {
+    name: string;
+    startTime: string;
+    endTime: string;
+    sortOrder: number;
+  }[]
 }
 
 export interface TourDetail {
@@ -59,6 +65,7 @@ export interface TourDetail {
     description: string;
     avgStar: number;
     totalRating: number;
+    about: string;
     onlyFromCost: number;
     ticketTypes: TicketType[];
   };

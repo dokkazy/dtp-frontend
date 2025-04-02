@@ -138,7 +138,7 @@ export default function TourFilter({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={`text-sm ${isDateFilterActive ? "border-teal-500 bg-teal-50 text-teal-500" : ""}`}
+                className={`text-sm ${isDateFilterActive ? "border-teal-500 bg-teal-50 text-teal-500 hover:border-teal-400 hover:text-teal-500" : ""}`}
               >
                 Có thể đặt
                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -173,7 +173,7 @@ export default function TourFilter({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={`text-sm ${isPriceFilterActive ? "border-teal-500 bg-teal-50 text-teal-500" : ""}`}
+                className={`text-sm ${isPriceFilterActive ? "border-teal-500 bg-teal-50 text-teal-500 hover:border-teal-400 hover:text-teal-500" : ""}`}
               >
                 Mức giá
                 <WalletCards className="ml-auto h-4 w-4 opacity-50" />

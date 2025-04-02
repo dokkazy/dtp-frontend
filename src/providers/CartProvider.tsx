@@ -36,7 +36,7 @@ export const useCartStore = <T,>(
 ): T => {
   const cartContext = useContext(CartContext)
   if (!cartContext) {
-    throw new Error(`useCartStore must be used within AuthProvider`)
+    throw new Error(`useCartStore must be used within CartProvider`)
   }
 
   return useStore(cartContext, selector)

@@ -1,21 +1,15 @@
 import {
   Building,
-  Cloud,
   Compass,
-  FlagTriangleLeft,
-  Globe,
   Heart,
   MapPin,
   Shield,
-  SlidersHorizontal,
   TrendingUp,
   Users,
 } from "lucide-react";
 import Image from "next/image";
 
-import SubscribeSection from "@/components/sections/landing/SubscribeSection";
 import Banner from "@/components/common/Banner";
-import TrackingToken from "@/components/common/TrackingToken";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,8 +22,8 @@ export default function About() {
 
       <div className="flex min-h-screen flex-col">
         {/* Who We Are Section */}
-        <section className="mx-auto max-w-6xl bg-background py-16 md:py-24">
-          <div className="container px-4 md:px-6">
+        <section className="bg-background py-16 md:py-24">
+          <div className="container mx-auto max-w-6xl px-4 md:px-6">
             <div className="grid items-center gap-12 md:grid-cols-2">
               <div>
                 <h2 className="mb-6 text-3xl font-bold tracking-tight md:text-4xl">
@@ -62,7 +56,7 @@ export default function About() {
 
         {/* Our Mission Section */}
         <section className="bg-muted py-16 md:py-24">
-          <div className="container px-4 text-center md:px-6">
+          <div className="container mx-auto max-w-6xl px-4 text-center md:px-6">
             <h2 className="mb-6 text-3xl font-bold tracking-tight md:text-4xl">
               <span className="text-core">Sứ mệnh</span> của chúng tôi
             </h2>
@@ -72,8 +66,6 @@ export default function About() {
             </p>
 
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-
-
               <Card className="border-none bg-background/50 backdrop-blur-sm">
                 <CardContent className="pt-6">
                   <div className="mb-4 flex justify-center">
@@ -125,11 +117,11 @@ export default function About() {
               </Card>
             </div>
           </div>
-        </section>
+      </section>
 
         {/* What We Offer Section */}
         <section className="bg-background py-16 md:py-24">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto max-w-6xl px-4 md:px-6">
             <h2 className="mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl">
               Chúng tôi cung cấp những gì
             </h2>
@@ -175,11 +167,11 @@ export default function About() {
                     <Shield className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
                     <div>
                       <h3 className="mb-2 text-xl font-semibold">
-                      Đặt tour an toàn
+                        Đặt tour an toàn
                       </h3>
                       <p className="text-muted-foreground">
-                      Đặt tour an toàn thông qua nền tảng của chúng tôi
-                      với giá cả và chính sách minh bạch.
+                        Đặt tour an toàn thông qua nền tảng của chúng tôi với
+                        giá cả và chính sách minh bạch.
                       </p>
                     </div>
                   </div>
@@ -191,7 +183,8 @@ export default function About() {
                         Cộng đồng du khách
                       </h3>
                       <p className="text-muted-foreground">
-                        Kết nối với các du khách khác, chia sẻ trải nghiệm và đọc các đánh giá chân thực.
+                        Kết nối với các du khách khác, chia sẻ trải nghiệm và
+                        đọc các đánh giá chân thực.
                       </p>
                     </div>
                   </div>
@@ -206,7 +199,6 @@ export default function About() {
 
               <TabsContent value="companies" className="space-y-8">
                 <div className="grid gap-8 md:grid-cols-2">
-
                   <div className="flex gap-4">
                     <TrendingUp className="mt-1 h-6 w-6 flex-shrink-0 text-primary" />
                     <div>
@@ -214,7 +206,8 @@ export default function About() {
                         Phát triển doanh nghiệp
                       </h3>
                       <p className="text-muted-foreground">
-                      Tăng số lượng đặt các chuyến du lịch và doanh thu với các công cụ tiếp thị và phân tích mạnh mẽ.
+                        Tăng số lượng đặt các chuyến du lịch và doanh thu với
+                        các công cụ tiếp thị và phân tích mạnh mẽ.
                       </p>
                     </div>
                   </div>
@@ -226,11 +219,11 @@ export default function About() {
                         Công cụ quản lý
                       </h3>
                       <p className="text-muted-foreground">
-                      Truy cập các công cụ quản lý đặt tour, lập lịch trình và giao tiếp với khách hàng mạnh mẽ.
+                        Truy cập các công cụ quản lý đặt tour, lập lịch trình và
+                        giao tiếp với khách hàng mạnh mẽ.
                       </p>
                     </div>
                   </div>
-
                 </div>
 
                 {/* <div className="mt-8 flex justify-center">
@@ -245,7 +238,7 @@ export default function About() {
 
         {/* Team Section */}
         <section className="bg-muted py-16 md:py-24">
-          <div className="container px-4 text-center md:px-6">
+          <div className="container mx-auto max-w-6xl px-4 text-center md:px-6">
             <h2 className="mb-6 text-3xl font-bold tracking-tight md:text-4xl">
               Gặp gỡ đội ngũ của chúng tôi
             </h2>
@@ -253,7 +246,7 @@ export default function About() {
               Một nhóm đam mê du lịch với sứ mệnh phát triển du lịch địa phương
             </p>
 
-            <div className="grid gap-8 sm:grid-cols-2 md:grid-col-3 lg:grid-cols-5">
+            <div className="md:grid-col-3 grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
               {[
                 {
                   name: "Phan Mai Sơn",

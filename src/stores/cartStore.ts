@@ -23,6 +23,7 @@ type CartState = {
   selectedItems: string[];
   selectAll: boolean;
   paymentItem: CartItem | null;
+  directCheckoutItem: CartItem | null;
 };
 
 type CartActions = {
@@ -57,6 +58,14 @@ type CartActions = {
     ticketTypeId: string,
     quantity: number,
   ) => void;
+  setDirectCheckoutItem: (
+    tour: TourDetail,
+    tourScheduleId: string,
+    day: string,
+    tickets: TicketSchedule[],
+    quantities: { [ticketId: string]: number },
+  ) => void;
+  clearDirectCheckoutItem: () => void;
 };
 
 export type CartStoreType = CartState & CartActions;
@@ -70,6 +79,7 @@ const initialState = {
   selectedItems: [],
   selectAll: false,
   paymentItem: null,
+  directCheckoutItem: null,
 };
 
 export const createCartStore = (initState = initialState) => {
@@ -83,6 +93,7 @@ export const createCartStore = (initState = initialState) => {
             selectedItems: newState.selectedItems || [],
             selectAll: newState.selectAll || false,
             paymentItem: newState.paymentItem || null,
+            directCheckoutItem: newState.directCheckoutItem || null,
           });
         },
         addToCart: (tour, tourScheduleId, day, tickets, quantities) => {
@@ -306,6 +317,7 @@ export const createCartStore = (initState = initialState) => {
 
           set({
             paymentItem: item,
+            directCheckoutItem: null,
           });
         },
         removePaymentItem: (cancel, paymentStatus) => {
@@ -393,7 +405,7 @@ export const createCartStore = (initState = initialState) => {
           // Hiển thị thông báo nếu vượt quá
           if (isExceeded) {
             if (typeof window !== "undefined") {
-              const toast = import("sonner").then((module) => {
+              import("sonner").then((module) => {
                 module.toast.error(
                   `Số lượng vé không được vượt quá số lượng tối đa cho phép.`,
                 );
@@ -425,10 +437,58 @@ export const createCartStore = (initState = initialState) => {
 
           resetSessionTimeout();
         },
+        setDirectCheckoutItem: (
+          tour: TourDetail,
+          tourScheduleId: string,
+          day: string,
+          tickets: TicketSchedule[],
+          quantities: { [ticketId: string]: number },
+        ) => {
+          // Only prepare tickets with quantity > 0
+          const ticketsWithQuantity = tickets
+            .filter((ticket) => quantities[ticket.ticketTypeId] > 0)
+            .map((ticket) => ({
+              ticketTypeId: ticket.ticketTypeId,
+              ticketKind: ticket.ticketKind,
+              netCost: ticket.netCost,
+              quantity: quantities[ticket.ticketTypeId],
+              availableTicket: ticket.availableTicket,
+            }));
+
+          // Calculate total price
+          const totalPrice = ticketsWithQuantity.reduce(
+            (sum, ticket) => sum + ticket.netCost * ticket.quantity,
+            0,
+          );
+
+          // Create temporary payment item (not added to cart)
+          const directCheckoutItem: CartItem = {
+            tour,
+            tourScheduleId,
+            day,
+            tickets: ticketsWithQuantity,
+            totalPrice,
+          };
+          console.log("Setting direct checkout item:", directCheckoutItem);
+
+          set({
+            directCheckoutItem,
+            paymentItem: null,
+            // Don't modify the cart array
+          });
+        },
+        clearDirectCheckoutItem: () => set({ directCheckoutItem: null }),
       }),
       {
         name: "cart-store",
         storage: createJSONStorage(() => localStorage),
+        // partialize: (state) => ({
+        //   cart: state.cart,
+        //   selectedItems: state.selectedItems,
+        //   selectAll: state.selectAll,
+        //   paymentItem: state.paymentItem,
+        //   // Omit directPaymentItem so it's not stored in localStorage
+        // }),
         onRehydrateStorage: () => {
           resetSessionTimeout();
         },

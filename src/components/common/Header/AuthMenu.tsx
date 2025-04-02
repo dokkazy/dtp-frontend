@@ -13,10 +13,11 @@ import {
   Bell,
   Check,
   ShoppingBag,
+  MessageSquareText,
 } from "lucide-react";
 import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
-import { useRouter } from "next/navigation";
 import { cn, handleErrorApi } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,8 @@ import {
 } from "@/components/ui/popover";
 import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
-
+import { useAuthContext } from "@/providers/AuthProvider";
+import { AUTH_SYNC_KEY } from "@/components/common/UserInitializer";
 // Define menu types for better type safety
 type MenuItem = {
   id: string;
@@ -40,22 +42,38 @@ type MenuItem = {
 
 export default function AuthMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
+  const { setUser } = useAuthContext();
   const [menuStack, setMenuStack] = React.useState<string[]>([]);
   const router = useRouter();
 
   async function handleLogOut() {
     try {
-      const response:any = await authApiRequest.logoutFromNextClientToNextServer();
+      const response: any =
+        await authApiRequest.logoutFromNextClientToNextServer();
       if (!response.payload.success) {
         console.error(response.payload.message);
         return;
       }
+      setUser(null);
       toast.success(response.payload.message);
+      setOpen(false);
+      localStorage.removeItem(AUTH_SYNC_KEY);
       location.href = links.home.href;
     } catch (error) {
       console.error("Logout error:", error);
       handleErrorApi(error);
-    } 
+      // If the error is due to an expired session token, redirect to login
+      authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
+        setUser(null);
+        localStorage.removeItem(AUTH_SYNC_KEY);
+        setTimeout(() => {
+          window.location.replace(
+            `${links.login.href}?redirectFrom=${pathname}`,
+          );
+        }, 2000);
+      });
+    }
   }
 
   // Get current menu based on navigation stack
@@ -121,16 +139,21 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       label: "Trang cá nhân",
       icon: User,
       onClick: () => {
-        router.push(links.passenger.href);
+        router.push(links.profile.href);
         setOpen(false);
       },
+    },
+    {
+      id:"review",
+      label:"Đánh giá",
+      icon: MessageSquareText,
     },
     {
       id: "cart",
       label: "Đơn hàng",
       icon: ShoppingBag,
       onClick: () => {
-        router.push('#');
+        router.push(links.orders.href);
         setOpen(false);
       },
     },
@@ -213,7 +236,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent autoFocus={false} className="w-[240px] p-0 z-[9999991]">
+      <PopoverContent autoFocus={false} className="z-[9999991] w-[240px] p-0">
         {menuStack.length > 0 && (
           <div className="flex items-center border-b p-2">
             <Button

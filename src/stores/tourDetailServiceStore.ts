@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { isProduction } from "@/lib/utils";
 import { DailyTicketSchedule } from "@/types/tours";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
@@ -163,7 +164,7 @@ const useServiceSectionStore = create<CartStoreType>()(
     }),
     {
       name: "Tour Detail Service Store",
-      enabled: process.env.NODE_ENV !== "production",
+      enabled: !isProduction(),
     },
   ),
 );

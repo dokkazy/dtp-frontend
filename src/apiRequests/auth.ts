@@ -15,6 +15,8 @@ const authApiRequest = {
     http.post<LoginResponseSchemaType>(apiEndpoint.login, body),
   register: (body: Omit<RegisterSchemaType, "confirmPassword">) =>
     http.post<RegisterResponseSchemaType>(apiEndpoint.register, body),
+
+  //next server to server
   logoutFromNextServerToServer: (sessionToken: string) =>
     http.post(
       apiEndpoint.logout,
@@ -23,25 +25,31 @@ const authApiRequest = {
         headers: { Authorization: `Bearer ${sessionToken}` },
       },
     ),
-  refreshFromNextServerToServer: (body: RefreshTokenRequestType, sessionToken: string) =>
-    http.post<LoginResponseSchemaType>(
-      apiEndpoint.refresh,
-      body,
-      { headers: { Authorization: `Bearer ${sessionToken}` } },
-    ),
+  loginFromNextServerToServer: (body: LoginSchemaType) =>
+    http.post<LoginResponseSchemaType>(apiEndpoint.login, body),
 
-  //next server
+  refreshFromNextServerToServer: (
+    body: RefreshTokenRequestType,
+    sessionToken: string,
+  ) =>
+    http.post<LoginResponseSchemaType>(apiEndpoint.refresh, body, {
+      headers: { Authorization: `Bearer ${sessionToken}` },
+    }),
+
   setToken: (body: LoginResponseSchemaType) =>
     http.post<SetTokenResponseType>(nextServer.setToken, body, { baseUrl: "" }),
-  
+
+  //next client to next server
   refreshFromNextClientToNextServer: () =>
     http.post<LoginResponseSchemaType | any>(
       nextServer.refreshToken,
       {},
       { baseUrl: "" },
     ),
-  
-    logoutFromNextClientToNextServer: (force?: boolean | undefined) =>
+  loginFromNextClientToNextServer: (body: LoginSchemaType) =>
+    http.post<LoginResponseSchemaType>(nextServer.login, body, { baseUrl: "" }),
+
+  logoutFromNextClientToNextServer: (force?: boolean | undefined) =>
     http.post(nextServer.logout, { force }, { baseUrl: "" }),
 };
 

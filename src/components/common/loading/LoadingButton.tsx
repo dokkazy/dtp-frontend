@@ -1,19 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function LoadingButton({
   pending,
   children,
+  className,
   ...props
 }: {
   pending: boolean;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <Button
       {...props}
       type="submit"
       variant="core"
-      className="w-full"
+      className={cn(`w-full`, `${className}`)}
       disabled={pending}
     >
       {pending ? (

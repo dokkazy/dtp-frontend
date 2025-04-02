@@ -1,16 +1,8 @@
-import { InView } from "@/components/ui/in-view";
+
 import Image from "next/image";
 
 export default function BookNextTourSection() {
   return (
-    <InView
-      variants={{
-        hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-        visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-      }}
-      viewOptions={{ margin: "0px 0px -200px 0px", once: true }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-    >
       <section className="mx-auto mb-8 max-w-2xl px-4 sm:pb-6 lg:max-w-6xl lg:px-8">
         <div className="flex flex-wrap items-center justify-between">
           <div className="w-full lg:w-1/2">
@@ -70,6 +62,5 @@ export default function BookNextTourSection() {
           </div>
         </div>
       </section>
-    </InView>
   );
 }

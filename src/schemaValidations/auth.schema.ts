@@ -3,7 +3,8 @@ import { z } from "zod";
 export const loginSchema = z
   .object({
     userName: z.string().min(2, {
-      message: "Username phải có ít nhất 2 kí tự"}),
+      message: "Username phải có ít nhất 2 kí tự",
+    }),
     password: z
       .string()
       .min(6, { message: "Mật khẩu phải có ít nhất 6 kí tự" })
@@ -22,7 +23,7 @@ export const loginResponseSchema = z
       accessToken: z.string(),
       expiresIn: z.number(),
       refreshToken: z.string(),
-      role: z.enum(["Admin", "Operator", "Tourist", "Manager"])
+      role: z.enum(["Admin", "Operator", "Tourist", "Manager"]),
     }),
   })
   .strict();
@@ -38,7 +39,14 @@ export const registerSchema = z
     address: z.string(),
     email: z.string().email("Email không hợp lệ"),
     userName: z.string(),
-    phoneNumber: z.string(),
+    phoneNumber: z
+      .string()
+      .regex(
+        /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/,
+        {
+          message: "Số điện thoại không hợp lệ",
+        },
+      ),
     password: z
       .string()
       .min(6, { message: "Mật khẩu phải có ít nhất 6 kí tự" })
@@ -76,5 +84,6 @@ export const registerResponseSchema = z
   })
   .strict();
 
-export type RegisterResponseSchemaType = z.TypeOf<typeof registerResponseSchema>;
-
+export type RegisterResponseSchemaType = z.TypeOf<
+  typeof registerResponseSchema
+>;

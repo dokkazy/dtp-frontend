@@ -4,21 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { links } from "@/configs/routes";
 import { Tour } from "@/types/tours";
+import { formatPrice } from "@/lib/utils";
 
 interface TourCardProps {
   tour: Tour;
 }
 
 export default function TourCard({ tour }: TourCardProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN").format(amount);
-  };
-
+  
   return (
     <Link
       href={`${links.tour.href}/${tour.id}`}
-      target="_blank"
-      rel="noopener noreferrer"
+      // target="_blank"
+      // rel="noopener noreferrer"
       className="group"
     >
       <div
@@ -65,10 +63,10 @@ export default function TourCard({ tour }: TourCardProps) {
             <div className="flex gap-2">
               <span className="text-xs text-gray-500">Từ</span>
               <div className="inline-flex items-center text-sm font-semibold text-core">
-              ₫ {tour.onlyFromCost}
+                {formatPrice(tour.onlyFromCost)}
                 {tour.onlyFromCost && (
                   <span className="ml-2 text-xs text-gray-400 line-through">
-                    ₫ {formatCurrency(tour.onlyFromCost * 2)}
+                    {formatPrice(tour.onlyFromCost * 2)}
                   </span>
                 )}
               </div>

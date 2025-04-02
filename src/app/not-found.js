@@ -15,6 +15,7 @@ export default function NotFound() {
         // Create countdown effect
         const interval = setInterval(() => {
             if (count == 0) {
+                setCount(0);
                 return;
             }
             setCount((prev) => prev - 1);
@@ -25,7 +26,7 @@ export default function NotFound() {
             clearTimeout(timer);
             clearInterval(interval);
         };
-    }, [router]);
+    }, [router, count]);
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">

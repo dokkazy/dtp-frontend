@@ -3,18 +3,16 @@ import { Menu, ShoppingCart, User } from "lucide-react";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { links } from "@/configs/routes";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { sessionToken } from "@/lib/http";
 import AuthMenu from "@/components/common/Header/AuthMenu";
+import CartSheet from "@/components/common/CartSheet";
 
 interface MobileHeaderProps {
   scrolled: boolean;
@@ -26,8 +24,8 @@ export default function MobileHeader({
   specialLinks,
 }: MobileHeaderProps) {
   const pathname = usePathname();
+  const [openCart, setOpenCart] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
-  const router = useRouter();
   const navLinks = [links.home, links.tour, links.blog, links.about];
 
   return (
@@ -53,7 +51,7 @@ export default function MobileHeader({
             <Menu size={28} />
           </Button>
           <Sheet open={isOpen} onOpenChange={() => setIsOpen(false)}>
-            <SheetContent className="max-w-60">
+            <SheetContent side={"top"} className="w-full">
               <nav className="mb-6 flex flex-col gap-4 p-2">
                 {navLinks.map((link, index) => (
                   <div key={index}>
@@ -96,12 +94,29 @@ export default function MobileHeader({
         </div>
         <div className="flex items-center gap-2">
           {sessionToken.value ? (
-            <AuthMenu>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </AuthMenu>
+            <>
+              <AuthMenu>
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </AuthMenu>
+              <CartSheet openCart={openCart} setOpenCart={setOpenCart}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    `${specialLinks?.includes(pathname) ? (scrolled ? "border-black text-black" : "text-white") : ""}`,
+                    "md:text-sm lg:text-base",
+                    `${specialLinks?.includes(pathname) ? "bg-transparent" : ""}`,
+                    "sm:text-base",
+                  )}
+                  onClick={() => setOpenCart(!openCart)}
+                >
+                  <ShoppingCart />
+                </Button>
+              </CartSheet>
+            </>
           ) : (
             <Button
               variant="outline"
@@ -118,19 +133,6 @@ export default function MobileHeader({
               </Link>
             </Button>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn(
-              `${specialLinks?.includes(pathname) ? (scrolled ? "border-black text-black" : "text-white") : ""}`,
-              "md:text-sm lg:text-base",
-              `${specialLinks?.includes(pathname) ? "bg-transparent" : ""}`,
-              "sm:text-base",
-            )}
-            onClick={() => router.push(links.shoppingCart.href)}
-          >
-            <ShoppingCart />
-          </Button>
         </div>
       </div>
     </header>

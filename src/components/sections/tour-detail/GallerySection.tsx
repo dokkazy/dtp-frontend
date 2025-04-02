@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TourDetail as Tour } from "@/types/tours";
 import ImageModal from "@/components/sections/tour-detail/ImageModal";
+import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 
 const images = [
   {
@@ -49,10 +50,16 @@ function extractImageUrls(tourDestinations: Tour["tourDestinations"]) {
   return imageGallery;
 }
 
-export default function GallerySection({ data }: { data: Tour }) {
+export default function GallerySection({
+  data,
+}: {
+  data: TourDetailType | null;
+}) {
   const [showGallery, setShowGallery] = React.useState(false);
   const [selectedImageId, setSelectedImageId] = React.useState<number>();
-  const imageGallery = extractImageUrls(data.tourDestinations);
+  const imageGallery = extractImageUrls(
+    data?.tourDetail?.tourDestinations || [],
+  );
   // console.log(imageGallery);
   const handleShowGallery = () => {
     if (imageGallery.length > 0) {
@@ -64,7 +71,7 @@ export default function GallerySection({ data }: { data: Tour }) {
     setShowGallery(false);
   };
   return (
-    <div className="relative grid h-[450px] auto-rows-auto grid-cols-4 gap-1 md:grid-cols-12">
+    <div className="relative h-[450px] auto-rows-auto gap-1 md:grid md:grid-cols-12">
       {/* Large image - spans 8 columns on medium screens and up */}
       <Button
         variant="outline"
@@ -74,7 +81,17 @@ export default function GallerySection({ data }: { data: Tour }) {
       >
         Thư viện ảnh
       </Button>
-      <Card className="col-span-4 row-span-2 overflow-hidden md:col-span-8">
+      <div className="relative size-full md:hidden">
+        <Image
+          src={imageGallery[0].src || images[0].src}
+          alt="Luxury van interior with plush white leather seats"
+          className="size-full object-scale-down object-center"
+          width={500}
+          height={500}
+          priority
+        />
+      </div>
+      <Card className="row-span-2 hidden overflow-hidden md:col-span-8 md:block">
         <CardContent className="h-full p-0">
           <div className="relative size-full">
             <Image
@@ -90,7 +107,7 @@ export default function GallerySection({ data }: { data: Tour }) {
       </Card>
 
       {/* First small image - spans 4 columns on medium screens and up */}
-      <Card className="col-span-4 overflow-hidden md:col-span-4">
+      <Card className="hidden overflow-hidden md:col-span-4 md:block">
         <CardContent className="h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
@@ -106,7 +123,7 @@ export default function GallerySection({ data }: { data: Tour }) {
       </Card>
 
       {/* Second small image - spans 4 columns on medium screens and up */}
-      <Card className="col-span-4 overflow-hidden md:col-span-4">
+      <Card className="hidden overflow-hidden md:col-span-4 md:block">
         <CardContent className="relative h-full p-0">
           <div className="relative aspect-square w-full">
             <Image

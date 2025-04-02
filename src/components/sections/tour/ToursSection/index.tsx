@@ -10,12 +10,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { links } from "@/configs/routes";
 import useTourFilterStore from "@/stores/tourFilterStore";
-import { tourApiRequest } from "@/apiRequests/tour";
 import useDebounce from "@/hooks/use-debounce";
 import TourCard from "@/components/cards/TourCard";
-import { Tour, TourSortBy } from "@/types/tours";
+import { TourSortBy } from "@/types/tours";
 import TourFilter from "./TourFilter";
-import { formatDateToYYYYMMDD } from "@/lib/utils";
+import { tourApiRequest } from "@/apiRequests/tour";
 
 export default function ToursSection() {
   const router = useRouter();
@@ -34,44 +33,92 @@ export default function ToursSection() {
     selectedDate,
     isDateFilterActive,
     resetAllFilters,
-    setSortBy
+    setSortBy,
   } = useTourFilterStore((state) => state);
   const debouncedValue = useDebounce(query, 500);
   const tourListSectionRef = React.useRef<HTMLDivElement>(null);
+
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const skip = (currentPage - 1) * pageSize;
+
+  //       let filterString = `contains(title, '${debouncedValue.trim()}') and isDeleted eq false`;
+  //       if (isPriceFilterActive) {
+  //         filterString += ` and onlyFromCost ge ${priceRange[0]} and onlyFromCost le ${priceRange[1]}`;
+  //       }
+  //       if (isDateFilterActive && selectedDate) {
+  //         const formattedDate = formatDateToYYYYMMDD(selectedDate);
+  //         filterString += ` and tourScheduleResponses/any(t: t/openDate eq ${formattedDate})`;
+  //       }
+  //       const params: Record<string, any> = {
+  //         $filter: filterString,
+  //         $top: pageSize,
+  //         $skip: skip,
+  //         $count: true,
+  //       };
+
+  //       if (sortBy === TourSortBy.PriceAsc) {
+  //         params.$orderby = "onlyFromCost asc";
+  //       } else if (sortBy === TourSortBy.PriceDesc) {
+  //         params.$orderby = "onlyFromCost desc";
+  //       }
+
+  //       const response = await tourApiRequest.getOdataTour(params);
+  //       const total =
+  //         response.payload["@odata.count"] || response.payload.value.length;
+  //       setTours(response.payload.value || [], total);
+  //     } catch (error) {
+  //       setTours([], 0);
+  //       console.error("Error fetching tours:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [
+  //   debouncedValue,
+  //   setTours,
+  //   currentPage,
+  //   pageSize,
+  //   priceRange,
+  //   isPriceFilterActive,
+  //   selectedDate,
+  //   isDateFilterActive,
+  //   sortBy,
+  // ]);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const skip = (currentPage - 1) * pageSize;
 
-        let filterString = `contains(title, '${debouncedValue.trim()}') and isDeleted eq false`;
-        if (isPriceFilterActive) {
-          filterString += ` and onlyFromCost ge ${priceRange[0]} and onlyFromCost le ${priceRange[1]}`;
-        }
-        if (isDateFilterActive && selectedDate) {
-          const formattedDate = formatDateToYYYYMMDD(selectedDate);
-          filterString += ` and tourScheduleResponses/any(t: t/openDate eq ${formattedDate})`;
-        }
-        const params: Record<string, any> = {
-          $filter: filterString,
-          $top: pageSize,
-          $skip: skip,
-          $count: true,
-        };
+        // Build URL with search params
+        const searchParams = new URLSearchParams({
+          query: debouncedValue.trim(),
+          page: currentPage.toString(),
+          pageSize: pageSize.toString(),
+          minPrice: priceRange[0].toString(),
+          maxPrice: priceRange[1].toString(),
+          isPriceFilterActive: isPriceFilterActive.toString(),
+          isDateFilterActive: isDateFilterActive.toString(),
+          sortBy: sortBy.toString(),
+        });
 
-        if (sortBy === TourSortBy.PriceAsc) {
-          params.$orderby = "onlyFromCost asc";
-        } else if (sortBy === TourSortBy.PriceDesc) {
-          params.$orderby = "onlyFromCost desc";
+        // Add date if it exists
+        if (selectedDate) {
+          searchParams.append("date", selectedDate.toISOString());
         }
 
-        const response = await tourApiRequest.getOdataTour(params);
-        const total =
-          response.payload["@odata.count"] || response.payload.value.length;
-        setTours(response.payload.value || [], total);
+        const response = await tourApiRequest.getAllTours(
+          searchParams.toString(),
+        );
 
-        console.log("Tours fetched:", response.payload.value);
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch tours");
+        }
+        setTours(response.payload.tours || [], response.payload.total || 0);
       } catch (error) {
         setTours([], 0);
         console.error("Error fetching tours:", error);
@@ -91,18 +138,6 @@ export default function ToursSection() {
     isDateFilterActive,
     sortBy,
   ]);
-
-  console.table({
-    tours,
-    currentPage,
-    pageSize,
-    totalItems,
-    priceRange,
-    isPriceFilterActive,
-    query,
-    isDateFilterActive,
-    selectedDate,
-  });
 
   const handlePageChange = React.useCallback(
     (page: number) => {

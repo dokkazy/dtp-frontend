@@ -1,50 +1,67 @@
-"use client"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+"use client";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { UserProfile } from "@/types/user"
-
-type Contact = {
-  id: string
-  lastName: string
-  firstName: string
-  phone: string
-  email: string
-}
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Contact } from "@/components/sections/checkout";
 
 type Props = {
-  open: boolean,
-  user: UserProfile,
-  onOpenChange: (open: boolean) => void
-  onSave: (contact: Contact) => void
-}
+  open: boolean;
+  contact: Contact | null;
+  onOpenChange: (open: boolean) => void;
+  onSave: (contact: Contact) => void;
+};
 
 // Define the form schema with zod
 const formSchema = z.object({
   name: z.string().min(1, { message: "Tên là bắt buộc" }),
-  phone: z.string().min(1, { message: "Số điện thoại là bắt buộc" }),
+  phoneNumber: z
+    .string()
+    .regex(
+      /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/,
+      {
+        message: "Số điện thoại không hợp lệ",
+      },
+    ),
   email: z.string().email({ message: "Email không hợp lệ" }),
-})
+});
 
-export function AddContactSheet({ open, onOpenChange, onSave, user }: Props) {
+export function AddContactSheet({
+  open,
+  onOpenChange,
+  onSave,
+  contact,
+}: Props) {
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      phone: "",
-      email: "",
+      name: contact?.name || "",
+      phoneNumber: contact?.phoneNumber || "",
+      email: contact?.email || "",
     },
-  })
+  });
 
   // Handle form submission
   function onSubmit(values: z.infer<typeof formSchema>) {
-    form.reset()
+    onSave(values);
+    onOpenChange(false);
   }
 
   return (
@@ -55,36 +72,10 @@ export function AddContactSheet({ open, onOpenChange, onSave, user }: Props) {
         </SheetHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            {/* <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="Name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Họ *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Vui lòng nhập" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tên *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Vui lòng nhập" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-4 space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -100,7 +91,7 @@ export function AddContactSheet({ open, onOpenChange, onSave, user }: Props) {
             />
             <FormField
               control={form.control}
-              name="phone"
+              name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Số điện thoại *</FormLabel>
@@ -119,25 +110,31 @@ export function AddContactSheet({ open, onOpenChange, onSave, user }: Props) {
                 <FormItem>
                   <FormLabel>Email *</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="Vui lòng nhập" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="Vui lòng nhập"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end gap-2 mt-6">
+            <div className="mt-6 flex justify-end gap-2">
               <Button
                 variant="outline"
                 type="button"
                 onClick={() => {
-                  form.reset()
-                  onOpenChange(false)
+                  onOpenChange(false);
                 }}
               >
                 Hủy bỏ
               </Button>
-              <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white">
+              <Button
+                type="submit"
+                className="bg-orange-500 text-white hover:bg-orange-600"
+              >
                 Lưu
               </Button>
             </div>
@@ -145,6 +142,5 @@ export function AddContactSheet({ open, onOpenChange, onSave, user }: Props) {
         </Form>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
-
