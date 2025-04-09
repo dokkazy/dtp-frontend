@@ -15,6 +15,7 @@ const authApiRequest = {
     http.post<LoginResponseSchemaType>(apiEndpoint.login, body),
   register: (body: Omit<RegisterSchemaType, "confirmPassword">) =>
     http.post<RegisterResponseSchemaType>(apiEndpoint.register, body),
+  confirmationAccount: (body:{confirmationToken: string}) => http.post(apiEndpoint.confirmation, body),
 
   //next server to server
   logoutFromNextServerToServer: (sessionToken: string) =>
@@ -39,6 +40,9 @@ const authApiRequest = {
   setToken: (body: LoginResponseSchemaType) =>
     http.post<SetTokenResponseType>(nextServer.setToken, body, { baseUrl: "" }),
 
+  confirmAccountFromNextServerToServer: (body: { confirmationToken: string }) =>
+    http.post(apiEndpoint.confirmation, body),
+
   //next client to next server
   refreshFromNextClientToNextServer: () =>
     http.post<LoginResponseSchemaType | any>(
@@ -51,6 +55,10 @@ const authApiRequest = {
 
   logoutFromNextClientToNextServer: (force?: boolean | undefined) =>
     http.post(nextServer.logout, { force }, { baseUrl: "" }),
+
+  confirmAccountFromNextClientToNextServer: (body: {
+    confirmationToken: string;
+  }) => http.post(nextServer.confirmation, body, { baseUrl: "" }),
 };
 
 export default authApiRequest;

@@ -10,6 +10,8 @@ import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { links } from "@/configs/routes";
+import { HttpError } from "@/lib/http";
+import { toast } from "sonner";
 
 const ORDERS_PER_PAGE = 5;
 
@@ -57,7 +59,12 @@ export default function OrderList() {
           setLoading(false);
         }
       } catch (error) {
-        console.log("Error fetching orders:", error);
+        if(error instanceof HttpError) {
+          console.log("Error fetching orders:", error);
+
+        }else{
+          toast.error("Đã có lỗi xảy ra trong quá trình tải đơn hàng.");
+        }
         setLoading(false);
       }
     };

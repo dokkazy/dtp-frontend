@@ -43,18 +43,20 @@ export interface Rating {
   createdAt: string;
 }
 
+export interface TourActivity {
+  name: string;
+  startTime: string;
+  endTime: string;
+  sortOrder: number;
+}
+
 export interface TourDestination {
   name: string;
   imageUrls: string[];
   startTime: string;
   endTime: string;
   sortOrder: number;
-  activities: {
-    name: string;
-    startTime: string;
-    endTime: string;
-    sortOrder: number;
-  }[]
+  activities: TourActivity[];
 }
 
 export interface TourDetail {
@@ -67,6 +69,8 @@ export interface TourDetail {
     totalRating: number;
     about: string;
     onlyFromCost: number;
+    peakInfor: string;
+    include: string;
     ticketTypes: TicketType[];
   };
   ratings: Rating[];
@@ -99,5 +103,3 @@ export interface TourScheduleTicket {
   message: string;
   data: DailyTicketSchedule[];
 }
-
-

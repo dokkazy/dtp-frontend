@@ -32,6 +32,7 @@ import {
 import { links } from "@/configs/routes";
 import { sessionToken } from "@/lib/http";
 import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
+import { formatPrice } from "@/lib/utils";
 
 export default function ServiceSection({ data }: { data: TourDetailType }) {
   const pathname = usePathname();
@@ -59,53 +60,8 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   const setDirectCheckoutItem = useCartStore(
     (state) => state.setDirectCheckoutItem,
   );
-
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       clearAll();
-  //       setTicketSchedule([]);
-  //       setLoading(true);
-  //       const response: any = await tourApiRequest.getScheduleTicketByTourId(
-  //         data.tour.id,
-  //       );
-
-  //       if (!response.payload.success) {
-  //         throw new Error("Failed to fetch ticket schedule");
-  //       }
-  //       setTicketSchedule(response?.payload?.data);
-  //     } catch (error) {
-  //       console.error("Error fetching ticket schedule:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [data.tour.id, setTicketSchedule, clearAll]);
-
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       clearAll();
-  //       setTicketSchedule([]);
-  //       setLoading(true);
-
-  //       // Use the new server route instead of direct API call
-  //       const response = await tourApiRequest.getTourScheduleTicket(
-  //         data.tour.id,
-  //       );
-  //       if (response.status === 200) {
-  //         setTicketSchedule(response.payload.data);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching ticket schedule:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [data.tour.id, setTicketSchedule, clearAll]);
-
+  console.log("ticketSchedule", ticketSchedule);
+ 
   useEffect(() => {
     clearAll();
     setTicketSchedule([]);
@@ -115,7 +71,12 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   }, [data.tourSchedule, setTicketSchedule, clearAll]);
 
   const handleAddToCart = () => {
-    if(data.tourDetail == null) return;
+    if (data.tourDetail == null) return;
+    if (!sessionToken.value) {
+      toast.warning("Vui lòng đăng nhập để tiếp tục đặt hàng");
+      router.push(`${links.login.href}?redirect=${pathname}`);
+      return;
+    }
     if (!date || selectedDayTickets.length === 0) {
       toast.warning("Vui lòng chọn ngày và số lượng vé");
       return;
@@ -155,7 +116,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   };
 
   const handleOrderDirectly = () => {
-    if(data.tourDetail == null) return;
+    if (data.tourDetail == null) return;
     if (!sessionToken.value) {
       toast.warning("Vui lòng đăng nhập để tiếp tục đặt hàng");
       router.push(`${links.login.href}?redirect=${pathname}`);
@@ -245,17 +206,17 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
 
   return (
     <div id="tour-detail-service" className="space-y-8">
-      <h2 className="relative pl-3 text-xl md:text-3xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 md:before:h-8 before:w-1 before:-translate-y-1/2 before:bg-core before:content-['']">
+      <h2 className="relative pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
         Các gói dịch vụ
       </h2>
       <Card className="bg-[#f5f5f5]">
-        <CardContent className="space-y-6 px-10 py-6">
+        <CardContent className="space-y-6 px-4 sm:px-6 py-6 md:px-10">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold">
+            <h3 className="text-base font-semibold md:text-xl">
               Vui lòng chọn ngày và gói dịch vụ
             </h3>
             <h3
-              className="underline hover:cursor-pointer"
+              className="hidden underline hover:cursor-pointer sm:flex"
               onClick={() => {
                 clearAll();
               }}
@@ -363,7 +324,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
             <Button
               variant="ghost"
               className={cn(
-                "rounded-lg border border-black py-6",
+                "rounded-lg border border-black md:py-6",
                 `${showPackage ? "border-teal-500 bg-teal-50 text-teal-500 hover:bg-teal-50 hover:text-teal-500" : "hover:bg-teal-50"}`,
               )}
               onClick={togglePackage}
@@ -378,19 +339,21 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
               <Card key={ticket.ticketTypeId}>
                 <CardContent className="flex items-center justify-between p-5">
                   <div>
-                    <h4 className="font-semibold">
+                    <h4 className="text-sm font-semibold md:text-base">
                       {getTicketKind(ticket.ticketKind)}
                     </h4>
                     <span className="text-xs text-teal-700">
                       Còn {ticket.availableTicket} vé
                     </span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <p className="font-medium">{ticket.netCost}₫</p>
+                  <div className="flex flex-col items-center gap-4 sm:flex-row">
+                    <p className="text-sm font-medium md:text-base">
+                      {formatPrice(ticket.netCost)}
+                    </p>
                     <div className="flex items-center gap-4">
                       <Button
                         variant="ghost"
-                        className="bg-[#f5f5f5] px-4 py-5 text-black hover:bg-slate-200"
+                        className="bg-[#f5f5f5] px-3 py-3 text-black hover:bg-slate-200 sm:px-4 sm:py-5"
                         onClick={() =>
                           handleQuantityChange(
                             ticket.ticketTypeId,
@@ -405,7 +368,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
                       <span>{ticketQuantities[ticket.ticketTypeId] || 0}</span>
                       <Button
                         variant="ghost"
-                        className="bg-[#f5f5f5] px-4 py-5 text-black hover:bg-slate-200"
+                        className="bg-[#f5f5f5] px-3 py-3 text-black hover:bg-slate-200 sm:px-4 sm:py-5"
                         onClick={() =>
                           handleQuantityChange(
                             ticket.ticketTypeId,
@@ -426,24 +389,24 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
               </Card>
             ))}
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:justify-between gap-4 md:flex-row md:items-center">
               <h3 className="text-xl font-bold">
                 {formatCurrency(totalPrice)}₫
               </h3>
-              <div className="space-x-4">
+              <div className="max-sm:gap-4 sm:space-x-4 px-2 max-sm:flex flex-wrap">
                 <Button
                   disabled={disabled}
                   onClick={() => {
                     handleAddToCart();
                   }}
-                  className="rounded-xl bg-[#f8c246] p-6 text-base hover:bg-[#fbcc5e]"
+                  className="rounded-xl bg-[#f8c246] p-6 text-sm hover:bg-[#fbcc5e] md:text-base"
                 >
                   Thêm vào giỏ hàng
                 </Button>
                 <Button
                   disabled={disabled}
                   onClick={handleOrderDirectly}
-                  className="rounded-xl bg-[#fc7a09] p-6 text-base hover:bg-[#ff9537]"
+                  className="rounded-xl bg-[#fc7a09] p-6 text-sm hover:bg-[#ff9537] md:text-base"
                 >
                   Đặt ngay
                 </Button>

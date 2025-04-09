@@ -19,19 +19,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useTourFilterStore from "@/stores/tourFilterStore";
-import { Tour, TourSortBy } from "@/types/tours";
+import { TourSortBy } from "@/types/tours";
 
 interface TourFilterProps {
   tourCount: number;
-  tours: Tour[];
-  isLoading: boolean;
   onApplyFilter: (page: number) => void;
 }
 
 export default function TourFilter({
   tourCount,
-  tours,
-  isLoading,
   onApplyFilter,
 }: TourFilterProps) {
   const {
@@ -104,33 +100,8 @@ export default function TourFilter({
     <div className="mb-4 animate-fade-in rounded-xl bg-white p-4 shadow-sm">
       <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="text-lg font-semibold">
-          Tìm thấy{" "}
-          {isLoading ? (
-            <span className="inline-flex items-center">
-              <svg
-                className="h-5 w-5 animate-spin text-core"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </span>
-          ) : (
-            <span className="text-core">{tourCount}</span>
-          )}{" "}
+          Tìm thấy&nbsp;
+          <span className="text-core transition-all duration-300">{tourCount || 0}&nbsp;</span>
           kết quả
         </div>
         <div className="flex items-center gap-2">

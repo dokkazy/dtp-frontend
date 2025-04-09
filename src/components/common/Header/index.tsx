@@ -109,7 +109,7 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <AuthMenu>
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarImage src="/images/default-profile.jpg" />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </AuthMenu>

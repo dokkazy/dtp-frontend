@@ -41,6 +41,22 @@ export class EntityError extends HttpError {
   }
 }
 
+export class NotFoundError extends HttpError {
+  status: 404;
+  payload: EntityErrorPayload;
+  constructor({
+    status,
+    payload,
+  }: {
+    status: 404;
+    payload: EntityErrorPayload;
+  }) {
+    super({ status: 404, payload });
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
 class SessionToken {
   private sessionToken = "";
 
@@ -155,6 +171,10 @@ const request = async <Response>(
     if (response.status === 400) {
       throw new EntityError(
         data as { status: 400; payload: EntityErrorPayload },
+      );
+    } else if (response.status === 404) {
+      throw new NotFoundError(
+        data as { status: 404; payload: EntityErrorPayload },
       );
     } else if (response.status === AUTHENTICATION_STATUS) {
       if (typeof window !== "undefined") {

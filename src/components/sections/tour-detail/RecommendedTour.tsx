@@ -12,32 +12,46 @@ import {
   Carousel as CarouselPrimitives,
 } from "@/components/motion-primitives/carousel";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  DesktopSkeletonCard,
+  MobileSkeletonCard,
+} from "@/components/cards/recommend-card-skeleton";
+import { tourApiRequest } from "@/apiRequests/tour";
 
 export default function RecommendedTour() {
   const pathname = usePathname();
   const lagSegment = pathname.split("/").pop();
   const router = useRouter();
-  const [data, setData] = useState<TourList | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<TourList | []>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setLoading(true);
     const fetchRecommendedTours = cache(async () => {
-      const response = await fetch("/api/tour/recommend", {
-        next: { revalidate: 1300 },
-      });
-
-      if (!response.ok) {
-        return null;
+      try {
+        const res = await tourApiRequest.getRecommendTours();
+        if (res.status === 200) {
+          console.log("Recommended tours:", res);
+          setData(res.payload.data);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching recommended tours:", error);
+        setData([]);
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setData(data.success ? data.data : null);
-      setLoading(false);
     });
     fetchRecommendedTours();
   }, []);
 
-  if (data === null) {
+  const handleRedirect = (id: string) => {
+    if (lagSegment === id) {
+      return;
+    }
+    const url = `${links.tour.href}/${id}`;
+    router.push(url);
+  };
+
+  if (!loading && data.length === 0) {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
         <div className="mb-4 rounded-full bg-gray-100 p-4">
@@ -60,26 +74,54 @@ export default function RecommendedTour() {
         <p className="text-sm text-gray-500">
           Không có tour nào khả dụng trong danh sách này.
         </p>
-        <p className="mt-1 text-sm text-gray-500">
-          Vui lòng thử lại sau hoặc điều chỉnh bộ lọc tìm kiếm của bạn.
-        </p>
       </div>
     );
   }
 
-  const handleRedirect = (id: string) => {
-    if(lagSegment === id){
-      return;
-    }
-    const url = `${links.tour.href}/${id}`;
-    router.push(url);
+  if (loading) {
+    return (
+      <>
+        {/* Mobile Skeleton Loading */}
+        <ScrollArea className="md:hidden">
+          <div className="flex w-fit gap-4 py-4">
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <MobileSkeletonCard key={index} />
+              ))}
+          </div>
+          <ScrollBar orientation="horizontal" className="h-2.5" />
+        </ScrollArea>
+
+        {/* Desktop Skeleton Loading */}
+        <CarouselPrimitives
+          disableDrag={true}
+          className="hidden md:block md:max-w-7xl"
+        >
+          <CarouselContent>
+            {Array(4)
+              .fill(0)
+              .map((_, index) => (
+                <CarouselItem key={index} className="basis-1/4 p-4 pl-1">
+                  <DesktopSkeletonCard />
+                </CarouselItem>
+              ))}
+          </CarouselContent>
+          <CarouselNavigation
+            className="absolute -bottom-12 left-auto top-auto w-full justify-end gap-2"
+            classNameButton="bg-teal-500 *:stroke-teal-50"
+            alwaysShow
+          />
+        </CarouselPrimitives>
+      </>
+    );
   }
 
   return (
     <>
       <ScrollArea className="md:hidden">
         <div className="flex w-fit gap-4 py-4">
-          {data.map((tour) => (
+          {data?.map((tour) => (
             <div
               onClick={() => handleRedirect(tour.id)}
               key={tour.id}
@@ -135,10 +177,10 @@ export default function RecommendedTour() {
       </ScrollArea>
       <CarouselPrimitives
         disableDrag={true}
-        className="hidden md:max-w-7xl md:block"
+        className="hidden md:block md:max-w-7xl"
       >
         <CarouselContent>
-          {data.map((tour) => (
+          {data?.map((tour) => (
             <CarouselItem key={tour.id} className="basis-1/4 p-4 pl-1">
               <div
                 onClick={() => handleRedirect(tour.id)}

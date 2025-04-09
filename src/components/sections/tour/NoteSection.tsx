@@ -13,7 +13,7 @@ export default function NoteSection() {
         Du lịch Quy Nhơn cần biết những gì ?
       </h1>
       <Card className="w-full">
-        <CardContent className="px-12 py-8">
+        <CardContent className="p-6 md:px-12 md:py-8">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-base md:text-lg">
