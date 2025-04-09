@@ -7,8 +7,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn, handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { links } from "@/configs/routes";
 import {
@@ -22,7 +21,7 @@ import {
 import { loginSchema, LoginSchemaType } from "@/schemaValidations/auth.schema";
 import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
-import { refreshToken, sessionToken } from "@/lib/http";
+import { HttpError, refreshToken, sessionToken } from "@/lib/http";
 
 export function LoginForm({
   className,
@@ -84,17 +83,14 @@ export function LoginForm({
         refreshToken.value = response.payload.data.refreshToken as string;
         window.notifyAuthChange?.();
         toast.success("Đăng nhập thành công");
-        // window.location.href = redirectUrl;
         router.push(redirectUrl);
         router.refresh();
       }
-      setLoading(false);
     } catch (error: any) {
-      if (error.status === 500) {
-        toast.error(error?.payload?.message);
-      }
-      if (error.status === 400) {
-        toast.error("Tài khoản hoặc mật khẩu không đúng");
+      if (error instanceof HttpError) {
+        handleErrorApi(error);
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau.");
       }
       setLoading(false);
     }
@@ -120,7 +116,7 @@ export function LoginForm({
             name="userName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-core">Username</FormLabel>
+                <FormLabel className="text-core">Username hoặc email</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -136,7 +132,7 @@ export function LoginForm({
                 <FormLabel className="flex items-center">
                   <span className="text-core"> Mật khẩu </span>
                   <Link
-                    href="#"
+                    href={links.forgotPassword.href}
                     className="ml-auto text-sm font-light text-[#0A0A0A] underline-offset-4 hover:underline"
                   >
                     Quên mật khẩu ?
@@ -150,7 +146,7 @@ export function LoginForm({
             )}
           />
           <LoadingButton pending={loading}>Đăng nhập</LoadingButton>
-          <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
             <span className="relative z-10 bg-background px-2 text-muted-foreground">
               Hoặc tiếp tục với
             </span>
@@ -182,7 +178,7 @@ export function LoginForm({
               ></path>
             </svg>
             Đăng nhập bằng Google
-          </Button>
+          </Button> */}
         </div>
         <div className="text-center text-sm">
           Chưa có tài khoản?{" "}

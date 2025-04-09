@@ -1,25 +1,16 @@
 "use client";
-import Image from "next/image";
-import {
-  Check,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  Info,
-  MapPin,
-  MessageCircle,
-  Phone,
-} from "lucide-react";
+import { ChevronRight, MessageCircle, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { orderApiRequest } from "@/apiRequests/order";
 import { useParams } from "next/navigation";
 import { OrderDetailResponse } from "@/types/order";
 import { formatDate, formatDateTime, getTicketKind } from "@/lib/utils";
 import Spinner from "@/components/common/loading/Spinner";
+import { HttpError } from "@/lib/http";
+import { toast } from "sonner";
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
-  const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(true);
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
     null,
@@ -33,7 +24,11 @@ export default function OrderDetailPage() {
         setOrderDetail(response.payload);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching order detail:", error);
+        if (error instanceof HttpError) {
+          console.error("Error fetching order detail:", error.payload.message);
+        } else {
+          toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+        }
         setLoading(false);
       }
     };
@@ -59,7 +54,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Spinner className="text-core h-20 w-20" />
+        <Spinner className="h-20 w-20 text-core" />
       </div>
     );
   }

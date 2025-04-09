@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { tourApiRequest } from "@/apiRequests/tour";
+import { HttpError } from "@/lib/http";
 
 export async function GET() {
   try {
@@ -8,7 +9,6 @@ export async function GET() {
       $filter: "isDeleted eq false",
       $orderby: "createdAt desc",
     });
-    console.log("response from recommend", response);
 
     if (response.status === 200) {
       return NextResponse.json(
@@ -24,22 +24,21 @@ export async function GET() {
         },
       );
     }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to fetch recommended tours",
-      },
-      { status: 500 },
-    );
   } catch (error) {
     console.error("Error fetching recommended tours:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "An error occurred while fetching recommended tours",
-      },
-      { status: 500 },
-    );
+    if (error instanceof HttpError) {
+      return NextResponse.json(
+        { error: error.payload },
+        { status: error.status },
+      );
+    } else {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "An error occurred while fetching recommended tours",
+        },
+        { status: 500 },
+      );
+    }
   }
 }

@@ -26,14 +26,13 @@ import { handleErrorApi } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuthContext } from "@/providers/AuthProvider";
+import { HttpError } from "@/lib/http";
 
 export default function Profile() {
   const { user, setUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const isNavigating = useRef(false);
-
-
 
   const form = useForm<UserUpdateRequestType>({
     resolver: zodResolver(userUpdateRequestSchema),
@@ -130,7 +129,6 @@ export default function Profile() {
   }
 
   const onSubmit = async (values: UserUpdateRequestType) => {
-    console.log(values);
     try {
       setLoading(true);
       const response = await userApiRequest.updateMe(values);
@@ -148,9 +146,12 @@ export default function Profile() {
       }
       setLoading(false);
     } catch (error: any) {
-      handleErrorApi(error);
-      console.log("Update error:", error);
-      toast.error("Cập nhật thông tin thất bại");
+      if (error instanceof HttpError) {
+        handleErrorApi(error);
+        console.log("Update error:", error);
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau.");
+      }
       setLoading(false);
     }
   };

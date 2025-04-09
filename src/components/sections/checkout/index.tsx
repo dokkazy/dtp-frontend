@@ -37,7 +37,7 @@ export type Contact = {
 export default function Checkout({ itemId }: { itemId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
   const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
   const [contact, setContact] = useState<Contact | null>(null);
   const { paymentItem, directCheckoutItem } = useCartStore((state) => state);
@@ -183,38 +183,71 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   </div>
                 </div>
                 <div className="px-8">
-                  <div className="flex w-full justify-between rounded-lg border border-gray-300 p-4">
+                  <div className="rounded-lg border border-gray-300 p-4">
                     {contact === null ? (
                       <Spinner />
                     ) : (
                       <>
-                        <div className="flex gap-2">
-                          <p className="flex w-full flex-col gap-2 text-sm">
-                            <span className="">Tên</span>
-                            <span className="">Số điện thoại</span>
-                            <span className="text-nowrap">
-                              Email (để cập nhật thông tin đơn hàng của bạn)
-                            </span>
-                          </p>
-                          <p className="flex w-full flex-col gap-2 text-sm">
-                            <span className="font-semibold">
+                        <div className="hidden gap-3 max-md:grid">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm">Tên:</span>
+                            <span className="text-sm font-semibold sm:text-base">
                               {contact.name}
                             </span>
-                            <span className="font-semibold">
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm">Số điện thoại: </span>
+                            <span className="text-sm font-semibold sm:text-base">
                               {contact.phoneNumber}
                             </span>
-                            <span className="font-semibold">
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-wrap text-sm">
+                              Email (để cập nhật thông tin đơn hàng của
+                              bạn):{" "}
+                            </span>
+                            <span className="text-sm font-semibold sm:text-base">
                               {contact.email}
                             </span>
-                          </p>
+                          </div>
+                          <div className="flex w-full justify-end">
+                            <p
+                              onClick={() => setIsContactSheetOpen(true)}
+                              className="text-sm font-medium underline hover:cursor-pointer sm:text-base"
+                            >
+                              Chỉnh sửa
+                            </p>
+                          </div>
                         </div>
-                        <div
-                          className="flex items-end"
-                          onClick={() => setIsContactSheetOpen(true)}
-                        >
-                          <p className="text-sm font-medium underline hover:cursor-pointer">
-                            Chỉnh sửa
-                          </p>
+                        <div className="hidden w-full justify-between md:flex">
+                          <div className="flex gap-2">
+                            <p className="flex w-full flex-col gap-2 text-sm">
+                              <span className="">Tên</span>
+                              <span className="">Số điện thoại</span>
+                              <span className="text-nowrap">
+                                Email (để cập nhật thông tin đơn hàng của bạn)
+                              </span>
+                            </p>
+                            <p className="flex w-full flex-col gap-2 text-sm">
+                              <span className="font-semibold">
+                                {contact.name}
+                              </span>
+                              <span className="font-semibold">
+                                {contact.phoneNumber}
+                              </span>
+                              <span className="font-semibold">
+                                {contact.email}
+                              </span>
+                            </p>
+                          </div>
+                          <div
+                            className=""
+                            onClick={() => setIsContactSheetOpen(true)}
+                          >
+                            <p className="text-sm font-medium underline hover:cursor-pointer">
+                              Chỉnh sửa
+                            </p>
+                          </div>
                         </div>
                       </>
                     )}
@@ -229,7 +262,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
                 </p>
               </div>
 
-              <div className="mx-8 mt-8 flex justify-between">
+              <div className="mx-8 mt-8 flex justify-between gap-2">
                 <p className="basis-2/3 text-sm">
                   Đơn hàng sẽ được gửi đi sau khi thanh toán. Bạn sẽ thanh toán
                   ở bước tiếp theo.
@@ -319,5 +352,4 @@ export default function Checkout({ itemId }: { itemId: string }) {
       </div>
     </>
   );
-
 }

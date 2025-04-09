@@ -15,7 +15,6 @@ export default function NotFound() {
         // Create countdown effect
         const interval = setInterval(() => {
             if (count == 0) {
-                setCount(0);
                 return;
             }
             setCount((prev) => prev - 1);
@@ -28,11 +27,12 @@ export default function NotFound() {
         };
     }, [router, count]);
 
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
                 <div className="text-9xl font-bold text-core">404</div>
-                <h1 className="text-3xl font-bold">Không tìm thấy trang</h1>
+                {count !== 0 ? (<h1 className="text-3xl font-bold">Không tìm thấy trang</h1>) : (<h1 className="text-3xl font-bold">Đang chuyển hướng</h1>)}
                 <p className="max-w-md text-muted-foreground">
                     Trang bạn đang tìm kiếm có thể đã bị xóa hoặc không tồn tại.
                     Bạn sẽ được chuyển hướng về trang chủ sau {count} giây.

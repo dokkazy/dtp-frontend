@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import TourCategory from "./TourCategory";
@@ -15,11 +15,13 @@ import TourCard from "@/components/cards/TourCard";
 import { TourSortBy } from "@/types/tours";
 import TourFilter from "./TourFilter";
 import { tourApiRequest } from "@/apiRequests/tour";
+import { HttpError } from "@/lib/http";
 
 export default function ToursSection() {
   const router = useRouter();
   const [query, setQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [tourCount, setTourCount] = React.useState(0);
   const {
     tours,
     sortBy,
@@ -38,95 +40,43 @@ export default function ToursSection() {
   const debouncedValue = useDebounce(query, 500);
   const tourListSectionRef = React.useRef<HTMLDivElement>(null);
 
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const skip = (currentPage - 1) * pageSize;
+  const fetchTours = useCallback(async () => {
+    try {
+      setLoading(true);
 
-  //       let filterString = `contains(title, '${debouncedValue.trim()}') and isDeleted eq false`;
-  //       if (isPriceFilterActive) {
-  //         filterString += ` and onlyFromCost ge ${priceRange[0]} and onlyFromCost le ${priceRange[1]}`;
-  //       }
-  //       if (isDateFilterActive && selectedDate) {
-  //         const formattedDate = formatDateToYYYYMMDD(selectedDate);
-  //         filterString += ` and tourScheduleResponses/any(t: t/openDate eq ${formattedDate})`;
-  //       }
-  //       const params: Record<string, any> = {
-  //         $filter: filterString,
-  //         $top: pageSize,
-  //         $skip: skip,
-  //         $count: true,
-  //       };
+      // Build URL with search params
+      const searchParams = new URLSearchParams({
+        query: debouncedValue.trim(),
+        page: currentPage.toString(),
+        pageSize: pageSize.toString(),
+        minPrice: priceRange[0].toString(),
+        maxPrice: priceRange[1].toString(),
+        isPriceFilterActive: isPriceFilterActive.toString(),
+        isDateFilterActive: isDateFilterActive.toString(),
+        sortBy: sortBy.toString(),
+      });
 
-  //       if (sortBy === TourSortBy.PriceAsc) {
-  //         params.$orderby = "onlyFromCost asc";
-  //       } else if (sortBy === TourSortBy.PriceDesc) {
-  //         params.$orderby = "onlyFromCost desc";
-  //       }
-
-  //       const response = await tourApiRequest.getOdataTour(params);
-  //       const total =
-  //         response.payload["@odata.count"] || response.payload.value.length;
-  //       setTours(response.payload.value || [], total);
-  //     } catch (error) {
-  //       setTours([], 0);
-  //       console.error("Error fetching tours:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [
-  //   debouncedValue,
-  //   setTours,
-  //   currentPage,
-  //   pageSize,
-  //   priceRange,
-  //   isPriceFilterActive,
-  //   selectedDate,
-  //   isDateFilterActive,
-  //   sortBy,
-  // ]);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        // Build URL with search params
-        const searchParams = new URLSearchParams({
-          query: debouncedValue.trim(),
-          page: currentPage.toString(),
-          pageSize: pageSize.toString(),
-          minPrice: priceRange[0].toString(),
-          maxPrice: priceRange[1].toString(),
-          isPriceFilterActive: isPriceFilterActive.toString(),
-          isDateFilterActive: isDateFilterActive.toString(),
-          sortBy: sortBy.toString(),
-        });
-
-        // Add date if it exists
-        if (selectedDate) {
-          searchParams.append("date", selectedDate.toISOString());
-        }
-
-        const response = await tourApiRequest.getAllTours(
-          searchParams.toString(),
-        );
-
-        if (response.status !== 200) {
-          throw new Error("Failed to fetch tours");
-        }
-        setTours(response.payload.tours || [], response.payload.total || 0);
-      } catch (error) {
-        setTours([], 0);
-        console.error("Error fetching tours:", error);
-      } finally {
-        setLoading(false);
+      // Add date if it exists
+      if (selectedDate) {
+        searchParams.append("date", selectedDate.toISOString());
       }
-    };
-    fetchData();
+
+      const response = await tourApiRequest.getAllTours(
+        searchParams.toString(),
+      );
+
+      if (response.status !== 200) {
+        setTours([], 0);
+        throw new Error("Failed to fetch tours");
+      }
+      console.log("Tours fetched successfully:", response.payload.tours);
+      setTours(response.payload.tours || [], response.payload.total || 0);
+    } catch (error) {
+      setTours([], 0);
+      console.error("Error fetching tours:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [
     debouncedValue,
     setTours,
@@ -138,6 +88,23 @@ export default function ToursSection() {
     isDateFilterActive,
     sortBy,
   ]);
+  const fetchToursCount = useCallback(async () => {
+    try {
+      const response = await tourApiRequest.getTourCount();
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch tours count");
+      }
+      setTourCount(response.payload.message || 0);
+    } catch (error) {
+      if(error instanceof HttpError) {
+        console.error("Error fetching tours count:", error.payload.message);
+      }
+    }
+  }, []);
+  React.useEffect(() => {
+    fetchTours();
+    fetchToursCount();
+  }, [fetchTours, fetchToursCount]);
 
   const handlePageChange = React.useCallback(
     (page: number) => {
@@ -176,7 +143,7 @@ export default function ToursSection() {
         <div className="container">
           <div className="flex flex-col gap-6 md:flex-row">
             {/*Left section*/}
-            <div className={`w-full lg:basis-[30%]`}>
+            <div className={`w-full md:basis-[40%] lg:basis-[30%]`}>
               <div
                 className={`h-[calc(100vh - 1rem)] sticky top-20 space-y-4 overflow-hidden px-12 transition-all duration-300 ease-in-out sm:px-0`}
               >
@@ -191,12 +158,13 @@ export default function ToursSection() {
             </div>
 
             {/*Right section*/}
-            <div className="lg:basis-[70%]" ref={tourListSectionRef}>
+            <div
+              className="basis-[60%] lg:basis-[70%]"
+              ref={tourListSectionRef}
+            >
               <TourFilter
                 tourCount={totalItems}
-                tours={tours}
                 onApplyFilter={handlePageChange}
-                isLoading={loading}
               />
               <TourList
                 tours={tours}
@@ -247,7 +215,7 @@ export default function ToursSection() {
                 variant="outline"
                 className="w-full"
               >
-                Xem {tours.length} ở Quy Nhơn
+                Xem {tourCount} ở Quy Nhơn
               </Button>
             </div>
           </>

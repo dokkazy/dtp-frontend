@@ -3,10 +3,9 @@ import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import {  useLayoutEffect, useState } from "react";
 
 import { cn, handleErrorApi } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { links } from "@/configs/routes";
 import {
@@ -23,14 +22,16 @@ import {
 } from "@/schemaValidations/auth.schema";
 import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
-import { useRouter } from "next/navigation";
+import envConfig from "@/configs/envConfig";
+import { HttpError } from "@/lib/http";
+import { CheckCircle } from "lucide-react";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [isSuccess, setIsSuccess] = useState(false);
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -48,22 +49,33 @@ export function RegisterForm({
     name: ["email"],
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const userName = email.split("@")[0];
     form.setValue("userName", userName);
   }, [email, form]);
 
-  const onSubmit = async (data: RegisterSchemaType) => {
+  const onSubmit = async (values: RegisterSchemaType) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword, ...SubmitData } = data;
+    const { confirmPassword, ...SubmitData } = values;
+    const data = {
+      ...SubmitData,
+      confirmUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.accountConfirm.href}`,
+    };
     setLoading(true);
     try {
-      await authApiRequest.register(SubmitData);
-      toast.success("Đăng ký thành công");
-      router.push(links.login.href);
+      const response = await authApiRequest.register(data);
+      if (response.status === 200) {
+        toast.success("Đăng ký thành công");
+        setIsSuccess(true);
+        // router.push(links.login.href);
+      }
       setLoading(false);
     } catch (error) {
-      handleErrorApi(error);
+      if (error instanceof HttpError) {
+        handleErrorApi(error);
+      } else {
+        toast.error("Đã xảy ra lỗi, vui lòng thử lại sau.");
+      }
       setLoading(false);
     }
   };
@@ -75,6 +87,19 @@ export function RegisterForm({
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
+        {isSuccess && (
+          <div className="rounded-lg border bg-white py-4 flex items-center justify-center flex-col">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+            <CheckCircle className="h-5 w-5 text-green-600" />
+          </div>
+            <h1 className="text-base font-medium sm:text-lg">
+              Tài khoản của bạn đã được đăng kí thành công
+            </h1>
+            <p className="text-sm sm:text-base">
+              Kiểm tra email để xác thực tài khoản
+            </p>
+          </div>
+        )}
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold text-core">Đăng ký</h1>
         </div>
@@ -87,7 +112,7 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel className="text-core">Username</FormLabel>
                   <FormControl>
-                    <Input disabled {...field} />
+                    <Input {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +199,7 @@ export function RegisterForm({
           />
 
           <LoadingButton pending={loading}>Đăng ký</LoadingButton>
-          <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
             <span className="relative z-10 bg-background px-2 text-muted-foreground">
               Hoặc tiếp tục với
             </span>
@@ -206,7 +231,7 @@ export function RegisterForm({
               ></path>
             </svg>
             Đăng nhập bằng Google
-          </Button>
+          </Button> */}
         </div>
         <div className="text-center text-sm">
           Đã có tài khoản?{" "}

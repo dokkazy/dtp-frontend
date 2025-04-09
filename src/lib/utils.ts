@@ -30,8 +30,8 @@ export function handleErrorApi(
   }
 }
 
-export const formatPrice = (price: number) => {
-  if (price == null || typeof price == "string") return "0";
+export const formatPrice = (price: number | undefined) => {
+  if (price == undefined || typeof price == "string") return "0";
   return price.toLocaleString("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -74,8 +74,13 @@ export const formatDate = (dateString: string | undefined) => {
 export const formatDateTime = (dateString: string | undefined) => {
   if (!dateString) return "N/A";
   const date = parseISO(dateString);
-  return format(date, "HH:mm 'ngày' dd/MM/yyyy", { locale: vi });
-}
+  return format(date, "HH:mm 'ngày' dd/MM/yyyy",{locale: vi});
+};
+
+export const formatTime = (time: string | undefined) => {
+  if (!time) return "";
+  return time.substring(0, 5);
+};
 
 export const formatDateToDDMMYYYY = (dateString: string) => {
   const date = new Date(dateString);

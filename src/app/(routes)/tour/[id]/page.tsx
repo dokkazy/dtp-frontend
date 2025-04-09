@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ArrowLeft, Home, SearchX } from "lucide-react";
+import Link from "next/link";
+
 import { tourApiRequest } from "@/apiRequests/tour";
 import TourDetail from "@/components/sections/tour-detail";
 import { Button } from "@/components/ui/button";
 import { DailyTicketSchedule, TourDetail as Tour } from "@/types/tours";
-import { ArrowLeft, Home, SearchX } from "lucide-react";
-import Link from "next/link";
 
 export type TourDetailType = {
   tourDetail: Tour | null;
@@ -40,7 +41,6 @@ async function fetchScheduleTicket(id: string) {
 async function fetchData(id: string) {
   try {
     const response: any = await tourApiRequest.getById(id);
-
     if (response.status != 200) {
       return null;
     }
@@ -70,8 +70,8 @@ export default async function TourDetailPage({
       tourDetail:tourDetail,
       tourSchedule: ticketSchedule || [],
     };
-    console.log("tour detail:", data.tourDetail)
   }
+  console.log("data", data);
 
   if (data === null) {
     return (

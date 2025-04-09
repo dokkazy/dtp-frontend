@@ -2,12 +2,12 @@ import { z } from "zod";
 
 export const loginSchema = z
   .object({
-    userName: z.string().min(2, {
-      message: "Username phải có ít nhất 2 kí tự",
+    userName: z.string().min(6, {
+      message: "Username phải có ít nhất 6 kí tự",
     }),
     password: z
       .string()
-      .min(6, { message: "Mật khẩu phải có ít nhất 6 kí tự" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" })
       .max(32, { message: "Mật khẩu không được quá 32 kí tự" }),
   })
   .strict();
@@ -38,7 +38,9 @@ export const registerSchema = z
     name: z.string(),
     address: z.string(),
     email: z.string().email("Email không hợp lệ"),
-    userName: z.string(),
+    userName: z.string().min(6, {
+      message: "Username phải có ít nhất 6 kí tự",
+    }),
     phoneNumber: z
       .string()
       .regex(
@@ -49,7 +51,7 @@ export const registerSchema = z
       ),
     password: z
       .string()
-      .min(6, { message: "Mật khẩu phải có ít nhất 6 kí tự" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" })
       .max(32, { message: "Mật khẩu không được quá 32 kí tự" })
       .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).+$/, {
         message:
@@ -57,7 +59,7 @@ export const registerSchema = z
       }),
     confirmPassword: z
       .string()
-      .min(6, { message: "Mật khẩu phải có ít nhất 6 kí tự" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" })
       .max(32, { message: "Mật khẩu không được quá 32 kí tự" }),
   })
   .strict()
@@ -87,3 +89,30 @@ export const registerResponseSchema = z
 export type RegisterResponseSchemaType = z.TypeOf<
   typeof registerResponseSchema
 >;
+
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Vui lòng nhập đúng định dạng email"),
+});
+
+export type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
+
+
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" })
+      .max(32, { message: "Mật khẩu không được quá 32 kí tự" })
+      .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).+$/, {
+        message:
+          "Mật khẩu phải chứa ít nhất một chữ cái viết hoa và một ký tự đặc biệt",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Mật khẩu không khớp",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>;

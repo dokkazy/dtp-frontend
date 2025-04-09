@@ -48,6 +48,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   async function handleLogOut() {
+    setOpen(false);
     try {
       const response: any =
         await authApiRequest.logoutFromNextClientToNextServer();
@@ -57,7 +58,6 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       }
       setUser(null);
       toast.success(response.payload.message);
-      setOpen(false);
       localStorage.removeItem(AUTH_SYNC_KEY);
       location.href = links.home.href;
     } catch (error) {

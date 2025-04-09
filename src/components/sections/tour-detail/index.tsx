@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { ChevronRight, MessagesSquare } from "lucide-react";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import Link from "next/link";
 
 import {
   Breadcrumb,
@@ -17,14 +17,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ServiceSection from "./ServiceSection";
-import { DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader,Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import GallerySection from "./GallerySection";
 import RecommendedTour from "./RecommendedTour";
 import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
+import ServiceDetail from "@/components/sections/tour-detail/ServiceDetail";
+import { formatPrice } from "@/lib/utils";
 
 export default function TourDetail({ data }: { data: TourDetailType | null }) {
-  const markup = { __html: `<p>${data?.tourDetail?.tour?.description}</p>` };
+  const markup = { __html: `${data?.tourDetail?.tour?.about}` };
   const handleServiceRef = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string,
@@ -38,7 +40,6 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
 
   return (
     <>
-      <nav></nav>
       <div className="mx-auto mb-16 mt-24 max-w-2xl space-y-6 px-4 sm:pb-6 md:max-w-7xl lg:px-8">
         <Breadcrumb>
           <BreadcrumbList>
@@ -63,7 +64,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <h1 className="text-xl font-bold tracking-tight sm:text-4xl md:text-3xl">
           {data?.tourDetail?.tour?.title}
         </h1>
         <div className="flex items-center gap-2">
@@ -83,15 +84,15 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
         <div className="container min-w-full">
           <div className="flex gap-6">
             {/* Tour Description */}
-            <div className="w-full space-y-16 md:basis-[70%]">
+            <div className="w-full space-y-8 md:space-y-16 md:basis-[70%]">
               <Card>
-                <CardContent className="relative h-48 space-y-4 overflow-hidden p-6">
-                  {/* <p>{data.tour?.description || "description"}</p> */}
+                <CardContent className="relative h-32 space-y-4 overflow-hidden p-6 md:h-48">
+                  <p>{data?.tourDetail?.tour?.description || "điểm nổi bật"}</p>
                   <div className="absolute bottom-0 left-0 right-0 flex h-[52px] items-center justify-between bg-gradient-to-t from-white to-transparent p-6 backdrop-blur-[6px] hover:underline">
                     <Dialog>
                       <DialogTrigger asChild>
                         <div className="flex items-center">
-                          <span className="text-lg font-semibold">
+                          <span className="text-sm font-semibold md:text-lg">
                             Xem thêm
                           </span>
                           <ChevronRight />
@@ -102,8 +103,8 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                           <h1 className="text-xl font-bold">Điểm nổi bật</h1>
                         </DialogHeader>
                         <ScrollArea className="h-[400px] w-full rounded-md p-4">
-                          {/* <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
-                            {data?.tourDetail?.tour?.about
+                          <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
+                            {data?.tourDetail?.tour?.description
                               .split(".")
                               .map((sentence) => sentence.trim())
                               .filter((sentence) => sentence)
@@ -115,7 +116,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                                   {sentence}
                                 </li>
                               ))}
-                          </ul> */}
+                          </ul>
                           <ScrollBar />
                         </ScrollArea>
                       </DialogContent>
@@ -132,10 +133,19 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
               {data != null && <ServiceSection data={data} />}
               <div className="">
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
+                  Chi tiết gói dịch vụ
+                </h2>
+                {data != null && (
+                  <ServiceDetail data={data?.tourDetail?.tourDestinations} />
+                )}
+              </div>
+              <div className="">
+                <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
                   Về dịch vụ này
                 </h2>
-                <div dangerouslySetInnerHTML={markup} />
+                <div dangerouslySetInnerHTML={markup} className="px-4"/>
               </div>
+
               <div className="mt-12">
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
                   Liên hệ với chúng tôi
@@ -146,9 +156,12 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                 <Button
                   className="rounded-lg border border-teal-500 py-6 text-core hover:bg-teal-50 hover:text-teal-500"
                   variant="outline"
+                  asChild
                 >
-                  <MessagesSquare className="h-20 w-20" />
-                  <span className="text-base">Chat với chúng tôi</span>
+                  <Link href="/chat" target="_blank">
+                    <MessagesSquare className="h-20 w-20" />
+                    <span className="text-base">Chat với chúng tôi</span>
+                  </Link>
                 </Button>
               </div>
               <div className="mt-12">
@@ -162,8 +175,8 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
             <div className="hidden md:block lg:basis-[30%]">
               <Card className="h-[calc(100vh - 1rem)] sticky top-20 h-fit">
                 <CardContent className="space-y-4 px-6 py-6">
-                  <h1 className="text-2xl font-semibold">
-                    {data?.tourDetail?.tour?.onlyFromCost}₫
+                  <h1 className="text-lg font-semibold md:text-2xl">
+                    {formatPrice(data?.tourDetail?.tour?.onlyFromCost)}
                   </h1>
                   <Button
                     onClick={(e) => handleServiceRef(e, "tour-detail-service")}
@@ -171,7 +184,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                     className="w-full text-lg"
                     size="lg"
                   >
-                    Chọn các gói dịch vụ
+                    Đặt ngay
                   </Button>
                 </CardContent>
               </Card>

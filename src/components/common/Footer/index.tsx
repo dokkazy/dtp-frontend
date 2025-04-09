@@ -4,16 +4,16 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="mx-auto mb-4 grid max-w-2xl gap-x-12 px-4 sm:grid-cols-1 sm:pb-6 md:grid-cols-4 lg:max-w-6xl lg:px-8">
-      <div className="flex flex-wrap items-center justify-between gap-y-4 md:flex-col">
+    <footer className="mx-auto mb-4 grid max-w-2xl gap-x-10 lg:gap-x-12 px-4 sm:grid-cols-1 sm:pb-6 md:grid-cols-4 lg:max-w-6xl lg:px-8">
+      <div className="flex flex-wrap items-center justify-between md:justify-around gap-y-4 md:flex-col">
         <div data-svg-wrapper className="">
           <Image
-            width={400}
-            height={400}
+            width={500}
+            height={500}
             src="/images/binhdinhtour3.png"
             alt="logo"
             priority
-            className="h-10 w-auto object-cover"
+            className="h-8 lg:h-10 w-auto object-cover"
           />
         </div>
         <p className="text-center text-xs text-[#101010]">
