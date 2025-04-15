@@ -10,16 +10,19 @@ import {
   Popup,
   ScaleControl,
   FullscreenControl,
+  MapRef,
 } from "@vis.gl/react-maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { toast } from "sonner";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { mockTourLocations } from "@/components/sections/tour/ToursSection/TourMap";
-import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
-import { TourList } from "@/types/tours";
-import useTourFilterStore from "@/stores/tourFilterStore";
+import { tourApiRequest } from "@/apiRequests/tour";
+import { HttpError } from "@/lib/http";
+import { Tour, TourList } from "@/types/tours";
+import Spinner from "@/components/common/loading/Spinner";
 
 // default center of Quy Nhon
 const center = {
@@ -37,20 +40,54 @@ const mapStyles = {
 
 export default function MapPage() {
   const router = useRouter();
-  // const [tours, setTours] = useState<TourList>(mockTourLocations);
-  const { tours } = useTourFilterStore((state) => state);
-  const [selectedLocation, setSelectedLocation] = useState<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any | null
-  >(null);
+  const [tours, setTours] = useState<TourList>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Tour | null>(null);
   const [mapInitialized, setMapInitialized] = useState(false);
   const [currentMapStyle, setCurrentMapStyle] = useState(mapStyles.standard);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setLoading(true);
+    const fetchData = async () => {
+      try {
+        const response = await tourApiRequest.getAll();
+        if (response.status === 200) {
+          setTours(response.payload);
+          console.log(response.payload[6].firstDestination);
+        }
+      } catch (error) {
+        if (error instanceof HttpError) {
+          console.error("Error fetching tours:", error.message);
+          toast.error(error.message);
+        } else {
+          toast.error("An unexpected error occurred while fetching tours.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Map reference
-  const mapRef = useRef(null);
+  const mapRef = useRef<MapRef>(null);
+
+  const handleTourFocus = useCallback((tour: Tour) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [
+          Number(tour.firstDestination.longitude),
+          Number(tour.firstDestination.latitude),
+        ],
+        zoom: 12,
+        duration: 1000,
+      });
+    }
+    // Also set the selected location to show the popup
+    setSelectedLocation(tour);
+    setIsSidebarVisible(false);
+  }, []);
 
   // Handle map load
   const onMapLoad = useCallback(() => {
@@ -77,21 +114,17 @@ export default function MapPage() {
   );
 
   // Handle marker click
-  const handleMarkerClick = useCallback(
-    (location: (typeof mockTourLocations)[0]) => {
-      setSelectedLocation(location);
-    },
-    [],
-  );
+  const handleMarkerClick = useCallback((location: Tour) => {
+    setSelectedLocation(location);
+  }, []);
 
   // Custom marker element
-  const MapMarker = ({
-    location,
-  }: {
-    location: (typeof mockTourLocations)[0];
-  }) => {
+  const MapMarker = ({ location }: { location: Tour }) => {
     return (
-      <Marker longitude={location.lng} latitude={location.lat}>
+      <Marker
+        longitude={Number(location.firstDestination.longitude)}
+        latitude={Number(location.firstDestination.latitude)}
+      >
         <div
           className="map-marker flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-core text-white shadow-md transition-transform hover:scale-110"
           onClick={() => handleMarkerClick(location)}
@@ -105,6 +138,15 @@ export default function MapPage() {
   const toggleSidebar = useCallback(() => {
     setIsSidebarVisible((prev) => !prev);
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center gap-2 bg-background/50">
+        <p>Đang tải tài nguyên...</p>
+        <Spinner className="text-core" />
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -129,109 +171,62 @@ export default function MapPage() {
               </h3>
             </div>
           </div>
-          <ScrollArea className="h-full bg-white pb-32">
-            <div className="">
-              {tours.length > 0
-                ? tours.map((tour) => (
-                    <div
-                      key={tour.id}
-                      className="cursor-pointer rounded-md border p-3 hover:bg-secondary/20"
-                      onClick={() => {
-                        // Find the corresponding location
-                        const location =
-                          mockTourLocations.find((loc) => loc.id === tour.id) ||
-                          mockTourLocations[0];
-                        setSelectedLocation(location);
-                      }}
-                    >
-                      <div className="flex">
-                        <div className="aspect-square h-full w-1/4 overflow-hidden">
-                          <Image
-                            src={
-                              tour.thumbnailUrl || "/images/quynhonbanner.jpg"
-                            }
-                            alt="quynhonbanner"
-                            width={500}
-                            height={500}
-                            className="h-20 w-20 rounded-lg object-cover"
-                          />
-                        </div>
-                        <div className="flex w-3/4 flex-col gap-1">
-                          <p className="font-medium">{tour.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {tour.companyName}
-                          </p>
-                          <div className="inline-flex items-center text-sm text-yellow-500">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            <span className="ml-1 font-medium">
-                              {tour.totalRating}
-                            </span>
-                            <span className="ml-1 text-gray-600">(100)</span>
-                            <span className="mx-1 text-gray-400">•</span>
-                            <span className="text-gray-600">100+ Đã đặt</span>
-                          </div>
-                          <p className="text-sm">
-                            {formatPrice(tour.onlyFromCost)}
-                          </p>
-                        </div>
-                      </div>
+          {tours.length > 0 ? (
+            <ScrollArea className="h-full bg-white pb-32">
+              {tours.map((tour) => (
+                <div
+                  key={tour.id}
+                  className="cursor-pointer border p-3 hover:bg-secondary/20"
+                  onClick={() => {
+                    handleTourFocus(tour);
+                  }}
+                >
+                  <div className="flex">
+                    <div className="aspect-square h-full w-1/4 overflow-hidden">
+                      <Image
+                        src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
+                        alt="quynhonbanner"
+                        width={500}
+                        height={500}
+                        className="h-20 w-20 rounded-lg object-cover"
+                      />
                     </div>
-                  ))
-                : mockTourLocations.map((loc) => (
-                  <div
-                    key={loc.id}
-                    className="cursor-pointer rounded-md border p-3 hover:bg-secondary/20"
-                    onClick={() => setSelectedLocation(loc)}
-                  >
-                    <div className="flex">
-                      <div className="aspect-square h-full w-1/4 overflow-hidden">
-                        <Image
-                          src={
-                            loc.thumbnailUrl || "/images/quynhonbanner.jpg"
-                          }
-                          alt="quynhonbanner"
-                          width={500}
-                          height={500}
-                          className="h-20 w-20 rounded-lg object-cover"
-                        />
+                    <div className="flex w-3/4 flex-col gap-1">
+                      <p className="font-medium">{tour.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {tour.companyName}
+                      </p>
+                      <div className="inline-flex items-center text-sm text-yellow-500">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span className="ml-1 font-medium">
+                          {tour.totalRating}
+                        </span>
+                        <span className="ml-1 text-gray-600">(100)</span>
+                        <span className="mx-1 text-gray-400">•</span>
+                        <span className="text-gray-600">100+ Đã đặt</span>
                       </div>
-                      <div className="flex w-3/4 flex-col gap-1">
-                        <p className="font-medium">{loc.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {loc.companyName}
-                        </p>
-                        <div className="inline-flex items-center text-sm text-yellow-500">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3 w-3"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                          <span className="ml-1 font-medium">
-                            {loc.totalRating}
-                          </span>
-                          <span className="ml-1 text-gray-600">(100)</span>
-                          <span className="mx-1 text-gray-400">•</span>
-                          <span className="text-gray-600">100+ Đã đặt</span>
-                        </div>
-                        <p className="text-sm">
-                          {formatPrice(loc.onlyFromCost)}
-                        </p>
-                      </div>
+                      <p className="text-sm">
+                        {formatPrice(tour.onlyFromCost)}
+                      </p>
                     </div>
                   </div>
-                ))}
-            </div>
-          </ScrollArea>
+                </div>
+              ))}
+            </ScrollArea>
+          ) : (
+            <>
+              <div className="flex h-full w-full justify-center bg-white">
+                <h1>Không có hoạt động nào tại Quy Nhơn</h1>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="relative h-full flex-1">
@@ -278,14 +273,14 @@ export default function MapPage() {
           <FullscreenControl position="top-right" />
           <ScaleControl position="bottom-left" />
 
-          {mockTourLocations.map((location) => (
+          {tours.map((location) => (
             <MapMarker key={location.id} location={location} />
           ))}
 
           {selectedLocation && (
             <Popup
-              longitude={selectedLocation.lng}
-              latitude={selectedLocation.lat}
+              longitude={Number(selectedLocation.firstDestination.longitude)}
+              latitude={Number(selectedLocation.firstDestination.latitude)}
               offset={[0, -30]}
               closeButton={false}
               closeOnClick={false}

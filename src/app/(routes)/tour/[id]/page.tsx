@@ -1,11 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ArrowLeft, Home, SearchX } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
 
 import { tourApiRequest } from "@/apiRequests/tour";
 import TourDetail from "@/components/sections/tour-detail";
 import { Button } from "@/components/ui/button";
 import { DailyTicketSchedule, TourDetail as Tour } from "@/types/tours";
+import envConfig from "@/configs/envConfig";
+import { openGraphProperties } from "@/app/shared-metadata";
+
+type Props = {
+  params: { id: string };
+};
 
 export type TourDetailType = {
   tourDetail: Tour | null;
@@ -51,12 +58,32 @@ async function fetchData(id: string) {
   }
 }
 
-export default async function TourDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = params;
+  const tourDetail: Tour | null = await fetchData(id);
+  if (tourDetail) {
+    return {
+      title: tourDetail.tour.title,
+      description: tourDetail.tour.description,
+      openGraph: {
+        title: tourDetail.tour.title,
+        description: tourDetail.tour.description,
+        url: `${envConfig.NEXT_PUBLIC_BASE_URL}/tour/${tourDetail.tour.id}`,
+        ...openGraphProperties,
+      },
+      alternates: {
+        canonical: `${envConfig.NEXT_PUBLIC_BASE_URL}/tour/${tourDetail.tour.id}`,
+      },
+    };
+  }
+  return {
+    title: "Tour không tồn tại",
+    description: "Tour không tồn tại",
+  };
+}
+
+export default async function TourDetailPage({ params }: Props) {
+  const { id } = params;
 
   const [tourDetail, ticketSchedule] = await Promise.all([
     fetchData(id),
@@ -67,7 +94,7 @@ export default async function TourDetailPage({
   let data: TourDetailType | null = null;
   if (tourDetail != null) {
     data = {
-      tourDetail:tourDetail,
+      tourDetail: tourDetail,
       tourSchedule: ticketSchedule || [],
     };
   }

@@ -89,7 +89,6 @@ export default function Checkout({ itemId }: { itemId: string }) {
         toast.error("Có lỗi xảy ra trong quá trình thanh toán");
         return;
       }
-      localStorage.setItem("lastOrderId", orderResponse.payload.id);
 
       const paymentData: PaymentRequest = {
         bookingId: orderResponse.payload.id,
@@ -107,11 +106,9 @@ export default function Checkout({ itemId }: { itemId: string }) {
         return;
       }
       if (paymentResponse.payload.message) {
-        localStorage.setItem("isCheckoutProcessing", "true");
         localStorage.setItem("checkoutUrl", paymentResponse.payload.message);
         localStorage.setItem("paymentStartTime", Date.now().toString());
 
-        document.cookie = "isCheckoutProcessing=true; path=/; max-age=3600";
         window.location.href = paymentResponse.payload.message;
       } else {
         console.error("Không tìm thấy đường dẫn thanh toán");
@@ -144,13 +141,13 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex gap-4">
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 h-24 w-28">
                           <Image
-                            src={"/images/eo-gio.jpg"}
+                            src={checkoutItem?.tour?.tourDestinations[0]?.imageUrls[0] || "/images/quynhonbanner.jpg"}
                             alt={""}
-                            width={90}
-                            height={90}
-                            className="rounded-md object-cover"
+                            width={300}
+                            height={300}
+                            className="rounded-md size-full object-cover"
                           />
                         </div>
                         <div>
@@ -292,7 +289,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
               <div className="sticky top-6 space-y-6 px-4">
                 <Card>
                   <CardContent className="space-y-4 py-4">
-                    <p className="font-semibold">
+                    <p className="font-semibold overflow-hidden">
                       {checkoutItem?.tour.tour.title}
                     </p>
                     <Separator />

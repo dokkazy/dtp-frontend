@@ -44,14 +44,14 @@ export default function Sidebar() {
       href: links.review.href,
     },
     {
-      label: "Cài đặt tài khoản",
+      label: links.account.label,
       icon: Settings,
-      href: `/account`,
+      href: links.account.href,
     },
     {
-      label: "Chính sách bảo mật",
+      label: links.privacy.label,
       icon: Shield,
-      href: `/privacy`,
+      href: links.privacy.href,
     },
   ];
 

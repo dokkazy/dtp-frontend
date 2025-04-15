@@ -33,7 +33,7 @@ const images = [
   },
   {
     id: 6,
-    src: "/images/eo-gio.jpg",
+    src: "/images/quynhonbanner.jpg",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function GallerySection({
     setShowGallery(false);
   };
   return (
-    <div className="relative h-[450px] auto-rows-auto gap-1 md:grid md:grid-cols-12">
+    <div className="relative h-96 md:h-[450px] auto-rows-auto gap-1 md:grid md:grid-cols-12">
       {/* Large image - spans 8 columns on medium screens and up */}
       <Button
         variant="outline"
@@ -85,7 +85,7 @@ export default function GallerySection({
         <Image
           src={imageGallery[0].src || images[0].src}
           alt="Luxury van interior with plush white leather seats"
-          className="size-full object-scale-down object-center"
+          className="size-full object-cover object-center"
           width={500}
           height={500}
           priority

@@ -1,3 +1,10 @@
+export enum OrderStatus {
+  SUBMITTED = 0,
+  AWAITING_PAYMENT = 1,
+  COMPLETED = 2,
+  CANCELLED = 3,
+  PAID = 4,
+}
 export interface OrderResponse {
   orderId: string;
   tourName: string;
@@ -5,6 +12,7 @@ export interface OrderResponse {
   tourDate: string;
   orderTickets: OrderTicket[];
   finalCost: number;
+  status: OrderStatus;
 }
 
 export interface OrderTicket {
@@ -44,4 +52,8 @@ export interface OrderDetailResponse {
   discountAmount: number;
   grossCost: number;
   netCost: number;
+  status: OrderStatus;
+  paymentLinkId: string;
 }
+
+

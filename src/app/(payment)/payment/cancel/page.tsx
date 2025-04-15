@@ -1,7 +1,7 @@
 "use client";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -14,29 +14,53 @@ import {
 } from "@/components/ui/card";
 import { useCartStore } from "@/providers/CartProvider";
 import Spinner from "@/components/common/loading/Spinner";
+import { orderApiRequest } from "@/apiRequests/order";
+import { toast } from "sonner";
+import { HttpError } from "@/lib/http";
 
 export default function CancelPaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { removePaymentItem, clearDirectCheckoutItem } = useCartStore((state) => state);
+  const { removePaymentItem, clearDirectCheckoutItem } = useCartStore(
+    (state) => state,
+  );
   const cancel = searchParams.get("cancel");
-  const isCheckoutProcessing = localStorage.getItem("isCheckoutProcessing");
+  const paymentId = searchParams.get("id");
+
+  const cancelPayment = useCallback(async (paymentId: string) => {
+    try {
+      const response = await orderApiRequest.cancelPayment(paymentId);
+      if (response.status !== 204) {
+        toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+      }
+      toast.success("Hủy thanh toán thành công.");
+    } catch (error) {
+      if (error instanceof HttpError) {
+        toast.error(error.payload.message);
+      } else {
+        toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (cancel === null) {
+    if (cancel === null || paymentId === null) {
       router.push("/");
       return;
     }
-    localStorage.removeItem("lastOrderId");
-    localStorage.removeItem("isCheckoutProcessing");
+    cancelPayment(paymentId);
     localStorage.removeItem("paymentStartTime");
-    localStorage.removeItem("checkoutUrl");
 
-    document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
     removePaymentItem(cancel as unknown as boolean);
     clearDirectCheckoutItem();
-    
-  }, [removePaymentItem, router, cancel, isCheckoutProcessing, clearDirectCheckoutItem]);
+  }, [
+    removePaymentItem,
+    router,
+    cancel,
+    clearDirectCheckoutItem,
+    paymentId,
+    cancelPayment,
+  ]);
 
   if (cancel === null) {
     return (

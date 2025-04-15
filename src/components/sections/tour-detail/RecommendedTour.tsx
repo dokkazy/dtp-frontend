@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { cache, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { links } from "@/configs/routes";
@@ -26,7 +26,7 @@ export default function RecommendedTour() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecommendedTours = cache(async () => {
+    const fetchRecommendedTours = async () => {
       try {
         const res = await tourApiRequest.getRecommendTours();
         if (res.status === 200) {
@@ -39,7 +39,7 @@ export default function RecommendedTour() {
         setData([]);
         setLoading(false);
       }
-    });
+    };
     fetchRecommendedTours();
   }, []);
 

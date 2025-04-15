@@ -9,7 +9,6 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-google-credentials.json
 
 # testing
 /coverage
@@ -17,9 +16,6 @@ google-credentials.json
 # next.js
 /.next/
 /out/
-/src/app/story
-/src/app/api/sheets
-
 # production
 /build
 
@@ -43,4 +39,3 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-*storybook.log

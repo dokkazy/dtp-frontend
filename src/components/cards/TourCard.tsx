@@ -1,5 +1,4 @@
-import React from "react";
-// import { Tour } from "@/lib/data";
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { links } from "@/configs/routes";
@@ -11,10 +10,13 @@ interface TourCardProps {
 }
 
 export default function TourCard({ tour }: TourCardProps) {
-  
+  const handleNavigationStart = () => {
+    document.body.style.cursor = "wait";
+  };
   return (
     <Link
       href={`${links.tour.href}/${tour.id}`}
+      onClick={handleNavigationStart}
       // target="_blank"
       // rel="noopener noreferrer"
       className="group"
@@ -25,7 +27,7 @@ export default function TourCard({ tour }: TourCardProps) {
       >
         <div className="relative">
           <Image
-            src={tour.thumbnailUrl}
+            src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
             alt={tour.title}
             className="h-36 w-full object-cover"
             loading="lazy"

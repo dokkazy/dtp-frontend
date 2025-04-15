@@ -15,13 +15,11 @@ import TourCard from "@/components/cards/TourCard";
 import { TourSortBy } from "@/types/tours";
 import TourFilter from "./TourFilter";
 import { tourApiRequest } from "@/apiRequests/tour";
-import { HttpError } from "@/lib/http";
 
 export default function ToursSection() {
   const router = useRouter();
   const [query, setQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [tourCount, setTourCount] = React.useState(0);
   const {
     tours,
     sortBy,
@@ -88,23 +86,9 @@ export default function ToursSection() {
     isDateFilterActive,
     sortBy,
   ]);
-  const fetchToursCount = useCallback(async () => {
-    try {
-      const response = await tourApiRequest.getTourCount();
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch tours count");
-      }
-      setTourCount(response.payload.message || 0);
-    } catch (error) {
-      if(error instanceof HttpError) {
-        console.error("Error fetching tours count:", error.payload.message);
-      }
-    }
-  }, []);
   React.useEffect(() => {
     fetchTours();
-    fetchToursCount();
-  }, [fetchTours, fetchToursCount]);
+  }, [fetchTours]);
 
   const handlePageChange = React.useCallback(
     (page: number) => {
@@ -215,7 +199,7 @@ export default function ToursSection() {
                 variant="outline"
                 className="w-full"
               >
-                Xem {tourCount} ở Quy Nhơn
+                Xem {totalItems} ở Quy Nhơn
               </Button>
             </div>
           </>

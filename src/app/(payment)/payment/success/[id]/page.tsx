@@ -2,7 +2,7 @@
 import { Calendar, User, CreditCard, Home, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { OrderDetailResponse } from "@/types/order";
 import { orderApiRequest } from "@/apiRequests/order";
 import Spinner from "@/components/common/loading/Spinner";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate, formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/providers/CartProvider";
 import { PaymentStatus } from "@/types/checkout";
 import { links } from "@/configs/routes";
@@ -27,6 +27,7 @@ export default function PaymentSuccess() {
   );
   const params = useParams();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(true);
   const cancel = searchParams.get("cancel");
   const status = searchParams.get("status");
   const { removePaymentItem, clearDirectCheckoutItem } = useCartStore(
@@ -35,44 +36,66 @@ export default function PaymentSuccess() {
   const router = useRouter();
 
   useEffect(() => {
-    localStorage.removeItem("lastOrderId")
-    localStorage.removeItem("isCheckoutProcessing");
     localStorage.removeItem("paymentStartTime");
-    localStorage.removeItem("checkoutUrl");
-
-    // Xóa cookie
-    document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
     removePaymentItem(cancel as unknown as boolean, status as PaymentStatus);
     clearDirectCheckoutItem();
   }, [removePaymentItem, cancel, status, router, clearDirectCheckoutItem]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!params.id) {
-          console.error("No order ID provided in URL params");
-          return;
-        }
-        const response = await orderApiRequest.getOrderDetail(
-          params.id as string,
-        );
-        console.log("Order detail response:", response);
-        if (response.status !== 200) {
-          throw new Error("Failed to fetch order detail");
-        }
-        const data: OrderDetailResponse = response.payload;
-        setOrderDetail(data);
-      } catch (error) {
-        console.log("Error fetching order detail:", error);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      if (!params.id) {
+        console.error("No order ID provided in URL params");
+        return;
       }
-    };
+      const response = await orderApiRequest.getOrderDetailClient(
+        params.id as string,
+      );
+      console.log("Order detail response:", response);
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch order detail");
+      }
+      const data: OrderDetailResponse = response.payload;
+      setOrderDetail(data);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error fetching order detail:", error);
+      setLoading(false);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
     fetchData();
-  }, [params.id, router, orderDetail]);
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spinner className="text-core" />
+      </div>
+    );
+  }
 
   if (!orderDetail) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Spinner className="text-core" />
+        <div className="flex flex-col items-center gap-4 text-center">
+          <h1 className="text-2xl font-bold">
+            Không tìm thấy thông tin đơn hàng
+          </h1>
+          <p className="text-muted-foreground">
+            Đơn hàng không tồn tại hoặc đã bị xóa. Hãy kiểm tra lại tour trong
+            danh sách đơn hàng
+          </p>
+          <div>
+            <Button asChild variant="outline" className="mt-4">
+              <Link href={links.home.href}>Trở về trang chủ</Link>
+            </Button>
+            <Button asChild variant="outline" className="mt-4">
+              <Link href={links.orders.href}>Danh sách đơn hàng</Link>
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -90,7 +113,7 @@ export default function PaymentSuccess() {
         <CardHeader className="flex-row items-center gap-4 space-y-0 border-b px-6 py-4">
           <div className="relative h-20 w-20 overflow-hidden rounded-md">
             <Image
-              src={orderDetail?.tourThumnail || "/images/eo-gio.jpg"}
+              src={orderDetail?.tourThumnail || "/images/quynhonbanner.jpg"}
               alt={orderDetail?.tourName || ""}
               fill
               className="object-cover"
@@ -159,19 +182,19 @@ export default function PaymentSuccess() {
             <h3 className="mb-3 text-lg font-medium">Thông tin thanh toán</h3>
             <div className="rounded-lg border p-4">
               <div className="space-y-2">
-                {orderDetail.orderTickets.map((ticket, index) => (
+                {orderDetail?.orderTickets.map((ticket, index) => (
                   <div key={index} className="flex justify-between">
                     <span className="text-muted-foreground">
                       Vé ({ticket.quantity})
                     </span>
-                    <span>{formatCurrency(ticket.grossCost)} ₫</span>
+                    <span>{formatPrice(ticket.grossCost)}</span>
                   </div>
                 ))}
 
-                {orderDetail.discountAmount > 0 && (
+                {orderDetail?.discountAmount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>-{formatCurrency(orderDetail.discountAmount)} ₫</span>
+                    <span>-{formatPrice(orderDetail?.discountAmount)}</span>
                   </div>
                 )}
 
@@ -179,7 +202,7 @@ export default function PaymentSuccess() {
 
                 <div className="flex justify-between font-medium">
                   <span>Tổng cộng</span>
-                  <span>{formatCurrency(orderDetail.grossCost)} ₫</span>
+                  <span>{formatPrice(orderDetail?.grossCost)}</span>
                 </div>
 
                 <div className="mt-2 flex items-center gap-2 rounded-md bg-green-50 p-2 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">

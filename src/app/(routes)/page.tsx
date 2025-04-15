@@ -5,6 +5,11 @@ import GallerySection from "@/components/sections/landing/GallerySection";
 
 import HeroSection from "@/components/sections/landing/HeroSection";
 import SubscribeSection from "@/components/sections/landing/SubscribeSection";
+import { Metadata } from "next";
+
+export const metadata:Metadata = {
+  title: "Trang chủ",
+}
 
 export default function Home() {
   return (

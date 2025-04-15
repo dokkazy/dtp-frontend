@@ -24,10 +24,8 @@ export default function ProcessCheckoutPage() {
       return;
     } else {
       // Nếu không có URL thanh toán, xóa cookie và localStorage
-      localStorage.removeItem("isCheckoutProcessing");
       localStorage.removeItem("paymentStartTime");
       localStorage.removeItem("checkoutUrl");
-      document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
       router.push("/");
     }
 
@@ -50,10 +48,8 @@ export default function ProcessCheckoutPage() {
 
   // Hủy quá trình thanh toán
   const cancelPayment = () => {
-    localStorage.removeItem("isCheckoutProcessing");
     localStorage.removeItem("paymentStartTime");
     localStorage.removeItem("checkoutUrl");
-    document.cookie = "isCheckoutProcessing=; path=/; max-age=0";
     router.push("/");
   };
 

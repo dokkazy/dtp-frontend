@@ -1,3 +1,4 @@
+import envConfig from "@/configs/envConfig"
 import { create } from "zustand"
 
 export type Message = {
@@ -44,7 +45,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     }))
 
     try {
-      const response = await fetch("https://chatbotbdt.onrender.com/api/Chat", {
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_AI_AGENT_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -13,7 +13,7 @@ const mockActivities = [
   {
     id: 1,
     title: "Tour Kỳ Co bằng đường bộ 1 ngày",
-    imageUrl: "/images/eo-gio.jpg",
+    imageUrl: "/images/quynhonbanner.jpg",
     rating: 4.0,
     reviews: 34,
     price: 700000,
@@ -92,7 +92,7 @@ export default async function ActivitySection() {
               <>
                 <Card
                   key={index}
-                  className="group relative transition-transform duration-300 ease-in-out hover:scale-105"
+                  className="group relative transition-transform duration-300 ease-in-out md:hover:scale-105"
                 >
                   <div className="aspect-square w-full overflow-hidden rounded-t-xl bg-gray-200 lg:h-80">
                     <Image
@@ -112,7 +112,7 @@ export default async function ActivitySection() {
                   </div>
                   <CardContent>
                     <div className="flex flex-col gap-2">
-                      <p className="text-lg font-semibold md:text-sm">
+                      <p className="text-lg font-semibold md:text-sm overflow-hidden">
                         {activity.title}
                       </p>
                       <p className="text-sm text-gray-400 line-through md:text-xs">
@@ -167,7 +167,7 @@ export default async function ActivitySection() {
                 </div>
                 <CardContent>
                   <div className="flex flex-col gap-2">
-                    <p className="text-lg font-semibold md:text-sm">
+                    <p className="text-lg font-semibold md:text-sm line-clamp-1">
                       {activity.title}
                     </p>
                     <p className="text-sm text-gray-400 line-through md:text-xs">

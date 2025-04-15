@@ -167,7 +167,7 @@ export default async function PopulationSection() {
                 <Card className="group relative min-w-[200px] max-w-[250px] transition-transform duration-300 ease-in-out hover:scale-105 lg:min-w-[250px] lg:max-w-[300px]">
                   <div className="aspect-square h-40 w-full overflow-hidden rounded-t-xl bg-gray-200">
                     <Image
-                      src={tour.thumbnailUrl}
+                      src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                       alt=""
                       className="h-full w-full object-cover object-center"
                       width={300}
@@ -187,10 +187,10 @@ export default async function PopulationSection() {
                       </p>
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-black sm:text-sm lg:text-base">
-                          {formatPrice(tour.onlyFromCost)}đ
+                          {formatPrice(tour.onlyFromCost)}
                         </p>
                         <p className="hidden text-gray-500 line-through sm:block sm:text-sm lg:text-base">
-                          {formatPrice(tour.onlyFromCost * 2)}đ
+                          {formatPrice(tour.onlyFromCost * 2)}
                         </p>
                       </div>
                     </div>

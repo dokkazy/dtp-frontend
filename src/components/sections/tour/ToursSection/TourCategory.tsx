@@ -1,11 +1,9 @@
 "use client";
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { RotateCcw, Search, Send, SlidersHorizontal } from "lucide-react";
+import { RotateCcw, Search, Send } from "lucide-react";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -26,28 +24,6 @@ export default function TourCategory({ query, setQuery, onResetAllFilters }: Tou
   return (
     <Card className="border-t">
       <CardContent className="space-y-3 py-4">
-        {/* <div>
-          <h3 className="mb-4 text-lg font-bold">Danh mục</h3>
-          <div className="flex flex-col gap-y-4">
-            {categories.map((category) => (
-              <div className="space-x-2" key={category.id}>
-                <Checkbox
-                  className="data-[state=checked]:bg-core"
-                  id={category.id}
-                  checked={selectedCategory === category.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // onSelectCategory(category.id);
-                  }}
-                />
-                <Label htmlFor={category.id} className="text-base">
-                  {" "}
-                  {category.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div> */}
         <div className="float-right" onClick={handleResetAll}>
           <h3 className="underline hover:cursor-pointer">Xóa tất cả</h3>
         </div>
