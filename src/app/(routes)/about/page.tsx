@@ -14,6 +14,18 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Về chúng tôi",
+  keywords: [
+    "Về chúng tôi",
+    "Thông tin về chúng tôi",
+    "Giới thiệu",
+    "Du lịch",
+    "Tour du lịch",
+  ],
+}
 
 export default function About() {
   return (

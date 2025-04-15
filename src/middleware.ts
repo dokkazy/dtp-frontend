@@ -29,9 +29,9 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api") ||
     request.nextUrl.pathname.startsWith("/checkout-processing") ||
     request.nextUrl.pathname.startsWith("/_next") ||
-    request.nextUrl.pathname.startsWith("/logout") ||
-    request.nextUrl.pathname.startsWith("/payment/success") ||
-    request.nextUrl.pathname.startsWith("/payment/cancel") ||
+    request.nextUrl.pathname.startsWith(links.logout.href) ||
+    request.nextUrl.pathname.startsWith(links.paymentSuccess.href) ||
+    request.nextUrl.pathname.startsWith(links.paymentCancel.href) ||
     request.nextUrl.pathname.includes(".") // Bỏ qua các tệp tĩnh
   ) {
     return NextResponse.next();
@@ -40,13 +40,13 @@ export function middleware(request: NextRequest) {
   if (authPath.some((path) => pathname.startsWith(path)) && sessionToken) {
     return NextResponse.redirect(new URL(links.home.href, request.url));
   }
-  const isCheckoutProcessing = request.cookies.get(
-    "isCheckoutProcessing",
-  )?.value;
+  // const isCheckoutProcessing = request.cookies.get(
+  //   "isCheckoutProcessing",
+  // )?.value;
 
-  if (isCheckoutProcessing === "true") {
-    return NextResponse.redirect(new URL("/checkout-processing", request.url));
-  }
+  // if (isCheckoutProcessing === "true") {
+  //   return NextResponse.redirect(new URL("/checkout-processing", request.url));
+  // }
 
   return response;
 }

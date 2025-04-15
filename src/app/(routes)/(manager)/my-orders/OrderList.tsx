@@ -1,24 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { ChevronDown, LandPlot } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import { OrderResponse } from "@/types/order";
-import { formatDate, formatPrice, getTicketKind } from "@/lib/utils";
+import { OrderResponse, OrderStatus } from "@/types/order";
+import {
+  formatDate,
+  formatPrice,
+  getOrderStatus,
+  getTicketKind,
+} from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { links } from "@/configs/routes";
 import { HttpError } from "@/lib/http";
-import { toast } from "sonner";
 
 const ORDERS_PER_PAGE = 5;
 
 export default function OrderList() {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [displayedOrders, setDisplayedOrders] = useState<OrderResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
@@ -40,6 +46,7 @@ export default function OrderList() {
   };
 
   useEffect(() => {
+    setLoading(true);
     const fetchOrders = async () => {
       try {
         const response = await orderApiRequest.getOrders();
@@ -59,10 +66,9 @@ export default function OrderList() {
           setLoading(false);
         }
       } catch (error) {
-        if(error instanceof HttpError) {
+        if (error instanceof HttpError) {
           console.log("Error fetching orders:", error);
-
-        }else{
+        } else {
           toast.error("Đã có lỗi xảy ra trong quá trình tải đơn hàng.");
         }
         setLoading(false);
@@ -84,7 +90,11 @@ export default function OrderList() {
       <div className="flex-1">
         <div className="bg-white p-2">
           <div className="mb-6 flex items-center justify-between">
-            <Skeleton className="h-6 w-40" />
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-gray-800">Đơn hàng</h2>
+              <ChevronDown className="h-5 w-5 text-gray-400" />
+            </div>
+            {/* <Skeleton className="h-6 w-40" /> */}
           </div>
           <div className="space-y-4">
             {Array(3)
@@ -130,21 +140,19 @@ export default function OrderList() {
                   key={order.orderId}
                   className="overflow-hidden rounded-lg border"
                 >
-                  <Link href={`${links.orders.href}/${order.orderId}`} target="_blank">
+                  <Link href={`${links.orders.href}/${order.orderId}`}>
                     <div className="flex items-start gap-4 p-4">
                       <div className="flex-1">
                         <div className="flex items-start gap-3">
                           <div className="rounded bg-teal-100 p-1 text-teal-600">
                             <LandPlot className="h-4 w-4" />
                           </div>
-                          <div>
+                          <div className="space-y-2">
                             <h3 className="font-medium text-gray-900">
                               {order.tourName}
                             </h3>
-                            <p className="mt-1 text-xs text-gray-500">
-                              Tour Ghép
-                            </p>
-                            <div className="mt-2 text-xs">
+                            <p className="text-xs text-gray-500">Tour Ghép</p>
+                            <div className="text-xs">
                               <p className="text-teal-600">
                                 {formatDate(order.tourDate)}
                               </p>
@@ -156,36 +164,49 @@ export default function OrderList() {
                               ))}
                             </div>
 
-                            <div className="mt-4">
+                            <div className="space-y-2">
                               <p className="text-sm font-medium">
-                                Tổng thanh toán: {formatPrice(order.finalCost)}{" "}
-                                đ
+                                Tổng thanh toán: {formatPrice(order.finalCost)}
                               </p>
-                              {/* <div className="mt-1 flex items-center gap-2 text-orange-500">
-                            <Clock className="h-4 w-4" />
-                            <p className="text-sm">Đang chờ thanh toán 01:59:28</p>
-                          </div> */}
+                              <p className="text-sm font-medium">
+                                Trạng thái đơn hàng:{" "}
+                                <span className="text-[#fc7a09]">
+                                  {getOrderStatus(order.status)}
+                                </span>
+                              </p>
+                              {order.status === OrderStatus.SUBMITTED && (
+                                <Button
+                                  variant={"core"}
+                                  className="flex items-center justify-center gap-2"
+                                >
+                                  Thanh toán
+                                </Button>
+                              )}
+                              {order.status ===
+                                OrderStatus.AWAITING_PAYMENT && (
+                                <Button
+                                  variant={"core"}
+                                  className="flex items-center justify-center gap-2"
+                                >
+                                  Tiếp tục thanh toán
+                                </Button>
+                              )}
                             </div>
-
-                            {/* <div className="mt-4">
-                              <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                                Thanh toán
-                              </Button>
-                            </div> */}
                           </div>
                         </div>
                       </div>
 
                       <div className="h-24 w-24 overflow-hidden rounded-md">
                         <Image
-                          src={`${order.tourThumnail}`}
+                          src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
                           alt="Tour Kỳ Co"
                           width={96}
                           height={96}
+                          loading="lazy"
                           className="h-full w-full object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = "/images/eo-gio.jpg";
+                            target.src = "/images/quynhonbanner.jpg";
                           }}
                         />
                       </div>

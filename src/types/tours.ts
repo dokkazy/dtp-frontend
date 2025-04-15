@@ -7,6 +7,10 @@ export interface Tour {
   avgStar: number;
   totalRating: number;
   onlyFromCost: number;
+  firstDestination: {
+    latitude: string;
+    longitude: string;
+  };
   isDeleted: boolean;
 }
 
@@ -56,6 +60,9 @@ export interface TourDestination {
   startTime: string;
   endTime: string;
   sortOrder: number;
+  sortOrderByDate: number;
+  latitude: string;
+  longitude: string;
   activities: TourActivity[];
 }
 

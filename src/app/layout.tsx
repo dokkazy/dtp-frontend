@@ -16,6 +16,8 @@ import { UserProfile } from "@/types/user";
 import { isProduction } from "@/lib/utils";
 import TrackingToken from "@/components/common/TrackingToken";
 import UserInitializer from "@/components/common/UserInitializer";
+import envConfig from "@/configs/envConfig";
+import { NavigationEvents } from "@/components/common/loading/NaviagationEvents";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -25,8 +27,14 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Binh Dinh Tour",
+  title: {
+    template: "%s | Binh Dinh Tour",
+    default: "Binh Dinh Tour",
+  },
   description: "Powered by BinhDinhTour",
+  referrer: "origin-when-cross-origin",
+  creator: "Dokkazy",
+  metadataBase: new URL(envConfig.NEXT_PUBLIC_BASE_URL),
 };
 
 export default async function RootLayout({
@@ -53,8 +61,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {!isProduction() && (
           <script
             crossOrigin="anonymous"
@@ -68,7 +74,7 @@ export default async function RootLayout({
           initialRefreshToken={refreshToken?.value}
           user={user}
         >
-          <TrackingToken/>
+          <TrackingToken />
           <UserInitializer />
           <CartProvider>
             <LoadingScreen>
@@ -76,6 +82,7 @@ export default async function RootLayout({
               <PageLoader />
               {children}
               <Toaster closeButton richColors position="top-right" />
+              <NavigationEvents />
             </LoadingScreen>
           </CartProvider>
         </AuthProvider>

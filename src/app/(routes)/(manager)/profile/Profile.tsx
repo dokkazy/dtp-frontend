@@ -193,7 +193,7 @@ export default function Profile() {
                   <FormItem>
                     <FormLabel>Họ và tên</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -207,7 +207,7 @@ export default function Profile() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" />
+                      <Input disabled={loading} {...field} type="email" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -221,7 +221,7 @@ export default function Profile() {
                   <FormItem>
                     <FormLabel>Số điện thoại</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -235,7 +235,7 @@ export default function Profile() {
                   <FormItem>
                     <FormLabel>Địa chỉ</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

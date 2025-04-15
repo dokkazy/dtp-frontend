@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { TicketKind } from "@/types/tours";
 import { format, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
+import { OrderStatus } from "@/types/order";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -61,6 +62,21 @@ export const getTicketKind = (ticketKind: TicketKind) => {
   }
 };
 
+export const getOrderStatus = (status: OrderStatus) => {
+  switch (status) {
+    case OrderStatus.SUBMITTED:
+      return "Đã tạo";
+    case OrderStatus.AWAITING_PAYMENT:
+      return "Chờ thanh toán";
+    case OrderStatus.COMPLETED:
+      return "Đã hoàn thành";
+    case OrderStatus.CANCELLED:
+      return "Đã hủy";
+    case OrderStatus.PAID:
+      return "Đã thanh toán";
+  }
+};
+
 export const formatDate = (dateString: string | undefined) => {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
@@ -74,7 +90,7 @@ export const formatDate = (dateString: string | undefined) => {
 export const formatDateTime = (dateString: string | undefined) => {
   if (!dateString) return "N/A";
   const date = parseISO(dateString);
-  return format(date, "HH:mm 'ngày' dd/MM/yyyy",{locale: vi});
+  return format(date, "HH:mm 'ngày' dd/MM/yyyy", { locale: vi });
 };
 
 export const formatTime = (time: string | undefined) => {

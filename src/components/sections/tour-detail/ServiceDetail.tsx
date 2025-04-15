@@ -37,90 +37,134 @@ const ActivityItem = ({ activity }: { activity: TourActivity }) => {
   );
 };
 
+const DayHeader = ({ day }: { day: number }) => {
+  return (
+    <div className="mb-6 mt-8 flex items-center gap-2 first:mt-0">
+      <div className="h-px flex-1 bg-blue-100"></div>
+      <div className="rounded-full bg-core px-4 py-2 font-bold text-white">
+        Ngày {day + 1}
+      </div>
+      <div className="h-px flex-1 bg-blue-100"></div>
+    </div>
+  );
+};
+
 export default function ServiceDetail({
   data,
 }: {
   data: TourDestination[] | undefined;
 }) {
-  const sortedDestinations = data
-    ? [...data].sort((a, b) => a.sortOrder - b.sortOrder)
+  const destinationsByDay = data
+    ? data.reduce<Record<number, TourDestination[]>>((acc, destination) => {
+        const day = destination.sortOrderByDate;
+        if (!acc[day]) {
+          acc[day] = [];
+        }
+        acc[day].push(destination);
+        return acc;
+      }, {})
     : [];
+
+  const sortedDays = Object.keys(destinationsByDay)
+    .map(Number)
+    .sort((a, b) => a - b);
   return (
     <div className="w-full rounded-lg border p-6">
       <Accordion collapsible type="single" className="w-full pb-6">
         <AccordionItem value="item-1">
-          <AccordionTrigger className="text-lg md:text-xl">Lịch trình</AccordionTrigger>
-          <AccordionContent className="space-y-0 px-4">
-              {sortedDestinations.map((destination, index) => (
-                <div key={index} className="group flex gap-4 md:gap-6">
-                  {/* Left side - time and icon */}
-                  <div className="flex flex-col items-center">
-                    <div className="text-sm font-medium text-blue-600">
-                      {formatTime(destination.startTime)}
-                    </div>
-                    <div className="z-10 mt-1 rounded-full border border-blue-100 bg-white p-2 shadow-sm">
-                      {getIcon("destination")}
-                    </div>
-                    <div className="mt-2 w-px flex-1 bg-blue-100 group-last:bg-transparent"></div>
-                  </div>
+          <AccordionTrigger className="text-lg md:text-xl">
+            Lịch trình
+          </AccordionTrigger>
 
-                  {/* Right side - content */}
-                  <div className="flex-1 pb-8 pt-1">
-                    <Card className="overflow-hidden transition-all hover:shadow-md">
-                      {destination.imageUrls &&
-                        destination.imageUrls.length > 0 && (
-                          <div className="relative h-40 w-full">
-                            <Image
-                              src={
-                                destination.imageUrls[0] || "/placeholder.svg"
-                              }
-                              alt={destination.name}
-                              fill
-                              className="object-cover"
-                              onError={(e) => {
-                                // Fallback for broken images
-                                const target = e.target as HTMLImageElement;
-                                target.src =
-                                  "/placeholder.svg?height=160&width=400";
-                              }}
-                            />
+          <AccordionContent className="sm:px-4">
+            {sortedDays.map((day) => {
+              const sortedDestinations = [...destinationsByDay[day]].sort(
+                (a, b) => a.sortOrder - b.sortOrder,
+              );
+              return (
+                <div key={day}>
+                  <DayHeader day={day} />
+                  <div className="space-y-0">
+                    {sortedDestinations.map((destination, index) => (
+                      <div key={index} className="group flex gap-4 md:gap-6">
+                        {/* Left side - time and icon */}
+                        <div className="flex flex-col items-center">
+                          <div className="text-sm font-medium text-blue-600">
+                            {formatTime(destination.startTime)}
                           </div>
-                        )}
-                      <CardContent className="p-4">
-                        <div className="text-lg font-bold">
-                          {destination.name}
-                        </div>
-                        <div className="mt-1 text-sm text-muted-foreground">
-                          {formatTime(destination.startTime)} -{" "}
-                          {formatTime(destination.endTime)}
+                          <div className="z-10 mt-1 rounded-full border border-blue-100 bg-white p-2 shadow-sm">
+                            {getIcon("destination")}
+                          </div>
+                          <div className="mt-2 w-px flex-1 bg-blue-100 group-last-of-type:bg-transparent"></div>
                         </div>
 
-                        {destination.activities &&
-                          destination.activities.length > 0 && (
-                            <div className="mt-3 border-t pt-2">
-                              {/* Sort activities by sortOrder */}
-                              {[...destination.activities]
-                                .sort((a, b) => a.sortOrder - b.sortOrder)
-                                .map((activity, index) => (
-                                  <ActivityItem
-                                    key={index}
-                                    activity={activity}
+                        {/* Right side - content */}
+                        <div className="flex-1 pb-8 pt-1">
+                          <Card className="overflow-hidden">
+                            {destination.imageUrls &&
+                              destination.imageUrls[0] && (
+                                <div className="relative h-28 sm:h-40 w-full">
+                                  <Image
+                                    src={
+                                      destination.imageUrls[0] ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={destination.name}
+                                    fill
+                                    className="object-cover"
+                                    onError={(e) => {
+                                      // Fallback for broken images
+                                      const target =
+                                        e.target as HTMLImageElement;
+                                      target.src =
+                                        "/placeholder.svg?height=160&width=400";
+                                    }}
                                   />
-                                ))}
-                            </div>
-                          )}
-                      </CardContent>
-                    </Card>
+                                </div>
+                              )}
+                            <CardContent className="p-4">
+                              <div className="text-base sm:text-lg font-bold">
+                                {destination.name}
+                              </div>
+                              <div className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                                {formatTime(destination.startTime)} -{" "}
+                                {formatTime(destination.endTime)}
+                              </div>
+
+                              {destination.activities &&
+                                destination.activities.length > 0 && (
+                                  <div className="mt-3 border-t pt-2">
+                                    {/* Sort activities by sortOrder */}
+                                    {[...destination.activities]
+                                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                                      .map((activity, index) => (
+                                        <ActivityItem
+                                          key={index}
+                                          activity={activity}
+                                        />
+                                      ))}
+                                  </div>
+                                )}
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
-            <AccordionTrigger className="text-lg md:text-xl">Thông tin tập trung/đón khách</AccordionTrigger>
+          <AccordionTrigger className="text-lg md:text-xl">
+            Thông tin tập trung/đón khách
+          </AccordionTrigger>
         </AccordionItem>
         <AccordionItem value="item-3">
-            <AccordionTrigger className="text-lg md:text-xl">Quy định</AccordionTrigger>
+          <AccordionTrigger className="text-lg md:text-xl">
+            Quy định
+          </AccordionTrigger>
         </AccordionItem>
         <AccordionItem value="item-4">
           <AccordionTrigger className="text-lg md:text-xl">

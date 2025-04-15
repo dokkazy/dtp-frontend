@@ -1,5 +1,6 @@
 export const links = {
   login: { href: "/login", label: "Đăng nhập" },
+  logout: { href: "/logout", label: "Đăng xuất" },
   register: { href: "/register", label: "Đăng ký" },
   resetPassword: { href: "/reset-password", label: "Đặt lại mật khẩu" },
   forgotPassword: { href: "/forgot-password", label: "Quên mật khẩu" },
@@ -12,6 +13,8 @@ export const links = {
   profile: { href: "/profile", label: "Khách hàng" },
   orders: { href: "/my-orders", label: "Đơn hàng" },
   review: { href: "/my-review", label: "Đánh giá" },
+  account: {href: "/my-account", label: "Cài đặt tài khoản"},
+  privacy: {href: "/privacy", label: "Chính sách bảo mật"},
   shoppingCart: { href: "/shoppingcart", label: "Giỏ hàng" },
   checkout: { href: "/checkout", label: "Thanh toán" },
   paymentCancel: { href: "/payment/cancel", label: "Hủy thanh toán" },

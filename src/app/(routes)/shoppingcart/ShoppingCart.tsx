@@ -221,16 +221,16 @@ export default function ShoppingCart() {
                         </div>
                         <div className="flex w-full">
                           <div className="flex basis-[70%] gap-6">
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 h-20 w-20">
                               <Image
                                 src={
-                                  /*item.tour.tourDestinations[0].imageUrls[0] ||*/
-                                  "/images/eo-gio.jpg"
+                                  item.tour.tourDestinations[0].imageUrls[0] ||
+                                  "/images/quynhonbanner.jpg"
                                 }
                                 alt={""}
-                                width={100}
-                                height={100}
-                                className="rounded-md object-cover"
+                                width={300}
+                                height={300}
+                                className="rounded-md size-full object-cover"
                               />
                             </div>
                             <div className="space-y-1">

@@ -14,7 +14,8 @@ const nextConfig = {
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-  }
+  },
+  transpilePackages: ["lucide-react"]
 };
 
 export default nextConfig;

@@ -21,7 +21,7 @@ export default function TrackingToken() {
     authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
       setTimeout(() => {
         window.location.replace(
-          `${links.login.href}?un_auth=true&expired=true`,
+          `${links.login.href}?expiredToken=true`,
         );
       }, 1000);
     });
@@ -62,8 +62,8 @@ export default function TrackingToken() {
       const now = new Date();
       const minutesUntilExpiry = differenceInMinutes(expirationTime, now);
 
-      // If token is already expired or will expire within 30 minutes
-      if (minutesUntilExpiry <= 30) {
+      // If token is already expired or will expire within 10 minutes
+      if (minutesUntilExpiry <= 10) {
         // Try to refresh immediately
         const success = await refreshUserToken();
         if(success) {
@@ -71,8 +71,8 @@ export default function TrackingToken() {
         }
       }
 
-      // Set timeout to refresh token 30 minutes before expiration
-      const refreshTime = minutesUntilExpiry - 30;
+      // Set timeout to refresh token 10 minutes before expiration
+      const refreshTime = minutesUntilExpiry - 10;
       const refreshDelay = refreshTime * 60 * 1000;
       console.log(`Token will refresh in ${refreshTime} minutes`);
 
