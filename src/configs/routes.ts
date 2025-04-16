@@ -11,7 +11,7 @@ export const links = {
   blog: { href: "/blog", label: "Cẩm nang du lịch" },
   about: { href: "/about", label: "Về chúng tôi" },
   profile: { href: "/profile", label: "Khách hàng" },
-  orders: { href: "/my-orders", label: "Đơn hàng" },
+  bookings: { href: "/my-bookings", label: "Lịch sử đặt tour" },
   review: { href: "/my-review", label: "Đánh giá" },
   account: {href: "/my-account", label: "Cài đặt tài khoản"},
   privacy: {href: "/privacy", label: "Chính sách bảo mật"},

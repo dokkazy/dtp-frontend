@@ -73,7 +73,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   const handleAddToCart = () => {
     if (data.tourDetail == null) return;
     if (!sessionToken.value) {
-      toast.warning("Vui lòng đăng nhập để tiếp tục đặt hàng");
+      toast.warning("Vui lòng đăng nhập để tiếp tục");
       router.push(`${links.login.href}?redirect=${pathname}`);
       return;
     }
@@ -118,7 +118,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   const handleOrderDirectly = () => {
     if (data.tourDetail == null) return;
     if (!sessionToken.value) {
-      toast.warning("Vui lòng đăng nhập để tiếp tục đặt hàng");
+      toast.warning("Vui lòng đăng nhập để tiếp tục");
       router.push(`${links.login.href}?redirect=${pathname}`);
       return;
     }

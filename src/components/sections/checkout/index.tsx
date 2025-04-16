@@ -155,7 +155,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
                             {checkoutItem?.tour?.tour?.title}
                           </h3>
                           <p className="mb-1 line-clamp-2 text-sm text-gray-600">
-                            {/* {checkoutItem?.tour.tour.description} */}
+                            {checkoutItem?.tour?.tour?.description}
                           </p>
                           <p className="text-sm text-gray-600">
                             {checkoutItem?.day}

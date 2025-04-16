@@ -12,8 +12,8 @@ import {
   User,
   Bell,
   Check,
-  ShoppingBag,
   MessageSquareText,
+  CalendarCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
@@ -149,17 +149,17 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       icon: MessageSquareText,
     },
     {
-      id: "cart",
-      label: "Đơn hàng",
-      icon: ShoppingBag,
+      id: "schedule",
+      label: "Lịch trình",
+      icon: CalendarCheck,
       onClick: () => {
-        router.push(links.orders.href);
+        router.push(links.bookings.href);
         setOpen(false);
       },
     },
     {
       id: "settings",
-      label: "Settings",
+      label: "Cài đặt",
       icon: Settings,
       hasSubmenu: true,
       submenu: [

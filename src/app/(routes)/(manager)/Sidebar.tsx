@@ -34,9 +34,9 @@ export default function Sidebar() {
       href: links.profile.href,
     },
     {
-      label: links.orders.label,
+      label: links.bookings.label,
       icon: Package,
-      href: links.orders.href,
+      href: links.bookings.href,
     },
     {
       label: links.review.label,

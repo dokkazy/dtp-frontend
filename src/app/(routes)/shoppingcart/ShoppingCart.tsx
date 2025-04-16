@@ -17,7 +17,7 @@ import {
 import { links } from "@/configs/routes";
 import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/providers/CartProvider";
-import { formatCurrency, getTicketKind, isDateInPast } from "@/lib/utils";
+import { formatCurrency, formatPrice, getTicketKind, isDateInPast } from "@/lib/utils";
 import { useSyncCartAcrossTabs } from "@/hooks/useSyncCartAcrossTabs";
 import { Input } from "@/components/ui/input";
 
@@ -255,7 +255,7 @@ export default function ShoppingCart() {
                                 >
                                   <span className="text-nowrap text-sm">
                                     {getTicketKind(ticket.ticketKind)} -{" "}
-                                    {ticket.netCost}₫
+                                    {formatPrice(ticket.netCost)}
                                   </span>
                                   <div className="flex items-center">
                                     <Button

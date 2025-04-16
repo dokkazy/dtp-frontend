@@ -45,8 +45,8 @@ export default function AccountConfirmPage() {
           setError(error.payload.message);
           toast.error(error.payload.message);
         } else {
-          setError("An unexpected error occurred");
-          toast.error("An unexpected error occurred");
+          setError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+          toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
         }
       } finally {
         setLoading(false);

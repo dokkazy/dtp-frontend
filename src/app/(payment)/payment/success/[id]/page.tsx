@@ -81,18 +81,18 @@ export default function PaymentSuccess() {
       <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="text-2xl font-bold">
-            Không tìm thấy thông tin đơn hàng
+            Không tìm thấy thông tin tour đặt trước
           </h1>
           <p className="text-muted-foreground">
-            Đơn hàng không tồn tại hoặc đã bị xóa. Hãy kiểm tra lại tour trong
-            danh sách đơn hàng
+            Tour không tồn tại hoặc đã bị xóa. Hãy kiểm tra lại tour trong
+            danh sách đặt tour của bạn.
           </p>
           <div>
             <Button asChild variant="outline" className="mt-4">
               <Link href={links.home.href}>Trở về trang chủ</Link>
             </Button>
             <Button asChild variant="outline" className="mt-4">
-              <Link href={links.orders.href}>Danh sách đơn hàng</Link>
+              <Link href={links.bookings.href}>Danh sách tour đã đặt</Link>
             </Button>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function PaymentSuccess() {
           {/* <ReceiptDownloadButton paymentData={paymentData} /> */}
           <div className="flex gap-3">
             <Button variant="outline" asChild>
-              <Link href={links.orders.href}>Xem danh sách đặt tour</Link>
+              <Link href={links.bookings.href}>Xem danh sách đặt tour</Link>
             </Button>
             <Button asChild variant="core">
               <Link href="/">

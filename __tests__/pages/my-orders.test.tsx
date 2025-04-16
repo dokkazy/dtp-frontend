@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { CartProvider } from "@/providers/CartProvider";
 import AuthProvider from "@/providers/AuthProvider";
-import OrderList from "@/app/(routes)/(manager)/my-orders/OrderList";
+import OrderList from "@/app/(routes)/(manager)/my-bookings/OrderList";
 import { OrderStatus } from "@/types/order";
 
 // Mock the API request

@@ -10,7 +10,7 @@ export default function AbortLayout({
 }) {
   const pathname = usePathname();
   const lastSegment = pathname.split("/");
-  if (lastSegment.length >= 3 && lastSegment[1] === "my-orders") {
+  if (lastSegment.length >= 3 && lastSegment[1] === "my-bookings") {
     return <>{children}</>;
   } else {
     return (
