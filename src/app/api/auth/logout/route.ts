@@ -46,7 +46,6 @@ export async function POST(req: Request) {
     const response: any = await authApiRequest.logoutFromNextServerToServer(
       sessionToken.value,
     );
-    console.log("logout response: ", response);
     if (response.payload.success) {
       return NextResponse.json(
         {

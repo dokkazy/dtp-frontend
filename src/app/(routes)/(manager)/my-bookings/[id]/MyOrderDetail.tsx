@@ -143,13 +143,12 @@ export default function MyOrderDetail({ id }: { id: string }) {
                 {formatPrice(orderDetail?.grossCost)}
               </h3>
               {orderDetail?.status === OrderStatus.SUBMITTED && (
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   <Button
                     disabled={paymentLoading}
-                    className="flex items-center justify-center gap-2 text-lg"
+                    className="flex items-center justify-center gap-2 p-6 sm:text-lg"
                     onClick={handlePayment}
                     variant="core"
-                    size="lg"
                   >
                     {paymentLoading ? (
                       <>
@@ -163,49 +162,12 @@ export default function MyOrderDetail({ id }: { id: string }) {
                   <Button
                     disabled={paymentLoading}
                     onClick={() => handleCancelPayment()}
-                    className="text-lg"
+                    className="flex items-center justify-center gap-2 p-6 sm:text-lg"
                     variant="outline"
-                    size="lg"
                   >
                     {paymentLoading ? (
                       <>
-                        <Spinner className="text-white" />
-                        Đang xử lý...
-                      </>
-                    ) : (
-                      "Hủy đơn hàng"
-                    )}
-                  </Button>
-                </div>
-              )}
-              {orderDetail?.status === OrderStatus.AWAITING_PAYMENT && (
-                <div className="flex items-center gap-4">
-                  <Button
-                    disabled={paymentLoading}
-                    className="flex items-center justify-center gap-2 text-lg"
-                    onClick={() => handleContinuePayment()}
-                    variant="core"
-                    size="lg"
-                  >
-                    {paymentLoading ? (
-                      <>
-                        <Spinner className="text-white" />
-                        Đang xử lý...
-                      </>
-                    ) : (
-                      "Thanh toán"
-                    )}
-                  </Button>
-                  <Button
-                    disabled={paymentLoading}
-                    className="text-lg"
-                    variant="outline"
-                    size="lg"
-                    onClick={() => handleCancelPayment()}
-                  >
-                    {paymentLoading ? (
-                      <>
-                        <Spinner className="text-white" />
+                        <Spinner className="text-black" />
                         Đang xử lý...
                       </>
                     ) : (
@@ -214,6 +176,80 @@ export default function MyOrderDetail({ id }: { id: string }) {
                   </Button>
                 </div>
               )}
+              {orderDetail?.status === OrderStatus.AWAITING_PAYMENT && (
+                <div className="flex flex-wrap items-center gap-4">
+                  <Button
+                    disabled={paymentLoading}
+                    className="flex items-center justify-center gap-2 p-6 sm:text-lg"
+                    onClick={() => handleContinuePayment()}
+                    variant="core"
+                  >
+                    {paymentLoading ? (
+                      <>
+                        <Spinner className="text-white" />
+                        Đang xử lý...
+                      </>
+                    ) : (
+                      "Thanh toán"
+                    )}
+                  </Button>
+                  <Button
+                    disabled={paymentLoading}
+                    className="flex items-center justify-center gap-2 p-6 sm:text-lg"
+                    variant="outline"
+                    onClick={() => handleCancelPayment()}
+                  >
+                    {paymentLoading ? (
+                      <>
+                        <Spinner className="text-black" />
+                        Đang xử lý...
+                      </>
+                    ) : (
+                      "Hủy thanh toán"
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+          {orderDetail?.status === OrderStatus.PAID && (
+            <div className="rounded-lg bg-white p-6 shadow">
+              <div className="flex flex-wrap items-center gap-4">
+                <Button
+                  disabled={paymentLoading}
+                  onClick={() => handleCancelPayment()}
+                  className="flex items-center justify-center gap-2 p-6 sm:text-lg"
+                  variant="outline"
+                >
+                  {paymentLoading ? (
+                    <>
+                      <Spinner className="text-black" />
+                      Đang xử lý...
+                    </>
+                  ) : (
+                    "Hủy tour"
+                  )}
+                </Button>
+                <div>
+                  <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
+                    <li>
+                      <p>
+                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong vòng 12h trước khi tour bắt đầu.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ được hoàn tiền 50% giá trị tour.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước 3 ngày trước khi tour bắt đầu.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
           <div className="rounded-lg bg-white p-6 shadow">

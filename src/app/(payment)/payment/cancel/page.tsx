@@ -1,7 +1,7 @@
 "use client";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,10 @@ export default function CancelPaymentPage() {
   );
   const cancel = searchParams.get("cancel");
   const paymentId = searchParams.get("id");
+  const hasCanceledRef = useRef(false);
 
   const cancelPayment = useCallback(async (paymentId: string) => {
+    if (hasCanceledRef.current) return;
     try {
       const response = await orderApiRequest.cancelPayment(paymentId);
       if (response.status !== 204) {
@@ -82,7 +84,7 @@ export default function CancelPaymentPage() {
 
         <CardContent className="pb-6">
           <div className="space-y-2 text-center">
-            <p>Đơn hàng của bạn đã hủy thành công</p>
+            <p>Hủy đặt tour thành công</p>
             <p className="text-sm text-muted-foreground">
               Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với bộ phận hỗ trợ
               của chúng tôi.

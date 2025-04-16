@@ -7,7 +7,7 @@ const privatePath = [
   links.checkout.href,
   links.paymentCancel.href,
   links.paymentSuccess.href,
-  links.orders.href,
+  links.bookings.href,
   links.review.href,
   links.shoppingCart.href,
   "/checkout-processing",

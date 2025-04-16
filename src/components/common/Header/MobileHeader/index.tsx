@@ -48,7 +48,7 @@ export default function MobileHeader({
             size="default"
             variant="outline"
           >
-            <Menu size={28} />
+            <Menu />
           </Button>
           <Sheet open={isOpen} onOpenChange={() => setIsOpen(false)}>
             <SheetContent side={"top"} className="w-full">

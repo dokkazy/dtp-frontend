@@ -61,7 +61,7 @@ export default function MapPage() {
           console.error("Error fetching tours:", error.message);
           toast.error(error.message);
         } else {
-          toast.error("An unexpected error occurred while fetching tours.");
+          toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
         }
       } finally {
         setLoading(false);

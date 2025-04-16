@@ -127,7 +127,7 @@ export default function OrderList() {
       <div className="bg-white p-2">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-gray-800">Đơn hàng</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
             <ChevronDown className="h-5 w-5 text-gray-400" />
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function OrderList() {
                   key={order.orderId}
                   className="overflow-hidden rounded-lg border"
                 >
-                  <Link href={`${links.orders.href}/${order.orderId}`}>
+                  <Link href={`${links.bookings.href}/${order.orderId}`}>
                     <div className="flex items-start gap-4 p-4">
                       <div className="flex-1">
                         <div className="flex items-start gap-3">
