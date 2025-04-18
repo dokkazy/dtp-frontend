@@ -110,3 +110,27 @@ export interface TourScheduleTicket {
   message: string;
   data: DailyTicketSchedule[];
 }
+
+export interface FeedbackRequest {
+  tourScheduleId: string;
+  description: string;
+}
+
+export interface RatingRequest {
+  tourId: string;
+  userId: string;
+  star: number;
+  comment: string;
+  images: string[];
+}
+
+export interface RatingResponse {
+  id: string;
+  tourId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  star: number;
+  comment: string;
+  images: string[] | null;
+}

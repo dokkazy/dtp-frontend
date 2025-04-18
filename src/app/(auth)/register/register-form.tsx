@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {  useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { cn, handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,8 @@ import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
 import envConfig from "@/configs/envConfig";
 import { HttpError } from "@/lib/http";
-import { CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function RegisterForm({
   className,
@@ -78,7 +79,49 @@ export function RegisterForm({
       }
       setLoading(false);
     }
+
+    setLoading(false);
   };
+
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+            <CheckCircle className="h-10 w-10 text-green-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-core">
+            Kiểm tra email của bạn
+          </h1>
+          <p className="text-balance text-sm text-muted-foreground">
+            Chúng tôi đã gửi email đến <strong>{email}</strong> với liên kết để
+            xác thực tài khoản của bạn.
+          </p>
+        </div>
+        <div className="grid gap-6">
+          <p className="text-center text-sm text-muted-foreground">
+            Nếu không nhận được email, vui lòng kiểm tra thư mục spam hoặc thử
+            lại.
+          </p>
+          <Button
+            variant="core"
+            onClick={() => {
+              setIsSuccess(false);
+              form.reset();
+            }}
+          >
+            Đăng ký lại
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href={links.login.href}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Quay lại đăng nhập
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -87,19 +130,6 @@ export function RegisterForm({
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {isSuccess && (
-          <div className="rounded-lg border bg-white py-4 flex items-center justify-center flex-col">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-          </div>
-            <h1 className="text-base font-medium sm:text-lg">
-              Tài khoản của bạn đã được đăng kí thành công
-            </h1>
-            <p className="text-sm sm:text-base">
-              Kiểm tra email để xác thực tài khoản
-            </p>
-          </div>
-        )}
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold text-core">Đăng ký</h1>
         </div>

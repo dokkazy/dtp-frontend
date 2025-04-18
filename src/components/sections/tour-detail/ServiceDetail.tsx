@@ -107,18 +107,12 @@ export default function ServiceDetail({
                                   <Image
                                     src={
                                       destination.imageUrls[0] ||
-                                      "/placeholder.svg"
+                                      "/images/quynhonbanner.jpg"
                                     }
                                     alt={destination.name}
                                     fill
                                     className="object-cover"
-                                    onError={(e) => {
-                                      // Fallback for broken images
-                                      const target =
-                                        e.target as HTMLImageElement;
-                                      target.src =
-                                        "/placeholder.svg?height=160&width=400";
-                                    }}
+                                   
                                   />
                                 </div>
                               )}

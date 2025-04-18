@@ -24,6 +24,9 @@ import {
   forgotPasswordSchema,
   ForgotPasswordSchemaType,
 } from "@/schemaValidations/auth.schema";
+import envConfig from "@/configs/envConfig";
+import authApiRequest from "@/apiRequests/auth";
+import { HttpError } from "@/lib/http";
 
 export default function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -40,23 +43,26 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (values: ForgotPasswordSchemaType) => {
     try {
       setLoading(true);
-      // Call your reset password API
-      // const response = await authApiRequest.requestPasswordReset(values.email);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Save the email to display in the success message
+      const data = {
+        email: values.email,
+        confirmUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.resetPassword.href}`,
+      };
+      const response = await authApiRequest.forgotPassword(data);
+      if (response.status !== 200) {
+        console.log("Error response:", response);
+      }
       setUserEmail(values.email);
-
-      // Show success UI
       setIsSubmitted(true);
       toast.success("Email đặt lại mật khẩu đã được gửi");
     } catch (error: any) {
-      console.error("Error requesting password reset:", error);
-      toast.error(
-        error?.payload?.message || "Không thể gửi email đặt lại mật khẩu",
-      );
+      if (error instanceof HttpError) {
+        console.error("Error requesting password reset:", error);
+        toast.error(
+          error?.payload?.message || "Không thể gửi email đặt lại mật khẩu",
+        );
+      } else {
+        toast.error("Có lỗi xảy ra trong quá trình gửi email đặt lại mật khẩu");
+      }
     } finally {
       setLoading(false);
     }
@@ -129,12 +135,14 @@ export default function ForgotPasswordForm() {
             )}
           />
           <LoadingButton pending={loading}>Gửi liên kết đặt lại</LoadingButton>
-          <Button variant="outline" asChild>
-            <Link href={links.login.href}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Quay lại đăng nhập
-            </Link>
-          </Button>
+          {!loading && (
+            <Button variant="outline" asChild>
+              <Link href={links.login.href}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Quay lại đăng nhập
+              </Link>
+            </Button>
+          )}
         </div>
       </form>
     </Form>

@@ -4,7 +4,7 @@ export const links = {
   register: { href: "/register", label: "Đăng ký" },
   resetPassword: { href: "/reset-password", label: "Đặt lại mật khẩu" },
   forgotPassword: { href: "/forgot-password", label: "Quên mật khẩu" },
-  accountConfirm: {href: "/account-confirm", label: "Xác thực tài khoản"},
+  accountConfirm: { href: "/account-confirm", label: "Xác thực tài khoản" },
   home: { href: "/", label: "Trang chủ" },
   tour: { href: "/tour", label: "Tour Quy Nhơn" },
   allTour: { href: "/tour/all", label: "Tất cả tour" },
@@ -13,8 +13,9 @@ export const links = {
   profile: { href: "/profile", label: "Khách hàng" },
   bookings: { href: "/my-bookings", label: "Lịch sử đặt tour" },
   review: { href: "/my-review", label: "Đánh giá" },
-  account: {href: "/my-account", label: "Cài đặt tài khoản"},
-  privacy: {href: "/privacy", label: "Chính sách bảo mật"},
+  rating: { href: "/my-review/rating", label: "Đánh giá" },
+  account: { href: "/my-account", label: "Cài đặt tài khoản" },
+  privacy: { href: "/privacy", label: "Chính sách bảo mật" },
   shoppingCart: { href: "/shoppingcart", label: "Giỏ hàng" },
   checkout: { href: "/checkout", label: "Thanh toán" },
   paymentCancel: { href: "/payment/cancel", label: "Hủy thanh toán" },
@@ -41,6 +42,8 @@ export const apiEndpoint = {
   logout: "api/authentication/logout",
   refresh: "/api/authentication/refresh",
   confirmation: "/api/authentication/confirmation",
+  fotgotPassword: "/api/authentication/forget-password",
+  resetPassword: "/api/authentication/reset-password",
   //user
   profile: "/api/user/me",
   updateProfile: "/api/user",
@@ -53,6 +56,7 @@ export const apiEndpoint = {
   tourScheduleTicket: "/api/tour/scheduleticket",
   tourSchedule: "/api/tour/schedule",
   basket: "/api/basket",
+  rating: "api/tour/rating",
 
   //order
   order: "/api/order",

@@ -10,7 +10,6 @@ const privatePath = [
   links.bookings.href,
   links.review.href,
   links.shoppingCart.href,
-  "/checkout-processing",
 ];
 
 const authPath = [links.login.href, links.register.href];
@@ -25,28 +24,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(links.login.href, request.url));
   }
 
-  if (
-    request.nextUrl.pathname.startsWith("/api") ||
-    request.nextUrl.pathname.startsWith("/checkout-processing") ||
-    request.nextUrl.pathname.startsWith("/_next") ||
-    request.nextUrl.pathname.startsWith(links.logout.href) ||
-    request.nextUrl.pathname.startsWith(links.paymentSuccess.href) ||
-    request.nextUrl.pathname.startsWith(links.paymentCancel.href) ||
-    request.nextUrl.pathname.includes(".") // Bỏ qua các tệp tĩnh
-  ) {
-    return NextResponse.next();
-  }
+  // if (
+  //   request.nextUrl.pathname.startsWith("/api") ||
+  //   request.nextUrl.pathname.startsWith("/_next") ||
+  //   request.nextUrl.pathname.startsWith(links.logout.href) ||
+  //   request.nextUrl.pathname.startsWith(links.paymentSuccess.href) ||
+  //   request.nextUrl.pathname.startsWith(links.paymentCancel.href) ||
+  //   request.nextUrl.pathname.includes(".") // Bỏ qua các tệp tĩnh
+  // ) {
+  //   return NextResponse.next();
+  // }
 
   if (authPath.some((path) => pathname.startsWith(path)) && sessionToken) {
     return NextResponse.redirect(new URL(links.home.href, request.url));
   }
-  // const isCheckoutProcessing = request.cookies.get(
-  //   "isCheckoutProcessing",
-  // )?.value;
-
-  // if (isCheckoutProcessing === "true") {
-  //   return NextResponse.redirect(new URL("/checkout-processing", request.url));
-  // }
 
   return response;
 }

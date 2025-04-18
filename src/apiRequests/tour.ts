@@ -16,6 +16,7 @@ export const tourApiRequest = {
     http.get(`${apiEndpoint.tourSchedule}/${id}`, { cache: "no-store" }),
   getScheduleTicketByTourId: (id: string) =>
     http.get(`${apiEndpoint.tourScheduleTicket}/${id}`, { cache: "no-store" }),
+  GetRatingByTourId: (id: string) => http.get(`${apiEndpoint.rating}/${id}`),
 
   //next server
   getAllTours: (urlSearchParams: string) =>

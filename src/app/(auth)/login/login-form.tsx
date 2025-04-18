@@ -38,38 +38,7 @@ export function LoginForm({
       password: "",
     },
   });
-
-  // const onSubmit = async (values: LoginSchemaType) => {
-  //   try {
-  //     setLoading(true);
-  //     const response: any = await authApiRequest.login({
-  //       userName: values.userName,
-  //       password: values.password,
-  //     });
-  //     const responseFromNextServer: any =
-  //       await authApiRequest.setToken(response);
-
-  //     if (responseFromNextServer.payload.success) {
-  //       try {
-  //         const userResponse: any = await userApiRequest.me();
-  //         if (userResponse.payload.success) {
-  //           setUser(userResponse.payload.data);
-  //           window.notifyAuthChange?.();
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching user data:", error);
-  //       }
-  //       toast.success("Đăng nhập thành công");
-  //       router.push(redirectUrl);
-  //       return;
-  //     }
-  //     setLoading(false);
-  //   } catch (error: any) {
-  //     handleErrorApi(error);
-  //     setLoading(false);
-  //   }
-  // };
-
+  
   const onSubmit = async (values: LoginSchemaType) => {
     try {
       setLoading(true);
@@ -84,7 +53,6 @@ export function LoginForm({
         window.notifyAuthChange?.();
         toast.success("Đăng nhập thành công");
         router.push(redirectUrl);
-        router.refresh();
       }
     } catch (error: any) {
       if (error instanceof HttpError) {

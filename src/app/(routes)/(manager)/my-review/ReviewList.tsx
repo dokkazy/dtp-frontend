@@ -1,27 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { ChevronDown, LandPlot } from "lucide-react";
+import { ChevronDown, LandPlot, PenLine } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { OrderResponse, OrderStatus } from "@/types/order";
-import {
-  formatDate,
-  formatPrice,
-  getOrderStatus,
-  getTicketKind,
-} from "@/lib/utils";
+import { formatDate, getTicketKind } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
-import { links } from "@/configs/routes";
 import { HttpError } from "@/lib/http";
+import { links } from "@/configs/routes";
 
 const ORDERS_PER_PAGE = 5;
 
-export default function OrderList() {
+export default function ReviewList() {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [displayedOrders, setDisplayedOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +48,8 @@ export default function OrderList() {
         if (response.status === 200) {
           const allOrders = response.payload;
           const validOrders = allOrders.filter(
-            (order: OrderResponse) => order.tourDate,
+            (order: OrderResponse) =>
+              order.tourDate && order.status == OrderStatus.COMPLETED,
           );
 
           // Sort orders by tour date (most recent first)
@@ -91,7 +87,9 @@ export default function OrderList() {
         <div className="bg-white p-2">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Danh sách tour đã hoàn thành
+              </h2>
               <ChevronDown className="h-5 w-5 text-gray-400" />
             </div>
             {/* <Skeleton className="h-6 w-40" /> */}
@@ -127,7 +125,9 @@ export default function OrderList() {
       <div className="bg-white p-2">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Danh sách tour đã hoàn thành
+            </h2>
             <ChevronDown className="h-5 w-5 text-gray-400" />
           </div>
         </div>
@@ -140,78 +140,58 @@ export default function OrderList() {
                   key={order.orderId}
                   className="overflow-hidden rounded-lg border"
                 >
-                  <Link href={`${links.bookings.href}/${order.orderId}`}>
-                    <div className="flex items-start gap-4 p-4">
-                      <div className="flex-1">
-                        <div className="flex items-start gap-3">
-                          <div className="rounded bg-teal-100 p-1 text-teal-600">
-                            <LandPlot className="h-4 w-4" />
-                          </div>
-                          <div className="space-y-2">
-                            <h3 className="font-medium text-gray-900">
-                              {order.tourName}
-                            </h3>
-                            <p className="text-xs text-gray-500">Tour Ghép</p>
-                            <div className="text-xs">
-                              <p className="text-teal-600">
-                                {formatDate(order.tourDate)}
+                  <div className="flex items-start gap-4 p-4">
+                    <div className="flex-1">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded bg-teal-100 p-1 text-teal-600">
+                          <LandPlot className="h-4 w-4" />
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="font-medium text-sm sm:text-base text-gray-900">
+                            {order.tourName}
+                          </h3>
+                          <p className="text-xs text-gray-500">Tour Ghép</p>
+                          <div className="text-xs">
+                            <p className="text-teal-600">
+                              {formatDate(order.tourDate)}
+                            </p>
+                            {order.orderTickets.map((ticket) => (
+                              <p key={ticket.code}>
+                                {getTicketKind(ticket.ticketKind)} ×{" "}
+                                {ticket.quantity}
                               </p>
-                              {order.orderTickets.map((ticket) => (
-                                <p key={ticket.code}>
-                                  {getTicketKind(ticket.ticketKind)} ×{" "}
-                                  {ticket.quantity}
-                                </p>
-                              ))}
-                            </div>
+                            ))}
+                          </div>
 
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium">
-                                Tổng thanh toán: {formatPrice(order.finalCost)}
-                              </p>
-                              <p className="text-sm font-medium">
-                                Trạng thái đơn hàng:{" "}
-                                <span className="text-[#fc7a09]">
-                                  {getOrderStatus(order.status)}
-                                </span>
-                              </p>
-                              {order.status === OrderStatus.SUBMITTED && (
-                                <Button
-                                  variant={"core"}
-                                  className="flex items-center justify-center gap-2"
-                                >
-                                  Thanh toán
-                                </Button>
-                              )}
-                              {order.status ===
-                                OrderStatus.AWAITING_PAYMENT && (
-                                <Button
-                                  variant={"core"}
-                                  className="flex items-center justify-center gap-2"
-                                >
-                                  Tiếp tục thanh toán
-                                </Button>
-                              )}
-                            </div>
-                          </div>
+                          <Button
+                            asChild
+                            variant={"core"}
+                            className="flex items-center justify-center w-fit gap-2"
+                          >
+                            <Link href={`${links.rating.href}/${order.orderId}`}>
+                              <PenLine className="h-4 w-4" />
+                              Gửi feedback
+                            </Link>
+                          </Button> 
                         </div>
                       </div>
-
-                      <div className="h-24 w-24 overflow-hidden rounded-md">
-                        <Image
-                          src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
-                          alt="Tour Kỳ Co"
-                          width={96}
-                          height={96}
-                          loading="lazy"
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/images/quynhonbanner.jpg";
-                          }}
-                        />
-                      </div>
                     </div>
-                  </Link>
+
+                    <div className="h-24 w-24 overflow-hidden rounded-md">
+                      <Image
+                        src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
+                        alt="Tour Kỳ Co"
+                        width={96}
+                        height={96}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/images/quynhonbanner.jpg";
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
               {hasMore && (
@@ -223,8 +203,23 @@ export default function OrderList() {
               )}
             </>
           ) : (
-            <div className="py-8 text-center text-gray-500">
-              <p>Chưa có tour nào.</p>
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <div>
+                <Image
+                  src={"/images/review-gif.gif"}
+                  alt="Review Image"
+                  priority
+                  width={500}
+                  height={500}
+                  className="h-32 w-32 object-cover"
+                />
+              </div>
+              <h3 className="mb-1 text-lg font-semibold">
+                Chưa có hoạt động nào
+              </h3>
+              <p className="text-sm text-gray-500">
+                Sẵn sàng cho chuyến đi sắp tới? Hãy trải nghiệm và viết đánh giá
+              </p>
             </div>
           )}
         </div>

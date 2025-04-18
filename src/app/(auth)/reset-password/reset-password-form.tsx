@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -22,14 +22,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LoadingButton from "@/components/common/loading/LoadingButton";
-import { resetPasswordSchema, ResetPasswordSchemaType } from "@/schemaValidations/auth.schema";
-
-
+import {
+  resetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/schemaValidations/auth.schema";
+import authApiRequest from "@/apiRequests/auth";
 
 export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const confirmationToken = searchParams.get("confirmationToken") || null;
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),
@@ -40,18 +43,23 @@ export default function ResetPasswordForm() {
   });
 
   const onSubmit = async (values: ResetPasswordSchemaType) => {
+    if (!confirmationToken) {
+      console.error("No confirmation token provided in URL.");
+      return;
+    }
     try {
       setLoading(true);
-      // Call your reset password API
-      // const response = await authApiRequest.resetPassword({
-      //   token,
-      //   newPassword: values.password,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Show success UI
+      const data = {
+        confirmationToken: decodeURIComponent(
+          confirmationToken.replace(/ /g, "+"),
+        ),
+        newPassword: values.password,
+      };
+      const response = await authApiRequest.resetPassword(data);
+      if (response.status !== 200) {
+        console.log("Error response:", response);
+        toast.error("Không thể đặt lại mật khẩu. Vui lòng thử lại sau.");
+      }
       setIsSubmitted(true);
       toast.success("Mật khẩu đã được đặt lại thành công");
     } catch (error: any) {
@@ -113,7 +121,8 @@ export default function ResetPasswordForm() {
                   <Input {...field} type="password" />
                 </FormControl>
                 <FormDescription>
-                  Mật khẩu phải có ít nhất 8 ký tự
+                  Mật khẩu phải có ít nhất 8 ký tự và bao gồm chữ hoa, chữ
+                  thường, số và ký tự đặc biệt.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -133,12 +142,14 @@ export default function ResetPasswordForm() {
             )}
           />
           <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
-          <Button variant="outline" asChild>
-            <Link href={links.login.href}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Quay lại đăng nhập
-            </Link>
-          </Button>
+          {!loading && (
+            <Button variant="outline" asChild>
+              <Link href={links.login.href}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Quay lại đăng nhập
+              </Link>
+            </Button>
+          )}
         </div>
       </form>
     </Form>

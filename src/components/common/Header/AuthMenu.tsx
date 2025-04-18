@@ -147,6 +147,10 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       id:"review",
       label:"Đánh giá",
       icon: MessageSquareText,
+      onClick: () => {
+        router.push(links.review.href);
+        setOpen(false);
+      },
     },
     {
       id: "schedule",

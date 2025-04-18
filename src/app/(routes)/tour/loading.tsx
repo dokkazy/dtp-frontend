@@ -38,7 +38,7 @@ export default function Loading() {
 
           {/* Desktop Carousel Skeleton */}
           <div className="hidden gap-4 md:grid md:grid-cols-3">
-            {[...Array(6)].map((_, index) => (
+            {[...Array(3)].map((_, index) => (
               <Card key={index} className="overflow-hidden">
                 <Skeleton className="aspect-square h-40 w-full rounded-t-xl" />
                 <CardContent className="space-y-3 p-4">

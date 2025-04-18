@@ -156,7 +156,7 @@ export default function TourList({
                 >
                   <div className="relative">
                     <Image
-                      src={tour.thumbnailUrl}
+                      src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                       alt={tour.title || ""}
                       className="h-60 w-full object-cover sm:h-96"
                       loading="lazy"

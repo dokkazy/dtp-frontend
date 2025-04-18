@@ -122,7 +122,7 @@ export default async function PopulationSection() {
               <Card className="group relative transition-transform duration-300 ease-in-out hover:scale-105 md:min-w-[250px] md:max-w-[300px]">
                 <div className="aspect-square h-44 w-full overflow-hidden rounded-t-xl bg-gray-200">
                   <Image
-                    src={tour.thumbnailUrl}
+                    src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     width={300}
