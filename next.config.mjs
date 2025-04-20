@@ -4,11 +4,17 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Chấp nhận tất cả hostname
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
       },
       {
         protocol: 'http',
-        hostname: '**', // Nếu cần hỗ trợ cả HTTP
+        hostname: '**',
       }
     ],
   },

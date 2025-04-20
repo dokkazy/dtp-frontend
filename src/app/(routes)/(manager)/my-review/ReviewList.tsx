@@ -147,7 +147,7 @@ export default function ReviewList() {
                           <LandPlot className="h-4 w-4" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="font-medium text-sm sm:text-base text-gray-900">
+                          <h3 className="text-sm font-medium text-gray-900 sm:text-base">
                             {order.tourName}
                           </h3>
                           <p className="text-xs text-gray-500">Tour Ghép</p>
@@ -166,29 +166,27 @@ export default function ReviewList() {
                           <Button
                             asChild
                             variant={"core"}
-                            className="flex items-center justify-center w-fit gap-2"
+                            className="flex w-fit items-center justify-center gap-2"
                           >
-                            <Link href={`${links.rating.href}/${order.orderId}`}>
+                            <Link
+                              href={`${links.rating.href}/${order.orderId}`}
+                            >
                               <PenLine className="h-4 w-4" />
                               Gửi feedback
                             </Link>
-                          </Button> 
+                          </Button>
                         </div>
                       </div>
                     </div>
 
                     <div className="h-24 w-24 overflow-hidden rounded-md">
                       <Image
-                        src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
+                        src={`${order.tourThumbnail || "/images/quynhonbanner.jpg"}`}
                         alt="Tour Kỳ Co"
                         width={96}
                         height={96}
                         loading="lazy"
                         className="h-full w-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/images/quynhonbanner.jpg";
-                        }}
                       />
                     </div>
                   </div>

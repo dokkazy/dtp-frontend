@@ -1,7 +1,7 @@
 import { MapPin, Sun, Coffee } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { TourActivity, TourDestination } from "@/types/tours";
+import { TourActivity, TourDestination, TourDetail } from "@/types/tours";
 import { formatTime } from "@/lib/utils";
 import {
   Accordion,
@@ -49,25 +49,27 @@ const DayHeader = ({ day }: { day: number }) => {
   );
 };
 
-export default function ServiceDetail({
-  data,
-}: {
-  data: TourDestination[] | undefined;
-}) {
+export default function ServiceDetail({ data }: { data: TourDetail | null }) {
   const destinationsByDay = data
-    ? data.reduce<Record<number, TourDestination[]>>((acc, destination) => {
-        const day = destination.sortOrderByDate;
-        if (!acc[day]) {
-          acc[day] = [];
-        }
-        acc[day].push(destination);
-        return acc;
-      }, {})
+    ? data?.tourDestinations.reduce<Record<number, TourDestination[]>>(
+        (acc, destination) => {
+          const day = destination.sortOrderByDate;
+          if (!acc[day]) {
+            acc[day] = [];
+          }
+          acc[day].push(destination);
+          return acc;
+        },
+        {},
+      )
     : [];
 
   const sortedDays = Object.keys(destinationsByDay)
     .map(Number)
     .sort((a, b) => a - b);
+
+  const markupPickInfor = { __html: `${data?.tour.pickinfor}` };
+  const markupInclude = { __html: `${data?.tour.include}` };
   return (
     <div className="w-full rounded-lg border p-6">
       <Accordion collapsible type="single" className="w-full pb-6">
@@ -103,7 +105,7 @@ export default function ServiceDetail({
                           <Card className="overflow-hidden">
                             {destination.imageUrls &&
                               destination.imageUrls[0] && (
-                                <div className="relative h-28 sm:h-40 w-full">
+                                <div className="relative h-28 w-full sm:h-40">
                                   <Image
                                     src={
                                       destination.imageUrls[0] ||
@@ -112,15 +114,14 @@ export default function ServiceDetail({
                                     alt={destination.name}
                                     fill
                                     className="object-cover"
-                                   
                                   />
                                 </div>
                               )}
                             <CardContent className="p-4">
-                              <div className="text-base sm:text-lg font-bold">
+                              <div className="text-base font-bold sm:text-lg">
                                 {destination.name}
                               </div>
-                              <div className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                              <div className="mt-1 text-xs text-muted-foreground sm:text-sm">
                                 {formatTime(destination.startTime)} -{" "}
                                 {formatTime(destination.endTime)}
                               </div>
@@ -154,11 +155,23 @@ export default function ServiceDetail({
           <AccordionTrigger className="text-lg md:text-xl">
             Thông tin tập trung/đón khách
           </AccordionTrigger>
+          <AccordionContent className="px-4">
+            <div
+              className="text-base"
+              dangerouslySetInnerHTML={markupPickInfor}
+            ></div>
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger className="text-lg md:text-xl">
             Quy định
           </AccordionTrigger>
+          <AccordionContent className="px-4">
+            <div
+              className="text-base"
+              dangerouslySetInnerHTML={markupInclude}
+            ></div>
+          </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-4">
           <AccordionTrigger className="text-lg md:text-xl">

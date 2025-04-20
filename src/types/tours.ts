@@ -76,7 +76,7 @@ export interface TourDetail {
     totalRating: number;
     about: string;
     onlyFromCost: number;
-    peakInfor: string;
+    pickinfor: string;
     include: string;
     ticketTypes: TicketType[];
   };
@@ -118,10 +118,9 @@ export interface FeedbackRequest {
 
 export interface RatingRequest {
   tourId: string;
-  userId: string;
   star: number;
   comment: string;
-  images: string[];
+  images: string[] | null;
 }
 
 export interface RatingResponse {

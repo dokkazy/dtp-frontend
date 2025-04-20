@@ -58,6 +58,7 @@ export default function OrderList() {
 
           // Sort orders by tour date (most recent first)
           const sortedOrders = sortOrdersByDate(validOrders);
+          console.log("Sorted Orders:", sortedOrders);
           setOrders(sortedOrders);
 
           const initialOrders = sortedOrders.slice(0, ORDERS_PER_PAGE);
@@ -198,16 +199,12 @@ export default function OrderList() {
 
                       <div className="h-24 w-24 overflow-hidden rounded-md">
                         <Image
-                          src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
+                          src={`${order.tourThumbnail || "/images/quynhonbanner.jpg"}`}
                           alt="Tour Kỳ Co"
                           width={96}
                           height={96}
                           loading="lazy"
                           className="h-full w-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/images/quynhonbanner.jpg";
-                          }}
                         />
                       </div>
                     </div>

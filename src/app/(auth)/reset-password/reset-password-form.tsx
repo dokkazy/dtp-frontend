@@ -27,6 +27,7 @@ import {
   ResetPasswordSchemaType,
 } from "@/schemaValidations/auth.schema";
 import authApiRequest from "@/apiRequests/auth";
+import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
 
 export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -99,59 +100,62 @@ export default function ResetPasswordForm() {
 
   return (
     <Form {...form}>
-      <form
-        noValidate
-        className={cn("flex flex-col gap-6")}
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold text-core">Đặt mật khẩu mới</h1>
-          <p className="text-balance text-sm text-muted-foreground">
-            Vui lòng nhập mật khẩu mới cho tài khoản của bạn
-          </p>
-        </div>
-        <div className="grid gap-6">
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-core">Mật khẩu mới</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" />
-                </FormControl>
-                <FormDescription>
-                  Mật khẩu phải có ít nhất 8 ký tự và bao gồm chữ hoa, chữ
-                  thường, số và ký tự đặc biệt.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
+      <div className="relative">
+        <LoadingOverlay isLoading={loading} />
+        <form
+          noValidate
+          className={cn("flex flex-col gap-6")}
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-2xl font-bold text-core">Đặt mật khẩu mới</h1>
+            <p className="text-balance text-sm text-muted-foreground">
+              Vui lòng nhập mật khẩu mới cho tài khoản của bạn
+            </p>
+          </div>
+          <div className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-core">Mật khẩu mới</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormDescription>
+                    Mật khẩu phải có ít nhất 8 ký tự và bao gồm chữ hoa, chữ
+                    thường, số và ký tự đặc biệt.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-core">Xác nhận mật khẩu</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
+            {!loading && (
+              <Button variant="outline" asChild>
+                <Link href={links.login.href}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Quay lại đăng nhập
+                </Link>
+              </Button>
             )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-core">Xác nhận mật khẩu</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
-          {!loading && (
-            <Button variant="outline" asChild>
-              <Link href={links.login.href}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Quay lại đăng nhập
-              </Link>
-            </Button>
-          )}
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </Form>
   );
 }

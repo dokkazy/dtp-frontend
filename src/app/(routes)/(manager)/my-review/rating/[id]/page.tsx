@@ -4,8 +4,9 @@ import Image from "next/image";
 
 import { orderApiRequest } from "@/apiRequests/order";
 import RatingForm from "@/components/sections/rating/RatingForm";
-import { OrderResponse } from "@/types/order";
+import { OrderDetailResponse } from "@/types/order";
 import { formatDate, getTicketKind } from "@/lib/utils";
+import { HttpError } from "@/lib/http";
 
 async function fetchOrderDetail(orderId: string) {
   const cookieStore = cookies();
@@ -13,11 +14,17 @@ async function fetchOrderDetail(orderId: string) {
   if (!token) {
     throw new Error("No authentication token found");
   }
-  const response = await orderApiRequest.getOrderDetail(orderId, token);
-  if (response.status === 200) {
-    return response.payload;
-  } else {
-    throw new Error("Failed to fetch order detail");
+  try {
+    const response = await orderApiRequest.getOrderDetail(orderId, token);
+    if (response.status === 200) {
+      return response.payload;
+    }
+  } catch (error) {
+    if(error instanceof HttpError) {
+      console.error("Error fetching order detail:", error.payload.message);
+    }else{
+      console.error("Error fetching order detail:", error);
+    }
   }
 }
 
@@ -26,9 +33,9 @@ export default async function RatingPage({
 }: {
   params: { id: string };
 }) {
-  const orderDetail: OrderResponse = await fetchOrderDetail(params.id);
+  const orderDetail: OrderDetailResponse = await fetchOrderDetail(params.id);
   return (
-    <div className="container max-w-full md:max-w-2xl space-y-4 py-6">
+    <div className="container max-w-full space-y-4 py-6 md:max-w-2xl">
       <div className="overflow-hidden rounded-lg border">
         <div className="flex items-start gap-4 p-4">
           <div className="flex-1">
@@ -37,7 +44,7 @@ export default async function RatingPage({
                 <LandPlot className="h-4 w-4" />
               </div>
               <div className="space-y-2">
-                <h3 className="font-medium text-sm sm:text-base text-gray-900">
+                <h3 className="text-sm font-medium text-gray-900 sm:text-base">
                   {orderDetail.tourName}
                 </h3>
                 <p className="text-xs text-gray-500">Tour Ghép</p>
@@ -57,7 +64,7 @@ export default async function RatingPage({
 
           <div className="h-24 w-24 overflow-hidden rounded-md">
             <Image
-              src={`${orderDetail.tourThumnail || "/images/quynhonbanner.jpg"}`}
+              src={`${orderDetail.tourThumbnail || "/images/quynhonbanner.jpg"}`}
               alt=""
               width={96}
               height={96}
@@ -67,7 +74,7 @@ export default async function RatingPage({
           </div>
         </div>
       </div>
-      <RatingForm tourId={params.id} />
+      <RatingForm tourId={orderDetail.tourId} tourScheduleId={orderDetail.tourScheduleId} />
     </div>
   );
 }

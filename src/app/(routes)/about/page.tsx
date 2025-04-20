@@ -206,7 +206,7 @@ export default function About() {
 
                 <div className="mt-8 flex justify-center">
                   <Button variant="core" size="lg" asChild>
-                    <Link href="/tours">Xem tour</Link>
+                    <Link href="/tour">Xem tour</Link>
                   </Button>
                 </div>
               </TabsContent>

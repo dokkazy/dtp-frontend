@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { ChevronRight, MessagesSquare } from "lucide-react";
 import Link from "next/link";
@@ -80,14 +80,14 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
           <div className="flex items-center">
             <span className="text-amber-500">★</span>
             <span className="ml-1 font-semibold">
-              {data?.tourDetail?.tour?.avgStar}
+              {data?.tourDetail?.tour?.avgStar.toFixed(1)}
             </span>
           </div>
           <span className="text-muted-foreground">
             ({data?.tourDetail?.tour?.totalRating} Đánh giá)
           </span>
           <span className="text-muted-foreground">•</span>
-          <span className="text-muted-foreground">10K+ Đã đặt</span>
+          <span className="text-muted-foreground">10+ Đã đặt</span>
         </div>
         {data != null && <GallerySection data={data} />}
         <div className="container min-w-full">
@@ -179,7 +179,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                   Chi tiết gói dịch vụ
                 </h2>
                 {data != null && (
-                  <ServiceDetail data={data?.tourDetail?.tourDestinations} />
+                  <ServiceDetail data={data?.tourDetail} />
                 )}
               </div>
               <div className="">

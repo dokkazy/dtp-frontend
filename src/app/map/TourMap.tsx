@@ -38,7 +38,7 @@ const mapStyles = {
   standard: "https://demotiles.maplibre.org/style.json",
 };
 
-export default function TourMap() {
+export default function MapPage() {
   const router = useRouter();
   const [tours, setTours] = useState<TourList>([]);
   const [loading, setLoading] = useState(false);
