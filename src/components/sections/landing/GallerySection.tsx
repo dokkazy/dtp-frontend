@@ -1,5 +1,8 @@
-import Masonry from "@/components/animation/Mansory";
+import dynamic from "next/dynamic";
 
+const Masonry = dynamic(() => import("@/components/animation/Mansory"), {
+  ssr: false,
+});
 const data = [
   { id: 1, image: "/images/gallery/landing1.png", height: 500 },
   { id: 2, image: "/images/gallery/landing2.jpeg", height: 400 },
@@ -15,7 +18,10 @@ const data = [
 
 export default function GallerySection() {
   return (
-    <section id="home-gallery" className="mx-auto mb-16 max-w-2xl px-4 sm:pb-6 lg:max-w-6xl lg:px-8">
+    <section
+      id="home-gallery"
+      className="mx-auto mb-16 max-w-2xl px-4 sm:pb-6 lg:max-w-6xl lg:px-8"
+    >
       <h1 className="mb-8 text-2xl font-extrabold tracking-tight text-gray-900 md:text-3xl lg:text-6xl">
         Hình ảnh của du khách
       </h1>

@@ -2,7 +2,7 @@ import { MapPin, Sun, Coffee } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { TourActivity, TourDestination, TourDetail } from "@/types/tours";
-import { formatTime } from "@/lib/utils";
+import { formatTime } from "@/lib/client/utils";
 import {
   Accordion,
   AccordionItem,

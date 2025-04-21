@@ -17,7 +17,7 @@ import {
 import { links } from "@/configs/routes";
 import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/providers/CartProvider";
-import { formatCurrency, formatPrice, getTicketKind, isDateInPast } from "@/lib/utils";
+import { formatCurrency, formatPrice, getTicketKind, isDateInPast } from "@/lib/client/utils";
 import { useSyncCartAcrossTabs } from "@/hooks/useSyncCartAcrossTabs";
 import { Input } from "@/components/ui/input";
 

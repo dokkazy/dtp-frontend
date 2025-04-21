@@ -11,6 +11,7 @@ const privatePath = [
   links.review.href,
   links.shoppingCart.href,
   links.rating.href,
+  links.account.href,
 ];
 
 const authPath = [links.login.href, links.register.href];

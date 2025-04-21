@@ -151,9 +151,9 @@ export default function MapPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       <div
-        className={`absolute left-10 top-1/2 z-10 flex w-full -translate-y-1/2 transform transition-all duration-300 ease-in-out md:w-auto ${isSidebarVisible ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-full opacity-0"}`}
+        className={`absolute top-1/2 z-10 left-0 flex max-w-full -translate-y-1/2 sm:right-10 transform transition-all duration-300 ease-in-out sm:left-10 md:w-auto ${isSidebarVisible ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-full opacity-0"}`}
       >
-        <div className="h-[calc(100vh-8rem)] w-full min-w-[400px] overflow-hidden rounded-lg shadow-lg lg:max-w-[450px]">
+        <div className="h-[calc(100vh-8rem)] w-full overflow-hidden rounded-lg shadow-lg sm:min-w-[400px] sm:w-[550px]">
           <div className="relative h-32 w-full">
             <div className="absolute inset-0">
               <Image
@@ -173,16 +173,15 @@ export default function MapPage() {
           </div>
           {tours.length > 0 ? (
             <ScrollArea className="h-full bg-white pb-32">
-              {tours.map((tour) => (
-                <div
-                  key={tour.id}
-                  className="cursor-pointer border p-3 hover:bg-secondary/20"
-                  onClick={() => {
-                    handleTourFocus(tour);
-                  }}
-                >
-                  <div className="flex">
-                    <div className="aspect-square h-full w-1/4 overflow-hidden">
+                {tours.map((tour) => (
+                  <div
+                    key={tour.id}
+                    className="flex cursor-pointer overflow-hidden border p-3 hover:bg-secondary/20"
+                    onClick={() => {
+                      handleTourFocus(tour);
+                    }}
+                  >
+                    <div className="aspect-square h-full w-1/4">
                       <Image
                         src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                         alt="quynhonbanner"
@@ -212,13 +211,10 @@ export default function MapPage() {
                         <span className="mx-1 text-gray-400">•</span>
                         <span className="text-gray-600">100+ Đã đặt</span>
                       </div>
-                      <p className="text-sm">
-                        {formatPrice(tour.onlyFromCost)}
-                      </p>
+                      <p className="text-sm">{formatPrice(tour.onlyFromCost)}</p>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </ScrollArea>
           ) : (
             <>

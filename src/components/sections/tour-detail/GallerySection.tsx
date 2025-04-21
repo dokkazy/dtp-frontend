@@ -138,7 +138,7 @@ export default function GallerySection({
           </div>
         </CardContent>
       </Card>
-      {imageGallery.length > 0 && (
+      {imageGallery.length > 0 && showGallery === true && (
         <ImageModal
           isOpen={showGallery}
           onClose={handleCloseModal}

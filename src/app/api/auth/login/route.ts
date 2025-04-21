@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import authApiRequest from "@/apiRequests/auth";
 import { HttpError } from "@/lib/http";
-import { getExpirationDateFromToken, getMaxAgeFromToken } from "@/lib/utils";
+import { getExpirationDateFromToken, getMaxAgeFromToken } from "@/lib/server/utils";
 import { LoginResponseSchemaType } from "@/schemaValidations/auth.schema";
 
 export async function POST(request: Request) {

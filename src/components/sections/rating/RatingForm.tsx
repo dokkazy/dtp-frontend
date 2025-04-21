@@ -165,8 +165,6 @@ export default function RatingForm({
       } else {
         toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -207,8 +205,6 @@ export default function RatingForm({
         console.error("Error uploading rating image:", error);
         toast.error("Failed to upload rating image");
         return [];
-      } finally {
-        setIsSubmitting(false);
       }
     }
   };
@@ -226,19 +222,22 @@ export default function RatingForm({
       tourScheduleId: tourScheduleId,
       description: data.feedback || "không có",
     };
-    handleImageUpload().then((imageUrls) => {
-      handleFeedback(feedbackData);
-      if (imageUrls !== undefined && imageUrls.length > 0) {
-        ratingData.images = imageUrls;
-        handleRating(ratingData);
-      } else {
-        toast.error(
-          "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
-        );
-        handleRating(ratingData);
-      }
-      
-    });
+    handleImageUpload()
+      .then((imageUrls) => {
+        handleFeedback(feedbackData);
+        if (imageUrls !== undefined && imageUrls.length > 0) {
+          ratingData.images = imageUrls;
+          handleRating(ratingData);
+        } else {
+          toast.error(
+            "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
+          );
+          handleRating(ratingData);
+        }
+      })
+      .then(() => {
+        setIsSubmitting(false);
+      });
   }
 
   return (

@@ -22,7 +22,7 @@ export default function RecommendedTour() {
   const pathname = usePathname();
   const lagSegment = pathname.split("/").pop();
   const router = useRouter();
-  const [data, setData] = useState<TourList | []>([]);
+  const [data, setData] = useState<TourList>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

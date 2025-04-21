@@ -99,8 +99,6 @@ export default async function TourDetailPage({ params }: Props) {
     };
   }
 
-  console.log("TourDetailPage data", data?.tourDetail?.tour);
-
   if (data === null) {
     return (
       <div className="mx-auto mt-24 max-w-6xl px-4">

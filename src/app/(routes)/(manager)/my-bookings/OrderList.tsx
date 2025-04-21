@@ -6,12 +6,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { OrderResponse, OrderStatus } from "@/types/order";
-import {
-  formatDate,
-  formatPrice,
-  getOrderStatus,
-  getTicketKind,
-} from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { formatPrice, getOrderStatus, getTicketKind } from "@/lib/client/utils";
 import { Button } from "@/components/ui/button";
 import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -92,7 +88,9 @@ export default function OrderList() {
         <div className="bg-white p-2">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Danh sách tour đã đặt
+              </h2>
               <ChevronDown className="h-5 w-5 text-gray-400" />
             </div>
             {/* <Skeleton className="h-6 w-40" /> */}
@@ -128,7 +126,9 @@ export default function OrderList() {
       <div className="bg-white p-2">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Danh sách tour đã đặt
+            </h2>
             <ChevronDown className="h-5 w-5 text-gray-400" />
           </div>
         </div>

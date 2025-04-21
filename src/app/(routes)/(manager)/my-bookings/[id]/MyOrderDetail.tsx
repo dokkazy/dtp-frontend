@@ -6,12 +6,13 @@ import { toast } from "sonner";
 
 import { orderApiRequest } from "@/apiRequests/order";
 import { OrderDetailResponse, OrderStatus } from "@/types/order";
+import { formatDate } from "@/lib/utils";
 import {
-  formatDate,
+  
   formatDateTime,
   formatPrice,
   getTicketKind,
-} from "@/lib/utils";
+} from "@/lib/client/utils";
 import Spinner from "@/components/common/loading/Spinner";
 import { HttpError } from "@/lib/http";
 import { Button } from "@/components/ui/button";

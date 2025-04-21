@@ -120,7 +120,7 @@ export interface RatingRequest {
   tourId: string;
   star: number;
   comment: string;
-  images: string[] | null;
+  images: string[];
 }
 
 export interface RatingResponse {
@@ -131,5 +131,5 @@ export interface RatingResponse {
   userEmail: string;
   star: number;
   comment: string;
-  images: string[] | null;
+  images: string[];
 }

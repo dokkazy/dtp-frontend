@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "rimraf .next && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -13,7 +13,7 @@
   "dependencies": {
     "@hookform/resolvers": "^4.1.2",
     "@maplibre/maplibre-gl-geocoder": "^1.8.0",
-    "@next/bundle-analyzer": "^14.2.24",
+    "@next/bundle-analyzer": "^14.2.28",
     "@next/third-parties": "^15.2.4",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -45,7 +45,6 @@
     "embla-carousel": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.4.7",
-    "googleapis": "^148.0.0",
     "lucide-react": "^0.475.0",
     "motion": "^12.7.4",
     "next": "14.2.26",
@@ -79,6 +78,7 @@
     "postcss": "^8",
     "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",

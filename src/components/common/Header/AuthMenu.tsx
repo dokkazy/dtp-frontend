@@ -30,6 +30,7 @@ import { links } from "@/configs/routes";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { AUTH_SYNC_KEY } from "@/components/common/UserInitializer";
 import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { refreshToken, sessionToken } from "@/lib/http";
 // Define menu types for better type safety
 type MenuItem = {
   id: string;
@@ -52,6 +53,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
   async function handleLogOut() {
     setOpen(false);
     setIsLoggingOut(true);
+    document.body.style.overflow = "hidden";
     try {
       const response: any =
         await authApiRequest.logoutFromNextClientToNextServer();
@@ -63,12 +65,16 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       toast.success(response.payload.message);
       localStorage.removeItem(AUTH_SYNC_KEY);
       location.href = links.home.href;
+      sessionToken.value = "";
+      refreshToken.value = "";
     } catch (error) {
       console.error("Logout error:", error);
       handleErrorApi(error);
       // If the error is due to an expired session token, redirect to login
       authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
         setUser(null);
+        sessionToken.value = "";
+        refreshToken.value = "";
         localStorage.removeItem(AUTH_SYNC_KEY);
         setTimeout(() => {
           window.location.replace(
@@ -79,8 +85,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
     } finally {
       // In case we need to reset the loading state for any reason
       // Note: this might not execute if we navigate away
-      setIsLoggingOut(false);
-    }
+      setIsLoggingOut(false);    }
   }
 
   // Get current menu based on navigation stack

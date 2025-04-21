@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { ChevronRight, MessagesSquare } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import {
   Breadcrumb,
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import ServiceSection from "./ServiceSection";
 import {
   DialogContent,
   DialogHeader,
@@ -23,10 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import GallerySection from "./GallerySection";
-import RecommendedTour from "./RecommendedTour";
 import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
-import ServiceDetail from "./ServiceDetail";
 import { formatPrice } from "@/lib/utils";
 import {
   Drawer,
@@ -34,7 +31,23 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import RatingSection from "./RatingSection";
+// dynamic import for better performance
+const RatingSection = dynamic(() => import("./RatingSection"), {
+  ssr: false,
+});
+const ServiceSection = dynamic(() => import("./ServiceSection"), {
+  ssr: false,
+});
+const GallerySection = dynamic(() => import("./GallerySection"), {
+  ssr: false,
+});
+const RecommendedTour = dynamic(() => import("./RecommendedTour"), {
+  ssr: false,
+});
+const ServiceDetail = dynamic(() => import("./ServiceDetail"), {
+  ssr: false,
+});
+
 
 export default function TourDetail({ data }: { data: TourDetailType | null }) {
   const markup = { __html: `${data?.tourDetail?.tour?.about}` };

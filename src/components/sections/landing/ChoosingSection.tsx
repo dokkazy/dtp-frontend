@@ -1,8 +1,14 @@
 "use client";
-import { BorderTrail } from "@/components/motion-primitives/border-trail";
+// import { BorderTrail } from "@/components/motion-primitives/border-trail";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+const BorderTrail = dynamic(() =>
+  import("@/components/motion-primitives/border-trail").then(
+    (mod) => mod.BorderTrail,
+  ),
+);
 const chooses = [
   {
     src: "/images/guarantee.png",
@@ -77,7 +83,7 @@ export default function ChoosingSection() {
                     src={choose.src}
                     width={50}
                     height={50}
-                    priority
+                    loading="lazy"
                     alt={choose.alt}
                   />
                   <h3 className="text-xs font-bold sm:text-sm md:text-lg">

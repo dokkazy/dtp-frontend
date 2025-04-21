@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { tourApiRequest } from "@/apiRequests/tour";
-import { formatDateToYYYYMMDD } from "@/lib/utils";
+import { formatDateToYYYYMMDD } from "@/lib/server/utils";
 import { TourSortBy } from "@/types/tours";
 import { HttpError } from "@/lib/http";
 
