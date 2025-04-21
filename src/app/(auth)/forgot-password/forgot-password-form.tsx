@@ -24,6 +24,10 @@ import {
   forgotPasswordSchema,
   ForgotPasswordSchemaType,
 } from "@/schemaValidations/auth.schema";
+import envConfig from "@/configs/envConfig";
+import authApiRequest from "@/apiRequests/auth";
+import { HttpError } from "@/lib/http";
+import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
 
 export default function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -40,23 +44,26 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (values: ForgotPasswordSchemaType) => {
     try {
       setLoading(true);
-      // Call your reset password API
-      // const response = await authApiRequest.requestPasswordReset(values.email);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Save the email to display in the success message
+      const data = {
+        email: values.email,
+        confirmUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.resetPassword.href}`,
+      };
+      const response = await authApiRequest.forgotPassword(data);
+      if (response.status !== 200) {
+        console.log("Error response:", response);
+      }
       setUserEmail(values.email);
-
-      // Show success UI
       setIsSubmitted(true);
       toast.success("Email đặt lại mật khẩu đã được gửi");
     } catch (error: any) {
-      console.error("Error requesting password reset:", error);
-      toast.error(
-        error?.payload?.message || "Không thể gửi email đặt lại mật khẩu",
-      );
+      if (error instanceof HttpError) {
+        console.error("Error requesting password reset:", error);
+        toast.error(
+          error?.payload?.message || "Không thể gửi email đặt lại mật khẩu",
+        );
+      } else {
+        toast.error("Có lỗi xảy ra trong quá trình gửi email đặt lại mật khẩu");
+      }
     } finally {
       setLoading(false);
     }
@@ -98,45 +105,53 @@ export default function ForgotPasswordForm() {
 
   return (
     <Form {...form}>
-      <form
-        noValidate
-        className={cn("flex flex-col gap-6")}
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold text-core">Đặt lại mật khẩu</h1>
-          <p className="text-balance text-sm text-muted-foreground">
-            Nhập email của bạn và chúng tôi sẽ gửi liên kết để đặt lại mật khẩu
-          </p>
-        </div>
-        <div className="grid gap-6">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-core">Email</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="email"
-                    placeholder="name@example.com"
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+      <div className="relative">
+        <LoadingOverlay isLoading={loading} message="Đang gửi email..." />
+        <form
+          noValidate
+          className={cn("flex flex-col gap-6")}
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-2xl font-bold text-core">Đặt lại mật khẩu</h1>
+            <p className="text-balance text-sm text-muted-foreground">
+              Nhập email của bạn và chúng tôi sẽ gửi liên kết để đặt lại mật
+              khẩu
+            </p>
+          </div>
+          <div className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-core">Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="name@example.com"
+                      autoComplete="email"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <LoadingButton pending={loading}>
+              Gửi liên kết đặt lại
+            </LoadingButton>
+            {!loading && (
+              <Button variant="outline" asChild>
+                <Link href={links.login.href}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Quay lại đăng nhập
+                </Link>
+              </Button>
             )}
-          />
-          <LoadingButton pending={loading}>Gửi liên kết đặt lại</LoadingButton>
-          <Button variant="outline" asChild>
-            <Link href={links.login.href}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Quay lại đăng nhập
-            </Link>
-          </Button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </Form>
   );
 }

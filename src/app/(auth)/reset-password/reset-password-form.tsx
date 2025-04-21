@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -22,14 +22,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import LoadingButton from "@/components/common/loading/LoadingButton";
-import { resetPasswordSchema, ResetPasswordSchemaType } from "@/schemaValidations/auth.schema";
-
-
+import {
+  resetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/schemaValidations/auth.schema";
+import authApiRequest from "@/apiRequests/auth";
+import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
 
 export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const confirmationToken = searchParams.get("confirmationToken") || null;
 
   const form = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(resetPasswordSchema),
@@ -40,18 +44,23 @@ export default function ResetPasswordForm() {
   });
 
   const onSubmit = async (values: ResetPasswordSchemaType) => {
+    if (!confirmationToken) {
+      console.error("No confirmation token provided in URL.");
+      return;
+    }
     try {
       setLoading(true);
-      // Call your reset password API
-      // const response = await authApiRequest.resetPassword({
-      //   token,
-      //   newPassword: values.password,
-      // });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Show success UI
+      const data = {
+        confirmationToken: decodeURIComponent(
+          confirmationToken.replace(/ /g, "+"),
+        ),
+        newPassword: values.password,
+      };
+      const response = await authApiRequest.resetPassword(data);
+      if (response.status !== 200) {
+        console.log("Error response:", response);
+        toast.error("Không thể đặt lại mật khẩu. Vui lòng thử lại sau.");
+      }
       setIsSubmitted(true);
       toast.success("Mật khẩu đã được đặt lại thành công");
     } catch (error: any) {
@@ -91,56 +100,62 @@ export default function ResetPasswordForm() {
 
   return (
     <Form {...form}>
-      <form
-        noValidate
-        className={cn("flex flex-col gap-6")}
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold text-core">Đặt mật khẩu mới</h1>
-          <p className="text-balance text-sm text-muted-foreground">
-            Vui lòng nhập mật khẩu mới cho tài khoản của bạn
-          </p>
-        </div>
-        <div className="grid gap-6">
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-core">Mật khẩu mới</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" />
-                </FormControl>
-                <FormDescription>
-                  Mật khẩu phải có ít nhất 8 ký tự
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
+      <div className="relative">
+        <LoadingOverlay isLoading={loading} />
+        <form
+          noValidate
+          className={cn("flex flex-col gap-6")}
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-2xl font-bold text-core">Đặt mật khẩu mới</h1>
+            <p className="text-balance text-sm text-muted-foreground">
+              Vui lòng nhập mật khẩu mới cho tài khoản của bạn
+            </p>
+          </div>
+          <div className="grid gap-6">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-core">Mật khẩu mới</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormDescription>
+                    Mật khẩu phải có ít nhất 8 ký tự và bao gồm chữ hoa, chữ
+                    thường, số và ký tự đặc biệt.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-core">Xác nhận mật khẩu</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
+            {!loading && (
+              <Button variant="outline" asChild>
+                <Link href={links.login.href}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Quay lại đăng nhập
+                </Link>
+              </Button>
             )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-core">Xác nhận mật khẩu</FormLabel>
-                <FormControl>
-                  <Input {...field} type="password" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
-          <Button variant="outline" asChild>
-            <Link href={links.login.href}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Quay lại đăng nhập
-            </Link>
-          </Button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </Form>
   );
 }

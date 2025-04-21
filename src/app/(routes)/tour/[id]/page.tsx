@@ -98,7 +98,6 @@ export default async function TourDetailPage({ params }: Props) {
       tourSchedule: ticketSchedule || [],
     };
   }
-  console.log("data", data);
 
   if (data === null) {
     return (

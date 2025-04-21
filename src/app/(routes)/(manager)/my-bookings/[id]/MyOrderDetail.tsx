@@ -6,12 +6,13 @@ import { toast } from "sonner";
 
 import { orderApiRequest } from "@/apiRequests/order";
 import { OrderDetailResponse, OrderStatus } from "@/types/order";
+import { formatDate } from "@/lib/utils";
 import {
-  formatDate,
+  
   formatDateTime,
   formatPrice,
   getTicketKind,
-} from "@/lib/utils";
+} from "@/lib/client/utils";
 import Spinner from "@/components/common/loading/Spinner";
 import { HttpError } from "@/lib/http";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,7 @@ export default function MyOrderDetail({ id }: { id: string }) {
         return;
       }
       toast.success("Hủy thanh toán thành công");
+      setLoading(true);
       window.location.reload();
     } catch (error) {
       if (error instanceof HttpError) {
@@ -234,17 +236,55 @@ export default function MyOrderDetail({ id }: { id: string }) {
                   <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
                     <li>
                       <p>
-                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong vòng 12h trước khi tour bắt đầu.
+                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong
+                        vòng 12h trước khi tour bắt đầu.
                       </p>
                     </li>
                     <li>
                       <p>
-                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ được hoàn tiền 50% giá trị tour.
+                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ
+                        được hoàn tiền 50% giá trị tour.
                       </p>
                     </li>
                     <li>
                       <p>
-                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước 3 ngày trước khi tour bắt đầu.
+                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước
+                        3 ngày trước khi tour bắt đầu.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+          {orderDetail?.status === OrderStatus.CANCELLED && (
+            <div className="rounded-lg bg-white p-6 shadow">
+              <div className="flex flex-wrap items-center gap-4">
+                <Button
+                  disabled
+                  className="flex items-center justify-center gap-2 p-6 sm:text-lg"
+                  variant="outline"
+                >
+                  Tour đã hủy
+                </Button>
+                <div>
+                  <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
+                    <li>
+                      <p>
+                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong
+                        vòng 12h trước khi tour bắt đầu.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ
+                        được hoàn tiền 50% giá trị tour.
+                      </p>
+                    </li>
+                    <li>
+                      <p>
+                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước
+                        3 ngày trước khi tour bắt đầu.
                       </p>
                     </li>
                   </ul>
@@ -330,7 +370,7 @@ export default function MyOrderDetail({ id }: { id: string }) {
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-base">
-                <span className="text-gray-600">Số đơn hàng:</span>
+                <span className="text-gray-600">Tour code:</span>
                 <span className="font-medium">{orderDetail?.code}</span>
               </div>
               <div className="flex justify-between text-base">

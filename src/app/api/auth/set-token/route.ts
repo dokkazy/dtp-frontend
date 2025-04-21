@@ -1,4 +1,4 @@
-import { getExpirationDateFromToken, getMaxAgeFromToken } from "@/lib/utils";
+import { getExpirationDateFromToken, getMaxAgeFromToken } from "@/lib/server/utils";
 
 export type SetTokenResponseType = {
   success: boolean;

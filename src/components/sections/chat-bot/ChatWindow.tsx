@@ -34,7 +34,7 @@ export function ChatWindow({
 }: ChatWindowProps) {
   return (
     <div
-      className={`fixed z-40 overflow-hidden rounded-lg border bg-background shadow-lg ${isFullPage ? "inset-4 sm:inset-8 md:inset-16 lg:inset-32" : "bottom-24 right-6 h-[500px] w-[90vw] sm:w-[400px]"} transition-all duration-300 ease-in-out`}
+      className={`fixed z-[9999991] overflow-hidden rounded-lg border bg-background shadow-lg ${isFullPage ? "inset-4 sm:inset-8 md:inset-16 lg:inset-32" : "bottom-24 right-6 h-[500px] w-[90vw] sm:w-[400px]"} transition-all duration-300 ease-in-out`}
     >
       <ChatInterface
         messages={messages}

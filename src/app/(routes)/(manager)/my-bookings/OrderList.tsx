@@ -6,12 +6,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { OrderResponse, OrderStatus } from "@/types/order";
-import {
-  formatDate,
-  formatPrice,
-  getOrderStatus,
-  getTicketKind,
-} from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { formatPrice, getOrderStatus, getTicketKind } from "@/lib/client/utils";
 import { Button } from "@/components/ui/button";
 import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -58,6 +54,7 @@ export default function OrderList() {
 
           // Sort orders by tour date (most recent first)
           const sortedOrders = sortOrdersByDate(validOrders);
+          console.log("Sorted Orders:", sortedOrders);
           setOrders(sortedOrders);
 
           const initialOrders = sortedOrders.slice(0, ORDERS_PER_PAGE);
@@ -91,7 +88,9 @@ export default function OrderList() {
         <div className="bg-white p-2">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-gray-800">Đơn hàng</h2>
+              <h2 className="text-lg font-semibold text-gray-800">
+                Danh sách tour đã đặt
+              </h2>
               <ChevronDown className="h-5 w-5 text-gray-400" />
             </div>
             {/* <Skeleton className="h-6 w-40" /> */}
@@ -127,7 +126,9 @@ export default function OrderList() {
       <div className="bg-white p-2">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold text-gray-800">Danh sách tour đã đặt</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Danh sách tour đã đặt
+            </h2>
             <ChevronDown className="h-5 w-5 text-gray-400" />
           </div>
         </div>
@@ -198,16 +199,12 @@ export default function OrderList() {
 
                       <div className="h-24 w-24 overflow-hidden rounded-md">
                         <Image
-                          src={`${order.tourThumnail || "/images/quynhonbanner.jpg"}`}
+                          src={`${order.tourThumbnail || "/images/quynhonbanner.jpg"}`}
                           alt="Tour Kỳ Co"
                           width={96}
                           height={96}
                           loading="lazy"
                           className="h-full w-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/images/quynhonbanner.jpg";
-                          }}
                         />
                       </div>
                     </div>
@@ -224,7 +221,7 @@ export default function OrderList() {
             </>
           ) : (
             <div className="py-8 text-center text-gray-500">
-              <p>Không có đơn hàng nào.</p>
+              <p>Chưa có tour nào.</p>
             </div>
           )}
         </div>

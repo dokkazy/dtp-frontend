@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { HttpError } from "@/lib/http";
+import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
 
 export default function Profile() {
   const { user, setUser } = useAuthContext();
@@ -157,96 +158,99 @@ export default function Profile() {
   };
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <Form {...form}>
-          <form
-            noValidate
-            className={"flex flex-col gap-6"}
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="flex flex-col gap-2">
-              <h1 className="text-2xl font-bold">Thông tin cá nhân</h1>
-              <p className="text-sm text-muted-foreground">
-                Cập nhật thông tin cá nhân của bạn
-              </p>
-            </div>
-            <div className="grid gap-6">
-              <FormField
-                control={form.control}
-                name="userName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input {...field} disabled />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <div className="relative">
+      <LoadingOverlay isLoading={loading} />
+      <Card>
+        <CardContent className="p-6">
+          <Form {...form}>
+            <form
+              noValidate
+              className={"flex flex-col gap-6"}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <div className="flex flex-col gap-2">
+                <h1 className="text-2xl font-bold">Thông tin cá nhân</h1>
+                <p className="text-sm text-muted-foreground">
+                  Cập nhật thông tin cá nhân của bạn
+                </p>
+              </div>
+              <div className="grid gap-6">
+                <FormField
+                  control={form.control}
+                  name="userName"
+                  render={({ field }) => (
+                    <FormItem aria-disabled={true}>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input {...field} disabled />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Họ và tên</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Họ và tên</FormLabel>
+                      <FormControl>
+                        <Input disabled={loading} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} type="email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input disabled={loading} {...field} type="email" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Số điện thoại</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormControl>
+                        <Input disabled={loading} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Địa chỉ</FormLabel>
-                    <FormControl>
-                      <Input disabled={loading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Địa chỉ</FormLabel>
+                      <FormControl>
+                        <Input disabled={loading} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <LoadingButton pending={loading}>Lưu thay đổi</LoadingButton>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                <LoadingButton pending={loading}>Lưu thay đổi</LoadingButton>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

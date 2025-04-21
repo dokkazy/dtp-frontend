@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { ChevronRight, MessagesSquare } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import {
   Breadcrumb,
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import ServiceSection from "./ServiceSection";
 import {
   DialogContent,
   DialogHeader,
@@ -23,10 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import GallerySection from "./GallerySection";
-import RecommendedTour from "./RecommendedTour";
 import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
-import ServiceDetail from "@/components/sections/tour-detail/ServiceDetail";
 import { formatPrice } from "@/lib/utils";
 import {
   Drawer,
@@ -34,6 +31,23 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+// dynamic import for better performance
+const RatingSection = dynamic(() => import("./RatingSection"), {
+  ssr: false,
+});
+const ServiceSection = dynamic(() => import("./ServiceSection"), {
+  ssr: false,
+});
+const GallerySection = dynamic(() => import("./GallerySection"), {
+  ssr: false,
+});
+const RecommendedTour = dynamic(() => import("./RecommendedTour"), {
+  ssr: false,
+});
+const ServiceDetail = dynamic(() => import("./ServiceDetail"), {
+  ssr: false,
+});
+
 
 export default function TourDetail({ data }: { data: TourDetailType | null }) {
   const markup = { __html: `${data?.tourDetail?.tour?.about}` };
@@ -68,9 +82,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>
-                {data?.tourDetail?.tour?.title}
-              </BreadcrumbPage>
+              <BreadcrumbPage>{data?.tourDetail?.tour?.title}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -81,23 +93,23 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
           <div className="flex items-center">
             <span className="text-amber-500">★</span>
             <span className="ml-1 font-semibold">
-              {data?.tourDetail?.tour?.avgStar}
+              {data?.tourDetail?.tour?.avgStar.toFixed(1)}
             </span>
           </div>
           <span className="text-muted-foreground">
             ({data?.tourDetail?.tour?.totalRating} Đánh giá)
           </span>
           <span className="text-muted-foreground">•</span>
-          <span className="text-muted-foreground">10K+ Đã đặt</span>
+          <span className="text-muted-foreground">10+ Đã đặt</span>
         </div>
         {data != null && <GallerySection data={data} />}
         <div className="container min-w-full">
           <div className="grid grid-cols-12 gap-6">
             {/* Tour Description */}
-            <div className="max-w-full space-y-8 col-span-full md:col-span-8 md:space-y-16">
+            <div className="col-span-full max-w-full space-y-8 md:col-span-8 md:space-y-16">
               <Card>
                 <CardContent className="relative h-32 space-y-4 overflow-hidden p-6 md:h-48">
-                  <p className="text-sm md:text-base overflow-hidden">
+                  <p className="overflow-hidden text-sm md:text-base">
                     {data?.tourDetail?.tour?.description}
                   </p>
                   <div className="absolute bottom-0 left-0 right-0 flex h-[52px] items-center justify-between bg-gradient-to-t from-white to-transparent p-6 backdrop-blur-[6px] hover:underline">
@@ -135,7 +147,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                     </Drawer>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <div className="hidden md:flex items-center">
+                        <div className="hidden items-center md:flex">
                           <span className="text-sm font-semibold md:text-lg">
                             Xem thêm
                           </span>
@@ -180,7 +192,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                   Chi tiết gói dịch vụ
                 </h2>
                 {data != null && (
-                  <ServiceDetail data={data?.tourDetail?.tourDestinations} />
+                  <ServiceDetail data={data?.tourDetail} />
                 )}
               </div>
               <div className="">
@@ -212,11 +224,12 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
                   Đánh giá
                 </h2>
+                <RatingSection />
               </div>
             </div>
 
             {/* Tour price */}
-            <div className="hidden md:block md:col-span-4">
+            <div className="hidden md:col-span-4 md:block">
               <Card className="h-[calc(100vh - 1rem)] sticky top-20 h-fit">
                 <CardContent className="space-y-4 px-6 py-6">
                   <h1 className="text-lg font-semibold md:text-2xl">

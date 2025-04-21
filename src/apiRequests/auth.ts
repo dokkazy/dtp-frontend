@@ -15,7 +15,12 @@ const authApiRequest = {
     http.post<LoginResponseSchemaType>(apiEndpoint.login, body),
   register: (body: Omit<RegisterSchemaType, "confirmPassword">) =>
     http.post<RegisterResponseSchemaType>(apiEndpoint.register, body),
-  confirmationAccount: (body:{confirmationToken: string}) => http.post(apiEndpoint.confirmation, body),
+  confirmationAccount: (body: { confirmationToken: string }) =>
+    http.post(apiEndpoint.confirmation, body),
+  forgotPassword: (body: { email: string; confirmUrl: string }) =>
+    http.post(apiEndpoint.fotgotPassword, body),
+  resetPassword: (body: { confirmationToken: string; newPassword: string }) =>
+    http.post(apiEndpoint.resetPassword, body),
 
   //next server to server
   logoutFromNextServerToServer: (sessionToken: string) =>

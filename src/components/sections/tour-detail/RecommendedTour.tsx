@@ -22,7 +22,7 @@ export default function RecommendedTour() {
   const pathname = usePathname();
   const lagSegment = pathname.split("/").pop();
   const router = useRouter();
-  const [data, setData] = useState<TourList | []>([]);
+  const [data, setData] = useState<TourList>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function RecommendedTour() {
               <div className="group relative transition-transform duration-300 ease-in-out hover:scale-105">
                 <div className="aspect-square h-32 w-full overflow-hidden rounded-xl bg-gray-200">
                   <Image
-                    src={tour.thumbnailUrl}
+                    src={tour.thumbnailUrl || "/images/binhdinhbanner.jpg"}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     width={300}
@@ -190,7 +190,7 @@ export default function RecommendedTour() {
                 <div className="group relative rounded-xl border transition-transform duration-300 ease-in-out hover:scale-105">
                   <div className="aspect-square h-40 w-full overflow-hidden rounded-t-xl bg-gray-200">
                     <Image
-                      src={tour.thumbnailUrl}
+                      src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                       alt=""
                       className="h-full w-full object-cover object-center"
                       width={300}

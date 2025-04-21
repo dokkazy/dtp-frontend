@@ -96,7 +96,7 @@ export default async function ActivitySection() {
                 >
                   <div className="aspect-square w-full overflow-hidden rounded-t-xl bg-gray-200 lg:h-80">
                     <Image
-                      src={activity.imageUrl}
+                      src={activity.imageUrl || "/images/quynhonbanner.jpg"}
                       alt=""
                       className="h-full w-full object-cover object-center"
                       width={300}
@@ -112,7 +112,7 @@ export default async function ActivitySection() {
                   </div>
                   <CardContent>
                     <div className="flex flex-col gap-2">
-                      <p className="text-lg font-semibold md:text-sm overflow-hidden">
+                      <p className="overflow-hidden text-lg font-semibold md:text-sm">
                         {activity.title}
                       </p>
                       <p className="text-sm text-gray-400 line-through md:text-xs">
@@ -147,11 +147,15 @@ export default async function ActivitySection() {
           </>
         ) : (
           activities.map((activity) => (
-            <Link href={`${links.tour.href}/${activity.id}`} key={activity.id}>
+            <Link
+              prefetch={false}
+              href={`${links.tour.href}/${activity.id}`}
+              key={activity.id}
+            >
               <Card className="group relative transition-transform duration-300 ease-in-out hover:scale-105">
                 <div className="aspect-square w-full overflow-hidden rounded-t-xl bg-gray-200 lg:h-80">
                   <Image
-                    src={activity.thumbnailUrl}
+                    src={activity.thumbnailUrl || "/images/quynhonbanner.jpg"}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     width={300}
@@ -167,7 +171,7 @@ export default async function ActivitySection() {
                 </div>
                 <CardContent>
                   <div className="flex flex-col gap-2">
-                    <p className="text-lg font-semibold md:text-sm line-clamp-1">
+                    <p className="line-clamp-1 text-lg font-semibold md:text-sm">
                       {activity.title}
                     </p>
                     <p className="text-sm text-gray-400 line-through md:text-xs">

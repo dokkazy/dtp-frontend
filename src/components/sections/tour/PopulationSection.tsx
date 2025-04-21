@@ -122,7 +122,7 @@ export default async function PopulationSection() {
               <Card className="group relative transition-transform duration-300 ease-in-out hover:scale-105 md:min-w-[250px] md:max-w-[300px]">
                 <div className="aspect-square h-44 w-full overflow-hidden rounded-t-xl bg-gray-200">
                   <Image
-                    src={tour.thumbnailUrl}
+                    src={tour.thumbnailUrl || "/images/quynhonbanner.jpg"}
                     alt=""
                     className="h-full w-full object-cover object-center"
                     width={300}
@@ -163,7 +163,7 @@ export default async function PopulationSection() {
               key={tour.id}
               className="basis-1/3 p-1 pl-1 sm:p-2 md:p-4"
             >
-              <Link href={`${links.tour.href}/${tour.id}`}>
+              <Link prefetch={false} href={`${links.tour.href}/${tour.id}`}>
                 <Card className="group relative min-w-[200px] max-w-[250px] transition-transform duration-300 ease-in-out hover:scale-105 lg:min-w-[250px] lg:max-w-[300px]">
                   <div className="aspect-square h-40 w-full overflow-hidden rounded-t-xl bg-gray-200">
                     <Image

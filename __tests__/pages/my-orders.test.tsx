@@ -22,7 +22,7 @@ jest.mock("@/apiRequests/order", () => ({
           ],
           finalCost: 1500000,
           status: 2,
-          tourThumnail: "/images/ky-co.jpg",
+          tourThumbnail: "/images/ky-co.jpg",
         },
         {
           orderId: "456",
@@ -33,7 +33,7 @@ jest.mock("@/apiRequests/order", () => ({
           ],
           finalCost: 800000,
           status: 0,
-          tourThumnail: "/images/eo-gio.jpg",
+          tourThumbnail: "/images/eo-gio.jpg",
         },
       ],
     }),
@@ -136,7 +136,7 @@ describe("OrderList", () => {
         ],
         finalCost: 1000000,
         status: OrderStatus.COMPLETED,
-        tourThumnail: "/images/ky-co.jpg",
+        tourThumbnail: "/images/ky-co.jpg",
       }));
 
     jest

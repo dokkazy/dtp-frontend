@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import blogData from "./blog-data.json";
 
+export const dynamic = "force-static";
+
 export default function Blog() {
   return (
     <main className="pb-16">

@@ -69,6 +69,9 @@ export default function ImageModal({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, currentImageIndex, images]);
+
+  
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[95vw] h-[95vh] z-[9999991]  p-0 bg-black border-none">

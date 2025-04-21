@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { TicketSchedule, TourDetail } from "@/types/tours";
-import { isDateInPast } from "@/lib/utils";
+import { isDateInPast } from "@/lib/client/utils";
 import { PaymentStatus } from "@/types/checkout";
 
 interface CartItem {

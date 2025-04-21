@@ -8,7 +8,8 @@ export enum OrderStatus {
 export interface OrderResponse {
   orderId: string;
   tourName: string;
-  tourThumnail: string;
+  tourId: string;
+  tourThumbnail: string;
   tourDate: string;
   orderTickets: OrderTicket[];
   finalCost: number;
@@ -38,13 +39,14 @@ interface OrderTicketRequest {
 }
 
 export interface OrderDetailResponse {
+  tourId: string;
   code: string;
   refCode: number;
   name: string;
   phoneNumber: string;
   email: string;
   tourName: string;
-  tourThumnail: string;
+  tourThumbnail: string;
   tourScheduleId: string;
   tourDate: string;
   orderDate: string;

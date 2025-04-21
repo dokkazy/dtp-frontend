@@ -76,7 +76,7 @@ export interface TourDetail {
     totalRating: number;
     about: string;
     onlyFromCost: number;
-    peakInfor: string;
+    pickinfor: string;
     include: string;
     ticketTypes: TicketType[];
   };
@@ -109,4 +109,27 @@ export interface TourScheduleTicket {
   success: boolean;
   message: string;
   data: DailyTicketSchedule[];
+}
+
+export interface FeedbackRequest {
+  tourScheduleId: string;
+  description: string;
+}
+
+export interface RatingRequest {
+  tourId: string;
+  star: number;
+  comment: string;
+  images: string[];
+}
+
+export interface RatingResponse {
+  id: string;
+  tourId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  star: number;
+  comment: string;
+  images: string[];
 }

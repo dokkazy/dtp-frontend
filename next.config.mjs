@@ -1,14 +1,26 @@
+import bundleAnalyzer from '@next/bundle-analyzer'
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Chấp nhận tất cả hostname
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
       },
       {
         protocol: 'http',
-        hostname: '**', // Nếu cần hỗ trợ cả HTTP
+        hostname: '**',
       }
     ],
   },
@@ -18,4 +30,5 @@ const nextConfig = {
   transpilePackages: ["lucide-react"]
 };
 
+// export default withBundleAnalyzer(nextConfig);
 export default nextConfig;

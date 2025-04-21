@@ -63,7 +63,7 @@ export default function HeroSection() {
                 <Image
                   src={image.src}
                   className={`${image.className} size-full rounded-2xl object-cover outline outline-2 outline-core transition-transform hover:scale-105`}
-                  priority
+                  priority={index === 0}
                   alt={image.alt}
                   width={300}
                   height={300}

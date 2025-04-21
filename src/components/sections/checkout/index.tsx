@@ -17,7 +17,7 @@ import {
 import { Steps } from "./Steps";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/providers/CartProvider";
-import { formatCurrency, getTicketKind } from "@/lib/utils";
+import { formatCurrency, getTicketKind } from "@/lib/client/utils";
 import { toast } from "sonner";
 import { OrderRequest } from "@/types/order";
 import { orderApiRequest } from "@/apiRequests/order";

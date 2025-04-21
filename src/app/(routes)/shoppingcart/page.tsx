@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ShoppingCart from "./ShoppingCart";
 
+
 export const metadata:Metadata = {
   title: "Giỏ hàng"
 }

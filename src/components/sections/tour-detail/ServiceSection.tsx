@@ -14,7 +14,7 @@ import {
   formatCurrency,
   formatDateToDDMMYYYY,
   getTicketKind,
-} from "@/lib/utils";
+} from "@/lib/client/utils";
 import {
   Popover,
   PopoverContent,

@@ -60,7 +60,6 @@ export default function GallerySection({
   const imageGallery = extractImageUrls(
     data?.tourDetail?.tourDestinations || [],
   );
-  // console.log(imageGallery);
   const handleShowGallery = () => {
     if (imageGallery.length > 0) {
       setSelectedImageId(imageGallery[0].id);
@@ -71,19 +70,21 @@ export default function GallerySection({
     setShowGallery(false);
   };
   return (
-    <div className="relative h-96 md:h-[450px] auto-rows-auto gap-1 md:grid md:grid-cols-12">
+    <div className="relative h-96 auto-rows-auto gap-1 md:grid md:h-[450px] md:grid-cols-12">
       {/* Large image - spans 8 columns on medium screens and up */}
-      <Button
-        variant="outline"
-        size="lg"
-        className="absolute bottom-4 right-4 z-10 border border-black"
-        onClick={handleShowGallery}
-      >
-        Thư viện ảnh
-      </Button>
+      {imageGallery.length > 0 && (
+        <Button
+          variant="outline"
+          size="lg"
+          className="absolute bottom-4 right-4 z-10 border border-black"
+          onClick={handleShowGallery}
+        >
+          Thư viện ảnh
+        </Button>
+      )}
       <div className="relative size-full md:hidden">
         <Image
-          src={imageGallery[0].src || images[0].src}
+          src={imageGallery[0]?.src || images[0].src}
           alt="Luxury van interior with plush white leather seats"
           className="size-full object-cover object-center"
           width={500}
@@ -95,7 +96,7 @@ export default function GallerySection({
         <CardContent className="h-full p-0">
           <div className="relative size-full">
             <Image
-              src={imageGallery[0].src || images[0].src}
+              src={imageGallery[0]?.src || images[0].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover object-center"
               width={500}
@@ -111,7 +112,7 @@ export default function GallerySection({
         <CardContent className="h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0].src || images[2].src}
+              src={imageGallery[0]?.src || images[2].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover object-center"
               width={400}
@@ -127,7 +128,7 @@ export default function GallerySection({
         <CardContent className="relative h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0].src || images[1].src}
+              src={imageGallery[0]?.src || images[1].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover"
               width={400}
@@ -137,12 +138,14 @@ export default function GallerySection({
           </div>
         </CardContent>
       </Card>
-      <ImageModal
-        isOpen={showGallery}
-        onClose={handleCloseModal}
-        images={imageGallery}
-        initialImageId={selectedImageId}
-      />
+      {imageGallery.length > 0 && showGallery === true && (
+        <ImageModal
+          isOpen={showGallery}
+          onClose={handleCloseModal}
+          images={imageGallery}
+          initialImageId={selectedImageId}
+        />
+      )}
     </div>
   );
 }

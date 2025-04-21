@@ -29,6 +29,8 @@ import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { AUTH_SYNC_KEY } from "@/components/common/UserInitializer";
+import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { refreshToken, sessionToken } from "@/lib/http";
 // Define menu types for better type safety
 type MenuItem = {
   id: string;
@@ -43,12 +45,15 @@ type MenuItem = {
 export default function AuthMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const { setUser } = useAuthContext();
   const [menuStack, setMenuStack] = React.useState<string[]>([]);
   const router = useRouter();
 
   async function handleLogOut() {
     setOpen(false);
+    setIsLoggingOut(true);
+    document.body.style.overflow = "hidden";
     try {
       const response: any =
         await authApiRequest.logoutFromNextClientToNextServer();
@@ -60,12 +65,16 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       toast.success(response.payload.message);
       localStorage.removeItem(AUTH_SYNC_KEY);
       location.href = links.home.href;
+      sessionToken.value = "";
+      refreshToken.value = "";
     } catch (error) {
       console.error("Logout error:", error);
       handleErrorApi(error);
       // If the error is due to an expired session token, redirect to login
       authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
         setUser(null);
+        sessionToken.value = "";
+        refreshToken.value = "";
         localStorage.removeItem(AUTH_SYNC_KEY);
         setTimeout(() => {
           window.location.replace(
@@ -73,7 +82,10 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
           );
         }, 2000);
       });
-    }
+    } finally {
+      // In case we need to reset the loading state for any reason
+      // Note: this might not execute if we navigate away
+      setIsLoggingOut(false);    }
   }
 
   // Get current menu based on navigation stack
@@ -144,9 +156,13 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       },
     },
     {
-      id:"review",
-      label:"Đánh giá",
+      id: "review",
+      label: "Đánh giá",
       icon: MessageSquareText,
+      onClick: () => {
+        router.push(links.review.href);
+        setOpen(false);
+      },
     },
     {
       id: "schedule",
@@ -234,56 +250,61 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
   const currentTitle = getCurrentMenuTitle();
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent autoFocus={false} className="z-[9999991] w-[240px] p-0">
-        {menuStack.length > 0 && (
-          <div className="flex items-center border-b p-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mr-2 h-8 w-8"
-              onClick={navigateBack}
-              tabIndex={-1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="font-medium">{currentTitle}</span>
-          </div>
-        )}
-
-        <div className="flex flex-col">
-          {currentMenu.map((item, index) => (
-            <React.Fragment key={item.id}>
-              {index > 0 && item.isDanger && (
-                <div className="my-1 h-px bg-border" />
-              )}
+    <>
+      {isLoggingOut && (
+        <LoadingOverlay isLoading={true} message="Đang đăng xuất..." />
+      )}
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
+        <PopoverContent autoFocus={false} className="z-[9999991] w-[240px] p-0">
+          {menuStack.length > 0 && (
+            <div className="flex items-center border-b p-2">
               <Button
                 variant="ghost"
-                className={cn(
-                  "flex items-center rounded-none",
-                  item.hasSubmenu ? "justify-between" : "justify-start gap-2",
-                  item.isDanger && "text-destructive hover:text-destructive",
-                )}
-                onClick={
-                  item.hasSubmenu
-                    ? () => navigateToSubmenu(item.id)
-                    : item.onClick
-                }
+                size="icon"
+                className="mr-2 h-8 w-8"
+                onClick={navigateBack}
                 tabIndex={-1}
               >
-                <div className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </div>
-                {item.hasSubmenu && (
-                  <ChevronLeft className="h-4 w-4 rotate-180" />
-                )}
+                <ChevronLeft className="h-4 w-4" />
               </Button>
-            </React.Fragment>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+              <span className="font-medium">{currentTitle}</span>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            {currentMenu.map((item, index) => (
+              <React.Fragment key={item.id}>
+                {index > 0 && item.isDanger && (
+                  <div className="my-1 h-px bg-border" />
+                )}
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "flex items-center rounded-none",
+                    item.hasSubmenu ? "justify-between" : "justify-start gap-2",
+                    item.isDanger && "text-destructive hover:text-destructive",
+                  )}
+                  onClick={
+                    item.hasSubmenu
+                      ? () => navigateToSubmenu(item.id)
+                      : item.onClick
+                  }
+                  tabIndex={-1}
+                >
+                  <div className="flex items-center gap-2">
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.hasSubmenu && (
+                    <ChevronLeft className="h-4 w-4 rotate-180" />
+                  )}
+                </Button>
+              </React.Fragment>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }

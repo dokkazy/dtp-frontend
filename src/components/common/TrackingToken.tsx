@@ -5,11 +5,11 @@ import { differenceInMinutes } from "date-fns";
 import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
 import { refreshToken, sessionToken } from "@/lib/http";
-import { decodeJwtTokenOnBrowser } from "@/lib/utils";
+import { decodeJwtTokenOnBrowser } from "@/lib/client/utils";
 
 export default function TrackingToken() {
   const accessToken = sessionToken.value;
-  
+
   const getTokenExpiration = useCallback((): Date | null => {
     if (!accessToken) return null;
     const decoded = decodeJwtTokenOnBrowser(accessToken);
@@ -20,9 +20,7 @@ export default function TrackingToken() {
   const handleInvalidToken = useCallback(() => {
     authApiRequest.logoutFromNextClientToNextServer(true).then(() => {
       setTimeout(() => {
-        window.location.replace(
-          `${links.login.href}?expiredToken=true`,
-        );
+        window.location.replace(`${links.login.href}?expiredToken=true`);
       }, 1000);
     });
   }, []);
@@ -54,8 +52,9 @@ export default function TrackingToken() {
   useEffect(() => {
     if (!accessToken) return;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
 
-    const setupTokenRefresh = async() => {
+    const setupTokenRefresh = async () => {
       const expirationTime = getTokenExpiration();
       if (!expirationTime) return null;
 
@@ -66,27 +65,66 @@ export default function TrackingToken() {
       if (minutesUntilExpiry <= 10) {
         // Try to refresh immediately
         const success = await refreshUserToken();
-        if(success) {
+        if (success) {
           setupTokenRefresh();
         }
       }
 
       // Set timeout to refresh token 10 minutes before expiration
       const refreshTime = minutesUntilExpiry - 10;
-      const refreshDelay = refreshTime * 60 * 1000;
+      const refreshDelay = Math.min(refreshTime * 60 * 1000, 30 * 60 * 1000);
       console.log(`Token will refresh in ${refreshTime} minutes`);
 
-      timeoutId = setTimeout(
-        async () => {
+      if (timeoutId) clearTimeout(timeoutId);
+
+      timeoutId = setTimeout(async () => {
+        const success = await refreshUserToken();
+        if (success) {
+          // Set up the next refresh
+          setupTokenRefresh();
+        }
+      }, refreshDelay);
+    };
+
+    intervalId = setInterval(
+      async () => {
+        const expirationTime = getTokenExpiration();
+        if (!expirationTime) return;
+
+        const now = new Date();
+        const minutesUntilExpiry = differenceInMinutes(expirationTime, now);
+
+        // If under 12 minutes until expiry, refresh now
+        if (minutesUntilExpiry <= 12) {
+          console.log("Periodic check triggered token refresh");
           const success = await refreshUserToken();
           if (success) {
-            // Set up the next refresh
             setupTokenRefresh();
           }
-        },
-        refreshDelay,
-      );
+        }
+      },
+      5 * 60 * 1000,
+    );
+
+    // Listen for visibility change to check token when tab becomes active
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible") {
+        const expirationTime = getTokenExpiration();
+        if (!expirationTime) return;
+
+        const now = new Date();
+        const minutesUntilExpiry = differenceInMinutes(expirationTime, now);
+
+        // If under 15 minutes until expiry, refresh now
+        if (minutesUntilExpiry <= 15) {
+          console.log("Visibility change triggered token refresh");
+          await refreshUserToken();
+          setupTokenRefresh();
+        }
+      }
     };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     // Set up first token refresh
     setupTokenRefresh();
@@ -94,6 +132,8 @@ export default function TrackingToken() {
     // Clean up on unmount
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
+      if (intervalId) clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [getTokenExpiration, refreshUserToken, accessToken]);
 

@@ -113,7 +113,7 @@ export default function PaymentSuccess() {
         <CardHeader className="flex-row items-center gap-4 space-y-0 border-b px-6 py-4">
           <div className="relative h-20 w-20 overflow-hidden rounded-md">
             <Image
-              src={orderDetail?.tourThumnail || "/images/quynhonbanner.jpg"}
+              src={orderDetail?.tourThumbnail || "/images/quynhonbanner.jpg"}
               alt={orderDetail?.tourName || ""}
               fill
               className="object-cover"
