@@ -15,7 +15,7 @@ import { TourList as Tours } from "@/types/tours";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import TourCardSkeleton from "@/components/common/loading/TourCardSkeleton";
+import TourCardSkeleton from "@/components/common/skeletons/TourCardSkeleton";
 
 interface TourListProps {
   tours: Tours;

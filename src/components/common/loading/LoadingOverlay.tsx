@@ -1,15 +1,11 @@
+"use client";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 import React from "react";
 
-interface LoadingOverlayProps {
-  isLoading: boolean;
-  message?: string;
-}
+export default function LoadingOverlay(){
+  const { isLoading, message } = useLoadingOverlayStore((state) => state);
 
-export default function LoadingOverlay({
-  isLoading,
-  message = "Đang xử lý...",
-}: LoadingOverlayProps) {
-  if (!isLoading) return null;
+  if ( !isLoading) return null;
 
   return (
     <div className="fixed inset-0 z-[9999991] flex items-center justify-center bg-black/50">

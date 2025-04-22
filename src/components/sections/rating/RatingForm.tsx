@@ -24,7 +24,7 @@ import { tourApiRequest } from "@/apiRequests/tour";
 import { HttpError } from "@/lib/http";
 import { RatingRequest } from "@/types/tours";
 import { uploadApiRequest } from "@/apiRequests/upload";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 const MAX_PHOTOS = 6; // Maximum number of photos allowed
 const ALLOWED_IMAGE_TYPES = [
@@ -56,7 +56,7 @@ export default function RatingForm({
   tourScheduleId: string;
 }) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [selectedImages, setSelectedImages] = useState<
     { file: File; preview: string }[]
@@ -155,8 +155,10 @@ export default function RatingForm({
       if (response.status === 200) {
         toast.success("Đánh giá thành công");
         router.push(links.review.href);
+        setLoading(false);
       } else {
         toast.error("Đánh giá không thành công. Vui lòng thử lại.");
+        setLoading(false);
       }
     } catch (error) {
       if (error instanceof HttpError) {
@@ -165,6 +167,7 @@ export default function RatingForm({
       } else {
         toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
       }
+      setLoading(false);
     }
   };
 
@@ -210,7 +213,7 @@ export default function RatingForm({
   };
 
   function onSubmit(data: RatingFormSchemaType) {
-    setIsSubmitting(true);
+    setLoading(true);
     const ratingData: RatingRequest = {
       tourId,
       star: data.star,
@@ -222,28 +225,23 @@ export default function RatingForm({
       tourScheduleId: tourScheduleId,
       description: data.feedback || "không có",
     };
-    handleImageUpload()
-      .then((imageUrls) => {
-        handleFeedback(feedbackData);
-        if (imageUrls !== undefined && imageUrls.length > 0) {
-          ratingData.images = imageUrls;
-          handleRating(ratingData);
-        } else {
-          toast.error(
-            "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
-          );
-          handleRating(ratingData);
-        }
-      })
-      .then(() => {
-        setIsSubmitting(false);
-      });
+    handleImageUpload().then((imageUrls) => {
+      handleFeedback(feedbackData);
+      if (imageUrls !== undefined && imageUrls.length > 0) {
+        ratingData.images = imageUrls;
+        handleRating(ratingData);
+      } else {
+        toast.error(
+          "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
+        );
+        handleRating(ratingData);
+      }
+    });
   }
 
   return (
     <Form {...form}>
       <div className="relative">
-        <LoadingOverlay isLoading={isSubmitting} />
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
@@ -393,9 +391,9 @@ export default function RatingForm({
               size="lg"
               type="submit"
               className="[425px]:basis-1/2 w-full"
-              disabled={isSubmitting}
+              disabled={isLoading}
             >
-              {isSubmitting ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Đang xử lý...

@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { ChevronLeft, ChevronRight, Star, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { tourApiRequest } from "@/apiRequests/tour";
 import { RatingResponse } from "@/types/tours";
-import Spinner from "@/components/common/loading/Spinner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import RatingSectionSkeleton from "@/components/common/skeletons/rating-section-skeleton";
 
 export default function RatingSection() {
   const params: { id: string } = useParams();
@@ -41,12 +42,7 @@ export default function RatingSection() {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex h-40 items-center justify-center gap-2 text-gray-500">
-        <Spinner className="text-core" />
-        <p>Đang tải...</p>
-      </div>
-    );
+    return <RatingSectionSkeleton />;
   }
 
   if (ratingData.length === 0) {

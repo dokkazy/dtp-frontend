@@ -14,7 +14,7 @@ const privatePath = [
   links.account.href,
 ];
 
-const authPath = [links.login.href, links.register.href];
+const authPath = [links.login.href, links.register.href, links.forgotPassword.href, links.resetPassword.href];
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {

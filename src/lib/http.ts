@@ -190,13 +190,19 @@ const request = async <Response>(
           sessionToken.value = "";
           refreshToken.value = "";
           clientLogoutRequest = null;
-          location.href = "/login";
+          import("sonner").then((module) => {
+            module.toast.error(
+              `Bắt buộc đăng xuất do phiên làm việc đã hết hạn`,
+            );
+          });
+          location.href =
+            "/login?redirect=" + encodeURIComponent(location.pathname);
         }
       } else {
         const sessionToken = (options?.headers as any)?.Authorization?.split(
           "Bearer ",
         )[1];
-        redirect("/logout?_auth=" + sessionToken);
+        redirect("/logout?redirect=" + encodeURIComponent(location.pathname));
       }
     }
   }

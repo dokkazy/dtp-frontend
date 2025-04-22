@@ -31,15 +31,19 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import GallerySectionSkeleton from "@/components/common/skeletons/gallery-section-skeleton";
+import RatingSectionSkeleton from "@/components/common/skeletons/rating-section-skeleton";
 // dynamic import for better performance
 const RatingSection = dynamic(() => import("./RatingSection"), {
   ssr: false,
+  loading: () => <RatingSectionSkeleton />,
 });
 const ServiceSection = dynamic(() => import("./ServiceSection"), {
   ssr: false,
 });
 const GallerySection = dynamic(() => import("./GallerySection"), {
   ssr: false,
+  loading: () => (<GallerySectionSkeleton/>)
 });
 const RecommendedTour = dynamic(() => import("./RecommendedTour"), {
   ssr: false,

@@ -26,15 +26,10 @@ export const tourApiRequest = {
   getAllTours: (urlSearchParams: string) =>
     http.get(`${nextServer.getAllTours}?${urlSearchParams}`, {
       baseUrl: "",
-      cache: "no-store",
     }),
-
-  getTourScheduleTicket: (id: string) =>
-    http.get(`${nextServer.tourScheduleTicket}/${id}`, { baseUrl: "" }),
 
   getRecommendTours: () =>
     http.get(`${nextServer.recommendTours}`, {
       baseUrl: "",
-      cache: "no-store",
     }),
 };

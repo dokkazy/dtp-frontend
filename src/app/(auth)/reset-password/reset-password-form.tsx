@@ -27,10 +27,12 @@ import {
   ResetPasswordSchemaType,
 } from "@/schemaValidations/auth.schema";
 import authApiRequest from "@/apiRequests/auth";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export default function ResetPasswordForm() {
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading } = useLoadingOverlayStore(
+      (state) => state,
+    );
   const [isSubmitted, setIsSubmitted] = useState(false);
   const searchParams = useSearchParams();
   const confirmationToken = searchParams.get("confirmationToken") || null;
@@ -101,7 +103,6 @@ export default function ResetPasswordForm() {
   return (
     <Form {...form}>
       <div className="relative">
-        <LoadingOverlay isLoading={loading} />
         <form
           noValidate
           className={cn("flex flex-col gap-6")}
@@ -144,8 +145,8 @@ export default function ResetPasswordForm() {
                 </FormItem>
               )}
             />
-            <LoadingButton pending={loading}>Đặt lại mật khẩu</LoadingButton>
-            {!loading && (
+            <LoadingButton pending={isLoading}>Đặt lại mật khẩu</LoadingButton>
+            {!isLoading && (
               <Button variant="outline" asChild>
                 <Link href={links.login.href}>
                   <ArrowLeft className="mr-2 h-4 w-4" />

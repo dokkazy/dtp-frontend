@@ -15,7 +15,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { TourList as Tours } from "@/types/tours";
-import TourCardSkeleton from "@/components/common/loading/TourCardSkeleton";
+import TourCardSkeleton from "@/components/common/skeletons/TourCardSkeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

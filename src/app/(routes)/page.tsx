@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 
 import HeroSection from "@/components/sections/landing/HeroSection";
 import BookNextTourSection from "@/components/sections/landing/BookNextTourSection";
-import { ActivityCardSkeleton } from "@/components/cards/activity-card-skeleton";
+import { ActivityCardSkeleton } from "@/components/common/skeletons/activity-card-skeleton";
 const ChoosingSection = dynamic(
   () => import("@/components/sections/landing/ChoosingSection"),
   { ssr: false },

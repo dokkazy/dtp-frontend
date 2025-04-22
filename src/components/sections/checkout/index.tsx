@@ -27,6 +27,7 @@ import envConfig from "@/configs/envConfig";
 import { PaymentRequest } from "@/types/checkout";
 import { AddContactSheet } from "./add-contact-sheet";
 import { useAuthContext } from "@/providers/AuthProvider";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export type Contact = {
   name: string;
@@ -36,7 +37,7 @@ export type Contact = {
 
 export default function Checkout({ itemId }: { itemId: string }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
   const { user } = useAuthContext();
   const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
   const [contact, setContact] = useState<Contact | null>(null);
@@ -73,9 +74,9 @@ export default function Checkout({ itemId }: { itemId: string }) {
       }
       const orderData: OrderRequest = {
         tourScheduleId: checkoutItem.tourScheduleId,
-        name: user?.name,
-        phoneNumber: user?.phoneNumber,
-        email: user?.email,
+        name: contact?.name ?? user?.name,
+        phoneNumber: contact?.phoneNumber ?? user?.phoneNumber,
+        email: contact?.email ?? user?.email,
         voucherCode: "",
         tickets: checkoutItem.tickets.map((ticket) => ({
           ticketTypeId: ticket.ticketTypeId,
@@ -122,7 +123,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
   };
 
   return (
-    <>
+    <div className="relative">
       <Steps currentStep={2} />
       <div className="w-full bg-[#f5f5f5]">
         <div className="container mx-auto max-w-7xl px-4 py-6">
@@ -141,13 +142,16 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex gap-4">
-                        <div className="flex-shrink-0 h-24 w-28">
+                        <div className="h-24 w-28 flex-shrink-0">
                           <Image
-                            src={checkoutItem?.tour?.tourDestinations[0]?.imageUrls[0] || "/images/quynhonbanner.jpg"}
+                            src={
+                              checkoutItem?.tour?.tourDestinations[0]
+                                ?.imageUrls[0] || "/images/quynhonbanner.jpg"
+                            }
                             alt={""}
                             width={300}
                             height={300}
-                            className="rounded-md size-full object-cover"
+                            className="size-full rounded-md object-cover"
                           />
                         </div>
                         <div>
@@ -268,9 +272,9 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   variant="core"
                   className="flex items-center justify-center gap-2 py-6 text-lg"
                   onClick={handlePayment}
-                  disabled={loading}
+                  disabled={isLoading}
                 >
-                  {loading ? (
+                  {isLoading ? (
                     <>
                       <Spinner className="text-white" />
                       Đang xử lý...
@@ -289,7 +293,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
               <div className="sticky top-6 space-y-6 px-4">
                 <Card>
                   <CardContent className="space-y-4 py-4">
-                    <p className="font-semibold overflow-hidden">
+                    <p className="overflow-hidden font-semibold">
                       {checkoutItem?.tour.tour.title}
                     </p>
                     <Separator />
@@ -347,6 +351,6 @@ export default function Checkout({ itemId }: { itemId: string }) {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

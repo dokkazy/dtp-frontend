@@ -1,11 +1,11 @@
 import React from "react";
-
-import OrderList from "./OrderList";
 import { Metadata } from "next";
 
+import OrderList from "./OrderList";
+
 export const metadata: Metadata = {
-  title: "Đơn hàng",
-  description: "Thông tin đơn hàng của bạn",
+  title: "Lịch trình của tôi",
+  description: "Thông tin lịch trình của bạn",
 };
 
 export default function OrdersPage() {

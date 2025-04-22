@@ -33,10 +33,12 @@ import { links } from "@/configs/routes";
 import { sessionToken } from "@/lib/http";
 import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 import { formatPrice } from "@/lib/utils";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export default function ServiceSection({ data }: { data: TourDetailType }) {
   const pathname = usePathname();
-  const [loading, setLoading] = React.useState(false);
+  const [fetchLoading, setFetchLoading] = React.useState(false);
+  const { setLoading, setMessage } = useLoadingOverlayStore((state) => state);
   const [disabled, setDisabled] = React.useState(false);
   const router = useRouter();
   const {
@@ -61,13 +63,13 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
     (state) => state.setDirectCheckoutItem,
   );
   console.log("ticketSchedule", ticketSchedule);
- 
+
   useEffect(() => {
     clearAll();
     setTicketSchedule([]);
-    setLoading(true);
+    setFetchLoading(true);
     setTicketSchedule(data.tourSchedule);
-    setLoading(false);
+    setFetchLoading(false);
   }, [data.tourSchedule, setTicketSchedule, clearAll]);
 
   const handleAddToCart = () => {
@@ -149,6 +151,8 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
 
     const formattedDate = formatDateToDDMMYYYY(selectedDay.day);
     setDisabled(true);
+    setLoading(true);
+    setMessage("Đang xử lý đơn hàng...");
 
     setDirectCheckoutItem(
       data.tourDetail,
@@ -160,6 +164,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
 
     // Navigate directly to checkout
     router.push(`${links.checkout.href}/${tourScheduleId}`);
+    setLoading(false);
   };
 
   const availableDates = React.useMemo(() => {
@@ -210,7 +215,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
         Các gói dịch vụ
       </h2>
       <Card className="bg-[#f5f5f5]">
-        <CardContent className="space-y-6 px-4 sm:px-6 py-6 md:px-10">
+        <CardContent className="space-y-6 px-4 py-6 sm:px-6 md:px-10">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold md:text-xl">
               Vui lòng chọn ngày và gói dịch vụ
@@ -235,7 +240,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
                   className="rounded-lg"
                   variant="core"
                 >
-                  {loading ? (
+                  {fetchLoading ? (
                     <svg
                       className="h-5 w-5 animate-spin text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -389,11 +394,11 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
               </Card>
             ))}
 
-            <div className="flex flex-col md:justify-between gap-4 md:flex-row md:items-center">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <h3 className="text-xl font-bold">
                 {formatCurrency(totalPrice)}₫
               </h3>
-              <div className="max-sm:gap-4 sm:space-x-4 px-2 max-sm:flex flex-wrap">
+              <div className="flex-wrap px-2 max-sm:flex max-sm:gap-4 sm:space-x-4">
                 <Button
                   disabled={disabled}
                   onClick={() => {
