@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -27,11 +27,13 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { HttpError } from "@/lib/http";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export default function Profile() {
   const { user, setUser } = useAuthContext();
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading } = useLoadingOverlayStore(
+      (state) => state,
+    );
   const router = useRouter();
   const isNavigating = useRef(false);
 
@@ -159,7 +161,6 @@ export default function Profile() {
 
   return (
     <div className="relative">
-      <LoadingOverlay isLoading={loading} />
       <Card>
         <CardContent className="p-6">
           <Form {...form}>
@@ -196,7 +197,7 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Họ và tên</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} {...field} />
+                        <Input disabled={isLoading} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -210,7 +211,7 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} {...field} type="email" />
+                        <Input disabled={isLoading} {...field} type="email" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -224,7 +225,7 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Số điện thoại</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} {...field} />
+                        <Input disabled={isLoading} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -238,14 +239,14 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Địa chỉ</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} {...field} />
+                        <Input disabled={isLoading} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <LoadingButton pending={loading}>Lưu thay đổi</LoadingButton>
+                <LoadingButton pending={isLoading}>Lưu thay đổi</LoadingButton>
               </div>
             </form>
           </Form>

@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 import { cn, handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,7 @@ import { loginSchema, LoginSchemaType } from "@/schemaValidations/auth.schema";
 import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
 import { HttpError, refreshToken, sessionToken } from "@/lib/http";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export function LoginForm({
   className,
@@ -31,7 +30,9 @@ export function LoginForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || links.home.href;
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading, setMessage } = useLoadingOverlayStore(
+    (state) => state,
+  );
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -43,6 +44,7 @@ export function LoginForm({
   const onSubmit = async (values: LoginSchemaType) => {
     try {
       setLoading(true);
+      setMessage("Đang đăng nhập...");
       const response: any =
         await authApiRequest.loginFromNextClientToNextServer({
           userName: values.userName,
@@ -54,6 +56,7 @@ export function LoginForm({
         window.notifyAuthChange?.();
         toast.success("Đăng nhập thành công");
         router.push(redirectUrl);
+        setLoading(false);
       }
     } catch (error: any) {
       if (error instanceof HttpError) {
@@ -68,8 +71,6 @@ export function LoginForm({
   return (
     <Form {...form}>
       <div className="relative">
-        <LoadingOverlay isLoading={loading} message="Đang đăng nhập..." />
-
         <form
           noValidate
           className={cn("flex flex-col gap-6", className)}
@@ -119,7 +120,7 @@ export function LoginForm({
                 </FormItem>
               )}
             />
-            <LoadingButton pending={loading}>Đăng nhập</LoadingButton>
+            <LoadingButton pending={isLoading}>Đăng nhập</LoadingButton>
             {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
                 Hoặc tiếp tục với

@@ -265,23 +265,23 @@ export default function About() {
                 {
                   name: "Phan Mai Sơn",
                   role: "Người sáng lập & CEO",
-                  image: "/placeholder.svg?height=400&width=400",
+                  image: "/images/default-profile.jpg",
                 },
                 {
                   name: "Lê Trung Kiên",
-                  image: "/placeholder.svg?height=400&width=400",
+                  image: "/images/default-profile.jpg",
                 },
                 {
                   name: "Trần Đăng Khoa",
-                  image: "/placeholder.svg?height=400&width=400",
+                  image: "/images/default-profile.jpg",
                 },
                 {
                   name: "Trương Đình Văn",
-                  image: "/placeholder.svg?height=400&width=400",
+                  image: "/images/default-profile.jpg",
                 },
                 {
                   name: "Võ Công Huy",
-                  image: "/placeholder.svg?height=400&width=400",
+                  image: "/images/default-profile.jpg",
                 },
               ].map((member, index) => (
                 <div key={index} className="flex flex-col items-center">

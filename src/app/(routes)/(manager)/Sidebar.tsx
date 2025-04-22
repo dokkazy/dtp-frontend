@@ -7,6 +7,7 @@ import {
   Settings,
   Shield,
   User,
+  Wallet,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -42,6 +43,11 @@ export default function Sidebar() {
       label: links.review.label,
       icon: MessageSquareText,
       href: links.review.href,
+    },
+    {
+      label: links.wallet.label,
+      icon: Wallet,
+      href: links.wallet.href,
     },
     {
       label: links.account.label,

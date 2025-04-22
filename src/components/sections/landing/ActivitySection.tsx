@@ -13,7 +13,7 @@ const mockActivities = [
   {
     id: 1,
     title: "Tour Kỳ Co bằng đường bộ 1 ngày",
-    imageUrl: "/images/quynhonbanner.jpg",
+    imageUrl: "/images/eo-gio.jpg",
     rating: 4.0,
     reviews: 34,
     price: 700000,

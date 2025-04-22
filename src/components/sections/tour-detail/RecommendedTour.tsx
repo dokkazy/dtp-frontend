@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {  useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { links } from "@/configs/routes";
@@ -11,11 +12,10 @@ import {
   CarouselNavigation,
   Carousel as CarouselPrimitives,
 } from "@/components/motion-primitives/carousel";
-import { usePathname, useRouter } from "next/navigation";
 import {
   DesktopSkeletonCard,
   MobileSkeletonCard,
-} from "@/components/cards/recommend-card-skeleton";
+} from "@/components/common/skeletons/recommend-card-skeleton";
 import { tourApiRequest } from "@/apiRequests/tour";
 
 export default function RecommendedTour() {

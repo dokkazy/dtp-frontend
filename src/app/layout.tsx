@@ -18,6 +18,7 @@ import TrackingToken from "@/components/common/TrackingToken";
 import UserInitializer from "@/components/common/UserInitializer";
 import envConfig from "@/configs/envConfig";
 import { NavigationEvents } from "@/components/common/loading/NaviagationEvents";
+import LoadingOverlay from "@/components/common/loading/LoadingOverlay";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -78,6 +79,7 @@ export default async function RootLayout({
           <UserInitializer />
           <CartProvider>
             <LoadingScreen>
+              <LoadingOverlay />
               <LoadingBar />
               <PageLoader />
               {children}

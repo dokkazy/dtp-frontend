@@ -1,3 +1,4 @@
+
 export const links = {
   login: { href: "/login", label: "Đăng nhập" },
   logout: { href: "/logout", label: "Đăng xuất" },
@@ -10,12 +11,16 @@ export const links = {
   allTour: { href: "/tour/all", label: "Tất cả tour" },
   blog: { href: "/blog", label: "Cẩm nang du lịch" },
   about: { href: "/about", label: "Về chúng tôi" },
+
   profile: { href: "/profile", label: "Khách hàng" },
   bookings: { href: "/my-bookings", label: "Lịch sử đặt tour" },
   review: { href: "/my-review", label: "Đánh giá" },
   rating: { href: "/my-review/rating", label: "Đánh giá" },
   account: { href: "/my-account", label: "Cài đặt tài khoản" },
   privacy: { href: "/privacy", label: "Chính sách bảo mật" },
+  wallet: { href: "/my-wallet", label: "Ví của tôi" },
+  otpQrSetup: { href: "/my-wallet/otp-setup", label: "Thiết lập xác thực OTP" },
+
   shoppingCart: { href: "/shoppingcart", label: "Giỏ hàng" },
   checkout: { href: "/checkout", label: "Thanh toán" },
   paymentCancel: { href: "/payment/cancel", label: "Hủy thanh toán" },
@@ -31,7 +36,6 @@ export const nextServer = {
 
   //tour
   getAllTours: "/api/tour/getAll",
-  tourScheduleTicket: "/api/tour/schedule-ticket",
   recommendTours: "/api/tour/recommend",
 };
 
@@ -61,4 +65,10 @@ export const apiEndpoint = {
   //order
   order: "/api/order",
   payment: "/api/payment",
+
+  //wallet
+  wallet: "/api/wallet",
+  otp: "/api/wallet/otp",
+  withdrawWithOtp: "/api/wallet/withdraw",
+  deposit: "/api/wallet/deposit",
 };

@@ -27,10 +27,12 @@ import {
 import envConfig from "@/configs/envConfig";
 import authApiRequest from "@/apiRequests/auth";
 import { HttpError } from "@/lib/http";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export default function ForgotPasswordForm() {
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading, setMessage } = useLoadingOverlayStore(
+      (state) => state,
+    );
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
@@ -44,6 +46,7 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (values: ForgotPasswordSchemaType) => {
     try {
       setLoading(true);
+      setMessage("Đang gửi email...");
       const data = {
         email: values.email,
         confirmUrl: `${envConfig.NEXT_PUBLIC_BASE_URL}${links.resetPassword.href}`,
@@ -106,7 +109,6 @@ export default function ForgotPasswordForm() {
   return (
     <Form {...form}>
       <div className="relative">
-        <LoadingOverlay isLoading={loading} message="Đang gửi email..." />
         <form
           noValidate
           className={cn("flex flex-col gap-6")}
@@ -138,10 +140,10 @@ export default function ForgotPasswordForm() {
                 </FormItem>
               )}
             />
-            <LoadingButton pending={loading}>
+            <LoadingButton pending={isLoading}>
               Gửi liên kết đặt lại
             </LoadingButton>
-            {!loading && (
+            {!isLoading && (
               <Button variant="outline" asChild>
                 <Link href={links.login.href}>
                   <ArrowLeft className="mr-2 h-4 w-4" />

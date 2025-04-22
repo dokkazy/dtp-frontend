@@ -14,6 +14,7 @@ import {
   Check,
   MessageSquareText,
   CalendarCheck,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
@@ -29,8 +30,9 @@ import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { AUTH_SYNC_KEY } from "@/components/common/UserInitializer";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
 import { refreshToken, sessionToken } from "@/lib/http";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
+
 // Define menu types for better type safety
 type MenuItem = {
   id: string;
@@ -45,14 +47,15 @@ type MenuItem = {
 export default function AuthMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
-  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const { setUser } = useAuthContext();
   const [menuStack, setMenuStack] = React.useState<string[]>([]);
   const router = useRouter();
+  const { setLoading, setMessage } = useLoadingOverlayStore((state) => state);
 
   async function handleLogOut() {
     setOpen(false);
-    setIsLoggingOut(true);
+    setLoading(true);
+    setMessage("Đang đăng xuất...");
     document.body.style.overflow = "hidden";
     try {
       const response: any =
@@ -85,7 +88,8 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
     } finally {
       // In case we need to reset the loading state for any reason
       // Note: this might not execute if we navigate away
-      setIsLoggingOut(false);    }
+      setLoading(false);
+    }
   }
 
   // Get current menu based on navigation stack
@@ -174,6 +178,15 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       },
     },
     {
+      id: "wallet",
+      label: "Ví của tôi",
+      icon: Wallet,
+      onClick: () => {
+        router.push(links.wallet.href);
+        setOpen(false);
+      },
+    },
+    {
       id: "settings",
       label: "Cài đặt",
       icon: Settings,
@@ -251,9 +264,6 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {isLoggingOut && (
-        <LoadingOverlay isLoading={true} message="Đang đăng xuất..." />
-      )}
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
         <PopoverContent autoFocus={false} className="z-[9999991] w-[240px] p-0">

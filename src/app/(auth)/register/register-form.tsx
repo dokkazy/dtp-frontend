@@ -26,13 +26,13 @@ import envConfig from "@/configs/envConfig";
 import { HttpError } from "@/lib/http";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LoadingOverlay from "@/components/common/loading/LoadingOrverlay";
+import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const [loading, setLoading] = useState(false);
+  const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
   const [isSuccess, setIsSuccess] = useState(false);
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -80,8 +80,6 @@ export function RegisterForm({
       }
       setLoading(false);
     }
-
-    setLoading(false);
   };
 
   if (isSuccess) {
@@ -127,7 +125,6 @@ export function RegisterForm({
   return (
     <Form {...form}>
       <div className="relative">
-        <LoadingOverlay isLoading={loading} message="Đang đăng ký..." />
         <form
           className={cn("flex flex-col gap-6", className)}
           {...props}
@@ -231,7 +228,7 @@ export function RegisterForm({
               )}
             />
 
-            <LoadingButton pending={loading}>Đăng ký</LoadingButton>
+            <LoadingButton pending={isLoading}>Đăng ký</LoadingButton>
             {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
                 Hoặc tiếp tục với

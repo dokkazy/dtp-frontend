@@ -1,9 +1,10 @@
 "use client";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface ImageModalProps {
   isOpen: boolean;
