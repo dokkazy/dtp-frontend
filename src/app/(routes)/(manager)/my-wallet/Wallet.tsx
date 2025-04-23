@@ -81,7 +81,9 @@ export default function Wallet() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-2xl font-bold">Ví của tôi</CardTitle>
-            <CardDescription>Quản lý số dư và rút tiền</CardDescription>
+            <CardDescription className="font-semibold">
+              Quản lý số dư và rút tiền
+            </CardDescription>
           </div>
           <Button
             variant="ghost"

@@ -14,6 +14,7 @@ export interface OrderResponse {
   orderTickets: OrderTicket[];
   finalCost: number;
   status: OrderStatus;
+  canRating: boolean;
 }
 
 export interface OrderTicket {

@@ -49,7 +49,9 @@ export default function ReviewList() {
           const allOrders = response.payload;
           const validOrders = allOrders.filter(
             (order: OrderResponse) =>
-              order.tourDate && order.status == OrderStatus.COMPLETED,
+              order.tourDate &&
+              order.status == OrderStatus.COMPLETED &&
+              order.canRating == true,
           );
 
           // Sort orders by tour date (most recent first)

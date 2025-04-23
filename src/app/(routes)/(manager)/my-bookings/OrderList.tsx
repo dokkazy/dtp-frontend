@@ -149,7 +149,7 @@ export default function OrderList() {
                             <LandPlot className="h-4 w-4" />
                           </div>
                           <div className="space-y-2">
-                            <h3 className="font-medium text-gray-900">
+                            <h3 className="font-semibold text-gray-900">
                               {order.tourName}
                             </h3>
                             <p className="text-xs text-gray-500">Tour Ghép</p>

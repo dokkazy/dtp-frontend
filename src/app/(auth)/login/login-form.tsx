@@ -89,7 +89,7 @@ export function LoginForm({
               name="userName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">
+                  <FormLabel className="font-semibold text-core">
                     Username hoặc email
                   </FormLabel>
                   <FormControl>
@@ -105,10 +105,10 @@ export function LoginForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
-                    <span className="text-core"> Mật khẩu </span>
+                    <span className="font-semibold text-core"> Mật khẩu </span>
                     <Link
                       href={links.forgotPassword.href}
-                      className="ml-auto text-sm font-light text-[#0A0A0A] underline-offset-4 hover:underline"
+                      className="ml-auto text-sm text-[#0A0A0A] underline-offset-4 hover:underline"
                     >
                       Quên mật khẩu ?
                     </Link>

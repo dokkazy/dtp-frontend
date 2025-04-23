@@ -278,7 +278,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="font-medium">{currentTitle}</span>
+              <span className="font-semibold">{currentTitle}</span>
             </div>
           )}
 
@@ -291,7 +291,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "flex items-center rounded-none",
+                    "flex items-center rounded-none font-semibold",
                     item.hasSubmenu ? "justify-between" : "justify-start gap-2",
                     item.isDanger && "text-destructive hover:text-destructive",
                   )}
