@@ -25,7 +25,10 @@ const images = [
   },
 ];
 
-function extractImageUrls(tourDestinations: Tour["tourDestinations"]) {
+function extractImageUrls(
+  tourDestinations: Tour["tourDestinations"],
+  imageUrls?: string[],
+) {
   let id = 1;
   const imageGallery = tourDestinations.flatMap((destination) =>
     destination.imageUrls.length > 0
@@ -35,7 +38,10 @@ function extractImageUrls(tourDestinations: Tour["tourDestinations"]) {
         }))
       : [],
   );
-  return imageGallery;
+  return [
+    ...(imageUrls?.map((url) => ({ id: id++, src: url })) || []),
+    ...imageGallery,
+  ];
 }
 
 export default function GallerySection({
@@ -47,6 +53,7 @@ export default function GallerySection({
   const [selectedImageId, setSelectedImageId] = React.useState<number>();
   const imageGallery = extractImageUrls(
     data?.tourDetail?.tourDestinations || [],
+    data?.tourDetail?.tour.imageUrls || [],
   );
   const handleShowGallery = () => {
     if (imageGallery.length > 0) {
@@ -100,7 +107,7 @@ export default function GallerySection({
         <CardContent className="h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0]?.src || images[1].src}
+              src={imageGallery[1]?.src || images[1].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover object-center"
               width={400}
@@ -116,7 +123,7 @@ export default function GallerySection({
         <CardContent className="relative h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0]?.src || images[2].src}
+              src={imageGallery[2]?.src || images[2].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover"
               width={400}

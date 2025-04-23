@@ -22,6 +22,7 @@ export type TourDetailType = {
 async function fetchScheduleTicket(id: string) {
   try {
     const response = await tourApiRequest.getScheduleTicketByTourId(id);
+
     if (!response || response.status !== 200) {
       console.error(
         "Schedule ticket API returned non-200 status:",
@@ -37,7 +38,6 @@ async function fetchScheduleTicket(id: string) {
       );
       return [];
     }
-
     return response.payload.data;
   } catch (error) {
     console.error("Error fetching schedule tickets:", error);

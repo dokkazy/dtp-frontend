@@ -248,7 +248,7 @@ export default function RatingForm({
             name="star"
             render={({ field }) => (
               <FormItem className="flex flex-col items-center space-y-2">
-                <FormLabel className="text-lg font-medium">
+                <FormLabel className="text-lg font-semibold">
                   Trải nghiệm của bạn với tour này ?
                 </FormLabel>
                 <FormControl>
@@ -283,7 +283,7 @@ export default function RatingForm({
             name="comment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Đánh giá của bạn</FormLabel>
+                <FormLabel className="font-semibold">Đánh giá của bạn</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Chia sẻ cảm nhận của bạn về tour này..."
@@ -301,7 +301,7 @@ export default function RatingForm({
             name="feedback"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Góp ý thêm về tour (Tùy chọn)</FormLabel>
+                <FormLabel className="font-semibold">Góp ý thêm về tour (Tùy chọn)</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Góp ý..."
@@ -319,7 +319,7 @@ export default function RatingForm({
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thêm ảnh (Tùy chọn)</FormLabel>
+                <FormLabel className="font-semibold">Thêm ảnh (Tùy chọn)</FormLabel>
                 <FormControl>
                   <div className="mt-2">
                     <div className="flex flex-wrap gap-2">

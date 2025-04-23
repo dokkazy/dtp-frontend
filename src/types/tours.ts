@@ -78,9 +78,9 @@ export interface TourDetail {
     onlyFromCost: number;
     pickinfor: string;
     include: string;
+    imageUrls: string[];
     ticketTypes: TicketType[];
   };
-  ratings: Rating[];
   tourDestinations: TourDestination[];
 }
 

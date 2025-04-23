@@ -51,7 +51,7 @@ export default function ReviewList() {
             (order: OrderResponse) =>
               order.tourDate &&
               order.status == OrderStatus.COMPLETED &&
-              order.canRating == true,
+              order.canRating == false,
           );
 
           // Sort orders by tour date (most recent first)
@@ -149,7 +149,7 @@ export default function ReviewList() {
                           <LandPlot className="h-4 w-4" />
                         </div>
                         <div className="space-y-2">
-                          <h3 className="text-sm font-medium text-gray-900 sm:text-base">
+                          <h3 className="text-sm font-semibold text-gray-900 sm:text-base">
                             {order.tourName}
                           </h3>
                           <p className="text-xs text-gray-500">Tour Ghép</p>
