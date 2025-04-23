@@ -44,7 +44,7 @@ export default async function RatingPage({
                 <LandPlot className="h-4 w-4" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-gray-900 sm:text-base">
+                <h3 className="text-sm font-semibold text-gray-900 sm:text-base">
                   {orderDetail.tourName}
                 </h3>
                 <p className="text-xs text-gray-500">Tour Ghép</p>

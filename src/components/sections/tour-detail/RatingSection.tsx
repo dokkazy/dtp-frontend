@@ -236,10 +236,10 @@ export default function RatingSection() {
         </div>
       )}
       <Dialog open={showRatingModal} onOpenChange={setShowRatingModal}>
-        <DialogContent className="z-[9999991] max-w-7xl overflow-hidden rounded-lg p-0">
+        <DialogContent className="z-[9999991] max-w-2xl sm:max-w-4xl lg:max-w-7xl h-[90vh] overflow-hidden rounded-lg">
           <div className="flex h-full flex-col md:flex-row">
             {/* Main image section */}
-            <div className="relative h-[300px] w-full md:h-[600px] md:w-2/3">
+            <div className="relative h-[300px] w-full md:h-[500px] md:w-2/3">
               {selectedRating?.images && selectedRating?.images.length > 0 && (
                 <Image
                   src={
@@ -300,7 +300,7 @@ export default function RatingSection() {
             </div>
 
             {/* Review content section */}
-            <div className="max-h-[300px] w-full overflow-y-auto bg-white p-4 md:max-h-[600px] md:w-1/3 md:p-6">
+            <div className="max-h-[300px] w-full overflow-y-auto bg-white p-4 md:max-h-[500px] md:w-1/3 md:p-6">
               <div className="mb-4 flex items-center gap-3">
                 <Avatar>
                   <AvatarImage src={"/images/quynhonbanner.jpg"} alt={""} />
