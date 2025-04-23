@@ -10,30 +10,18 @@ import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 const images = [
   {
     id: 1,
-    src: "https://picsum.photos/id/1036/600/400",
+    src: "/images/eo-gio.jpg",
     // alt: "Luxury van interior with plush white leather seats"
   },
   {
     id: 2,
-    src: "https://picsum.photos/id/1043/600/400",
+    src: "/images/thap-doi.jpg",
     // alt: "Luxury van interior with plush white leather seats"
   },
   {
     id: 3,
-    src: "https://picsum.photos/id/1038/600/400",
-    // alt: "Luxury van interior with plush white leather seats"
-  },
-  {
-    id: 4,
-    src: "/images/about.jpg",
-  },
-  {
-    id: 5,
     src: "/images/doi-cat-phuong-mai.jpg",
-  },
-  {
-    id: 6,
-    src: "/images/quynhonbanner.jpg",
+    // alt: "Luxury van interior with plush white leather seats"
   },
 ];
 
@@ -112,7 +100,7 @@ export default function GallerySection({
         <CardContent className="h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0]?.src || images[2].src}
+              src={imageGallery[0]?.src || images[1].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover object-center"
               width={400}
@@ -128,7 +116,7 @@ export default function GallerySection({
         <CardContent className="relative h-full p-0">
           <div className="relative aspect-square w-full">
             <Image
-              src={imageGallery[0]?.src || images[1].src}
+              src={imageGallery[0]?.src || images[2].src}
               alt="Luxury van interior with plush white leather seats"
               className="size-full object-cover"
               width={400}

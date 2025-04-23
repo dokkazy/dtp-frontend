@@ -101,7 +101,9 @@ export default function TourFilter({
       <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="text-lg font-semibold">
           Tìm thấy&nbsp;
-          <span className="text-core transition-all duration-300">{tourCount || 0}&nbsp;</span>
+          <span className="text-core transition-all duration-300">
+            {tourCount || 0}&nbsp;
+          </span>
           kết quả
         </div>
         <div className="flex items-center gap-2">
@@ -192,7 +194,7 @@ export default function TourFilter({
       </div>
 
       <div className="mt-4 flex items-center justify-between">
-        <div className="text-sm text-gray-500">Sắp xếp theo:</div>
+        <div className="text-sm font-medium text-gray-500">Sắp xếp theo:</div>
         <Select
           defaultValue={`${TourSortBy.Recommended}`}
           onValueChange={(value) => handleSortBy(value)}

@@ -4,6 +4,7 @@ import { CheckCircle, CircleX } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 import authApiRequest from "@/apiRequests/auth";
 import Footer from "@/components/common/Footer";
@@ -11,8 +12,6 @@ import Header from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
 import { links } from "@/configs/routes";
 import { HttpError } from "@/lib/http";
-import { toast } from "sonner";
-import Spinner from "@/components/common/loading/Spinner";
 
 export default function AccountConfirm() {
   const params = useSearchParams();
@@ -55,11 +54,20 @@ export default function AccountConfirm() {
     fetchConfirmation();
   }, [confirmationToken, router]);
 
-
   if (loading || !confirmationToken) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <Spinner className="h-16 w-16 text-core" />
+      <div className="container mx-auto my-12">
+        <div className="flex flex-col items-center justify-center py-32">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
+          </div>
+          <h2 className="mb-2 text-2xl font-semibold text-gray-700">
+            Đang xác thực tài khoản...
+          </h2>
+          <p className="text-center text-gray-500">
+            Vui lòng đợi trong giây lát.
+          </p>
+        </div>
       </div>
     );
   }

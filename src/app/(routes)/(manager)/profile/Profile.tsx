@@ -181,7 +181,7 @@ export default function Profile() {
                   name="userName"
                   render={({ field }) => (
                     <FormItem aria-disabled={true}>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel className="font-semibold">Username</FormLabel>
                       <FormControl>
                         <Input {...field} disabled />
                       </FormControl>
@@ -195,7 +195,7 @@ export default function Profile() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Họ và tên</FormLabel>
+                      <FormLabel className="font-semibold">Họ và tên</FormLabel>
                       <FormControl>
                         <Input disabled={isLoading} {...field} />
                       </FormControl>
@@ -209,7 +209,7 @@ export default function Profile() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="font-semibold">Email</FormLabel>
                       <FormControl>
                         <Input disabled={isLoading} {...field} type="email" />
                       </FormControl>
@@ -223,7 +223,7 @@ export default function Profile() {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số điện thoại</FormLabel>
+                      <FormLabel className="font-semibold">Số điện thoại</FormLabel>
                       <FormControl>
                         <Input disabled={isLoading} {...field} />
                       </FormControl>
@@ -237,7 +237,7 @@ export default function Profile() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Địa chỉ</FormLabel>
+                      <FormLabel className="font-semibold">Địa chỉ</FormLabel>
                       <FormControl>
                         <Input disabled={isLoading} {...field} />
                       </FormControl>

@@ -43,7 +43,7 @@ const DayHeader = ({ day }: { day: number }) => {
     <div className="mb-6 mt-8 flex items-center gap-2 first:mt-0">
       <div className="h-px flex-1 bg-blue-100"></div>
       <div className="rounded-full bg-core px-4 py-2 font-bold text-white">
-        Ngày {day + 1}
+        Ngày {day}
       </div>
       <div className="h-px flex-1 bg-blue-100"></div>
     </div>
@@ -73,7 +73,7 @@ export default function ServiceDetail({ data }: { data: TourDetail | null }) {
   const markupInclude = { __html: `${data?.tour.include}` };
   return (
     <div className="w-full rounded-lg border p-6">
-      <Accordion collapsible type="single" className="w-full pb-6">
+      <Accordion type="multiple" className="w-full pb-6">
         <AccordionItem value="item-1">
           <AccordionTrigger className="text-lg md:text-xl">
             Lịch trình

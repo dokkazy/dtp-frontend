@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-sync-scripts */
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Sans, Quicksand } from "next/font/google";
 import { cookies } from "next/headers";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
@@ -25,6 +25,13 @@ const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["vietnamese"],
   weight: ["100", "200", "300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
+});
+
+const quicksand = Quicksand({
+  variable: "--font-roboto-sans",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal"],
 });
 
 export const metadata: Metadata = {
@@ -69,7 +76,7 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body className={`${ibmPlexSans.className} antialiased`}>
+      <body className={`${quicksand.className} antialiased`}>
         <AuthProvider
           initialSessionToken={sessionToken?.value}
           initialRefreshToken={refreshToken?.value}

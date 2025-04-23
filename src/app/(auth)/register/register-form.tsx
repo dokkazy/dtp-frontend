@@ -140,7 +140,9 @@ export function RegisterForm({
                 name="userName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-core">Username</FormLabel>
+                    <FormLabel className="font-semibold text-core">
+                      Username
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} disabled />
                     </FormControl>
@@ -153,7 +155,9 @@ export function RegisterForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-core">Tên</FormLabel>
+                    <FormLabel className="font-semibold text-core">
+                      Tên
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -167,7 +171,9 @@ export function RegisterForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">Email</FormLabel>
+                  <FormLabel className="font-semibold text-core">
+                    Email
+                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -180,7 +186,9 @@ export function RegisterForm({
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">Số điện thoại</FormLabel>
+                  <FormLabel className="font-semibold text-core">
+                    Số điện thoại
+                  </FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -193,7 +201,9 @@ export function RegisterForm({
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">Địa chỉ</FormLabel>
+                  <FormLabel className="font-semibold text-core">
+                    Địa chỉ
+                  </FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -206,7 +216,9 @@ export function RegisterForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">Mật khẩu</FormLabel>
+                  <FormLabel className="font-semibold text-core">
+                    Mật khẩu
+                  </FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
@@ -219,7 +231,9 @@ export function RegisterForm({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-core">Nhập lại mật khẩu</FormLabel>
+                  <FormLabel className="font-semibold text-core">
+                    Nhập lại mật khẩu
+                  </FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>

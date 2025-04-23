@@ -95,7 +95,7 @@ export default function Sidebar() {
               className={`w-full justify-start ${pathname === link.href ? "bg-muted" : ""}`}
               asChild
             >
-              <Link href={link.href}>
+              <Link href={link.href} className="font-semibold">
                 <link.icon className="mr-2 h-4 w-4" />
                 {link.label}
               </Link>

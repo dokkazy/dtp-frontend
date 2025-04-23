@@ -119,7 +119,7 @@ export default async function ActivitySection() {
                         {activity.originalPrice.toLocaleString("vi-VN")}đ
                       </p>
                       <div className="flex items-center justify-between">
-                        <p className="text-base text-core md:text-sm">
+                        <p className="text-base font-semibold text-core md:text-sm">
                           Đặt từ hôm nay
                         </p>
                         <p className="text-xl font-bold text-red-500 md:text-lg">

@@ -7,12 +7,7 @@ import { toast } from "sonner";
 import { orderApiRequest } from "@/apiRequests/order";
 import { OrderDetailResponse, OrderStatus } from "@/types/order";
 import { formatDate } from "@/lib/utils";
-import {
-  
-  formatDateTime,
-  formatPrice,
-  getTicketKind,
-} from "@/lib/client/utils";
+import { formatDateTime, formatPrice, getTicketKind } from "@/lib/client/utils";
 import Spinner from "@/components/common/loading/Spinner";
 import { HttpError } from "@/lib/http";
 import { Button } from "@/components/ui/button";
@@ -236,20 +231,14 @@ export default function MyOrderDetail({ id }: { id: string }) {
                   <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
                     <li>
                       <p>
-                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong
-                        vòng 12h trước khi tour bắt đầu.
+                        Trong vòng 24h sau khi thanh toán, Khách hàng hủy tour
+                        sẽ được hoàn 100% số tiền và 70% cho thời gian sau đó.
                       </p>
                     </li>
                     <li>
                       <p>
-                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ
-                        được hoàn tiền 50% giá trị tour.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước
-                        3 ngày trước khi tour bắt đầu.
+                        Không được hoàn tiền đối với khách hàng hủy tour trước
+                        ngày khởi hành 4 ngày.
                       </p>
                     </li>
                   </ul>
