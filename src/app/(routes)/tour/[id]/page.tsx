@@ -21,7 +21,14 @@ export type TourDetailType = {
 
 async function fetchScheduleTicket(id: string) {
   try {
-    const response = await tourApiRequest.getScheduleTicketByTourId(id);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const response = await tourApiRequest.getScheduleTicketByTourId(id, {
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
 
     if (!response || response.status !== 200) {
       console.error(
@@ -47,7 +54,14 @@ async function fetchScheduleTicket(id: string) {
 
 async function fetchData(id: string) {
   try {
-    const response: any = await tourApiRequest.getById(id);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response: any = await tourApiRequest.getById(id, {
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
     if (response.status != 200) {
       return null;
     }

@@ -23,23 +23,6 @@ export default function ReviewList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
-  const sortOrdersByDate = (orders: OrderResponse[]) => {
-    return [...orders].sort((a, b) => {
-      // Parse dates from DD-MM-YYYY format
-      const parseDate = (dateStr: string) => {
-        if (!dateStr) return new Date(0); // Handle undefined/null dates
-        const [day, month, year] = dateStr.split("-").map(Number);
-        return new Date(year, month - 1, day);
-      };
-
-      const dateA = parseDate(a.tourDate);
-      const dateB = parseDate(b.tourDate);
-
-      // Sort in descending order (newest first)
-      return dateB.getTime() - dateA.getTime();
-    });
-  };
-
   useEffect(() => {
     setLoading(true);
     const fetchOrders = async () => {
@@ -49,18 +32,15 @@ export default function ReviewList() {
           const allOrders = response.payload;
           const validOrders = allOrders.filter(
             (order: OrderResponse) =>
-              order.tourDate &&
               order.status == OrderStatus.COMPLETED &&
               order.canRating == false,
           );
 
-          // Sort orders by tour date (most recent first)
-          const sortedOrders = sortOrdersByDate(validOrders);
-          setOrders(sortedOrders);
+          setOrders(validOrders);
 
-          const initialOrders = sortedOrders.slice(0, ORDERS_PER_PAGE);
+          const initialOrders = validOrders.slice(0, ORDERS_PER_PAGE);
           setDisplayedOrders(initialOrders);
-          setHasMore(sortedOrders.length > ORDERS_PER_PAGE);
+          setHasMore(validOrders.length > ORDERS_PER_PAGE);
           setLoading(false);
         }
       } catch (error) {

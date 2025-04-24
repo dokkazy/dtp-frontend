@@ -10,12 +10,15 @@ export const tourApiRequest = {
       `${apiEndpoint.odataTours}?${new URLSearchParams(urlSearchParams)}`,
       { cache: "no-store" },
     ),
-  getById: (id: string) =>
-    http.get(`${apiEndpoint.tours}/${id}`, { cache: "no-store" }),
+  getById: (id: string, options = {}) =>
+    http.get(`${apiEndpoint.tours}/${id}`, { cache: "no-store", ...options }),
   getTourScheduleByTourId: (id: string) =>
     http.get(`${apiEndpoint.tourSchedule}/${id}`, { cache: "no-store" }),
-  getScheduleTicketByTourId: (id: string) =>
-    http.get(`${apiEndpoint.tourScheduleTicket}/${id}`, { cache: "no-store" }),
+  getScheduleTicketByTourId: (id: string, options = {}) =>
+    http.get(`${apiEndpoint.tourScheduleTicket}/${id}`, {
+      cache: "no-store",
+      ...options,
+    }),
   getRatingByTourId: (id: string) =>
     http.get(`${apiEndpoint.rating}/${id}`, { cache: "no-store" }),
   postRating: (body: RatingRequest) => http.post(apiEndpoint.rating, body),

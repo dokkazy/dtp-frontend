@@ -1,12 +1,14 @@
 import { cookies } from "next/headers";
-import { LandPlot } from "lucide-react";
+import { ArrowLeft, Home, LandPlot, SearchX } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { orderApiRequest } from "@/apiRequests/order";
 import RatingForm from "@/components/sections/rating/RatingForm";
 import { OrderDetailResponse } from "@/types/order";
 import { formatDate, getTicketKind } from "@/lib/utils";
 import { HttpError } from "@/lib/http";
+import { Button } from "@/components/ui/button";
 
 async function fetchOrderDetail(orderId: string) {
   const cookieStore = cookies();
@@ -19,12 +21,14 @@ async function fetchOrderDetail(orderId: string) {
     if (response.status === 200) {
       return response.payload;
     }
+    return null;
   } catch (error) {
-    if(error instanceof HttpError) {
+    if (error instanceof HttpError) {
       console.error("Error fetching order detail:", error.payload.message);
-    }else{
+    } else {
       console.error("Error fetching order detail:", error);
     }
+    return null;
   }
 }
 
@@ -34,6 +38,39 @@ export default async function RatingPage({
   params: { id: string };
 }) {
   const orderDetail: OrderDetailResponse = await fetchOrderDetail(params.id);
+  if (!orderDetail) {
+    return (
+      <div className="mx-auto mt-24 max-w-6xl px-4">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-6 rounded-full bg-muted p-6">
+            <SearchX className="h-12 w-12 text-muted-foreground" />
+          </div>
+
+          <h1 className="mb-2 text-3xl font-bold">Tour không tồn tại</h1>
+          <p className="mb-8 max-w-md text-muted-foreground">
+            Rất tiếc, tour bạn đang tìm kiếm không tồn tại hoặc đã bị xóa. Vui
+            lòng thử tìm kiếm tour khác.
+          </p>
+
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Button asChild variant="outline" size="lg">
+              <Link href="/tour">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Quay lại trang tour
+              </Link>
+            </Button>
+
+            <Button asChild variant="core" size="lg">
+              <Link href="/">
+                <Home className="mr-2 h-4 w-4" />
+                Về trang chủ
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="container max-w-full space-y-4 py-6 md:max-w-2xl">
       <div className="overflow-hidden rounded-lg border">
@@ -74,7 +111,10 @@ export default async function RatingPage({
           </div>
         </div>
       </div>
-      <RatingForm tourId={orderDetail.tourId} tourScheduleId={orderDetail.tourScheduleId} />
+      <RatingForm
+        tourId={orderDetail.tourId}
+        tourScheduleId={orderDetail.tourScheduleId}
+      />
     </div>
   );
 }
