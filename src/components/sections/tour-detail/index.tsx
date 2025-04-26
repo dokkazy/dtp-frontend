@@ -23,7 +23,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 import { formatPrice } from "@/lib/utils";
 import {
   Drawer,
@@ -33,6 +32,7 @@ import {
 } from "@/components/ui/drawer";
 import GallerySectionSkeleton from "@/components/common/skeletons/gallery-section-skeleton";
 import RatingSectionSkeleton from "@/components/common/skeletons/rating-section-skeleton";
+import { TourDetail as Tour } from "@/types/tours";
 // dynamic import for better performance
 const RatingSection = dynamic(() => import("./RatingSection"), {
   ssr: false,
@@ -43,7 +43,7 @@ const ServiceSection = dynamic(() => import("./ServiceSection"), {
 });
 const GallerySection = dynamic(() => import("./GallerySection"), {
   ssr: false,
-  loading: () => (<GallerySectionSkeleton/>)
+  loading: () => <GallerySectionSkeleton />,
 });
 const RecommendedTour = dynamic(() => import("./RecommendedTour"), {
   ssr: false,
@@ -52,9 +52,8 @@ const ServiceDetail = dynamic(() => import("./ServiceDetail"), {
   ssr: false,
 });
 
-
-export default function TourDetail({ data }: { data: TourDetailType | null }) {
-  const markup = { __html: `${data?.tourDetail?.tour?.about}` };
+export default function TourDetail({ data }: { data: Tour | null }) {
+  const markup = { __html: `${data?.tour?.about}` };
   const handleServiceRef = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string,
@@ -81,27 +80,27 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink href="/tour">
-                {data?.tourDetail?.tour?.companyName}
+                {data?.tour?.companyName}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{data?.tourDetail?.tour?.title}</BreadcrumbPage>
+              <BreadcrumbPage>{data?.tour?.title}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <h1 className="text-xl font-bold tracking-tight sm:text-4xl md:text-3xl">
-          {data?.tourDetail?.tour?.title}
+          {data?.tour?.title}
         </h1>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <span className="text-amber-500">★</span>
             <span className="ml-1 font-semibold">
-              {data?.tourDetail?.tour?.avgStar.toFixed(1)}
+              {data?.tour?.avgStar.toFixed(1)}
             </span>
           </div>
           <span className="text-muted-foreground">
-            ({data?.tourDetail?.tour?.totalRating} Đánh giá)
+            ({data?.tour?.totalRating} Đánh giá)
           </span>
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">10+ Đã đặt</span>
@@ -114,7 +113,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
               <Card>
                 <CardContent className="relative h-32 space-y-4 overflow-hidden p-6 md:h-48">
                   <p className="overflow-hidden text-sm md:text-base">
-                    {data?.tourDetail?.tour?.description}
+                    {data?.tour?.description}
                   </p>
                   <div className="absolute bottom-0 left-0 right-0 flex h-[52px] items-center justify-between bg-gradient-to-t from-white to-transparent p-6 backdrop-blur-[6px] hover:underline">
                     <Drawer>
@@ -132,7 +131,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                         </DrawerHeader>
                         <ScrollArea className="h-[400px] w-full rounded-md p-4">
                           <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
-                            {data?.tourDetail?.tour?.description
+                            {data?.tour?.description
                               .split(".")
                               .map((sentence) => sentence.trim())
                               .filter((sentence) => sentence)
@@ -164,7 +163,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                         </DialogHeader>
                         <ScrollArea className="h-[400px] w-full rounded-md p-4">
                           <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
-                            {data?.tourDetail?.tour?.description
+                            {data?.tour?.description
                               .split(".")
                               .map((sentence) => sentence.trim())
                               .filter((sentence) => sentence)
@@ -195,9 +194,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
                   Chi tiết gói dịch vụ
                 </h2>
-                {data != null && (
-                  <ServiceDetail data={data?.tourDetail} />
-                )}
+                {data != null && <ServiceDetail data={data} />}
               </div>
               <div className="">
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
@@ -237,7 +234,7 @@ export default function TourDetail({ data }: { data: TourDetailType | null }) {
               <Card className="h-[calc(100vh - 1rem)] sticky top-20 h-fit">
                 <CardContent className="space-y-4 px-6 py-6">
                   <h1 className="text-lg font-semibold md:text-2xl">
-                    {formatPrice(data?.tourDetail?.tour?.onlyFromCost)}
+                    {formatPrice(data?.tour?.onlyFromCost)}
                   </h1>
                   <Button
                     onClick={(e) => handleServiceRef(e, "tour-detail-service")}

@@ -3,9 +3,8 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { TourDetail as Tour } from "@/types/tours";
+import { TourDetail } from "@/types/tours";
 import ImageModal from "@/components/sections/tour-detail/ImageModal";
-import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 
 const images = [
   {
@@ -26,7 +25,7 @@ const images = [
 ];
 
 function extractImageUrls(
-  tourDestinations: Tour["tourDestinations"],
+  tourDestinations: TourDetail["tourDestinations"],
   imageUrls?: string[],
 ) {
   let id = 1;
@@ -44,16 +43,12 @@ function extractImageUrls(
   ];
 }
 
-export default function GallerySection({
-  data,
-}: {
-  data: TourDetailType | null;
-}) {
+export default function GallerySection({ data }: { data: TourDetail | null }) {
   const [showGallery, setShowGallery] = React.useState(false);
   const [selectedImageId, setSelectedImageId] = React.useState<number>();
   const imageGallery = extractImageUrls(
-    data?.tourDetail?.tourDestinations || [],
-    data?.tourDetail?.tour.imageUrls || [],
+    data?.tourDestinations || [],
+    data?.tour.imageUrls || [],
   );
   const handleShowGallery = () => {
     if (imageGallery.length > 0) {

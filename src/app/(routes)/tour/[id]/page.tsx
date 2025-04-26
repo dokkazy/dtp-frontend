@@ -19,49 +19,36 @@ export type TourDetailType = {
   tourSchedule: DailyTicketSchedule[] | [];
 };
 
-async function fetchScheduleTicket(id: string) {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    const response = await tourApiRequest.getScheduleTicketByTourId(id, {
-      signal: controller.signal,
-    });
-    
-    clearTimeout(timeoutId);
+// async function fetchScheduleTicket(id: string) {
+//   try {
+//     const response = await tourApiRequest.getScheduleTicketByTourId(id);
 
-    if (!response || response.status !== 200) {
-      console.error(
-        "Schedule ticket API returned non-200 status:",
-        response?.status,
-      );
-      return [];
-    }
+//     if (!response || response.status !== 200) {
+//       console.error(
+//         "Schedule ticket API returned non-200 status:",
+//         response?.status,
+//       );
+//       return [];
+//     }
 
-    if (!response.payload || !response.payload.data) {
-      console.error(
-        "Schedule ticket API response missing expected data structure:",
-        response.payload,
-      );
-      return [];
-    }
-    return response.payload.data;
-  } catch (error) {
-    console.error("Error fetching schedule tickets:", error);
-    return [];
-  }
-}
+//     if (!response.payload || !response.payload.data) {
+//       console.error(
+//         "Schedule ticket API response missing expected data structure:",
+//         response.payload,
+//       );
+//       return [];
+//     }
+//     return response.payload.data;
+//   } catch (error) {
+//     console.error("Error fetching schedule tickets:", error);
+//     return [];
+//   }
+// }
 
 async function fetchData(id: string) {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
-    const response: any = await tourApiRequest.getById(id, {
-      signal: controller.signal,
-    });
+    const response: any = await tourApiRequest.getById(id);
 
-    clearTimeout(timeoutId);
     if (response.status != 200) {
       return null;
     }
@@ -99,21 +86,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TourDetailPage({ params }: Props) {
   const { id } = params;
 
-  const [tourDetail, ticketSchedule] = await Promise.all([
-    fetchData(id),
-    fetchData(id).then((detail) =>
-      detail ? fetchScheduleTicket(detail.tour.id) : [],
-    ),
-  ]);
-  let data: TourDetailType | null = null;
-  if (tourDetail != null) {
-    data = {
-      tourDetail: tourDetail,
-      tourSchedule: ticketSchedule || [],
-    };
-  }
+  const tourDetail: Tour | null = await fetchData(id);
 
-  if (data === null) {
+  // const [tourDetail, ticketSchedule] = await Promise.all([
+  //   fetchData(id),
+  //   fetchData(id).then((detail) =>
+  //     detail ? fetchScheduleTicket(detail.tour.id) : [],
+  //   ),
+  // ]);
+  // let data: TourDetailType | null = null;
+  // if (tourDetail != null) {
+  //   data = {
+  //     tourDetail: tourDetail,
+  //     tourSchedule: ticketSchedule || [],
+  //   };
+  // }
+
+  if (tourDetail === null) {
     return (
       <div className="mx-auto mt-24 max-w-6xl px-4">
         <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -146,6 +135,6 @@ export default async function TourDetailPage({ params }: Props) {
       </div>
     );
   } else {
-    return <TourDetail data={data} />;
+    return <TourDetail data={tourDetail} />;
   }
 }

@@ -1,8 +1,10 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { motion } from "framer-motion";
+
 export default function NotFound() {
     const router = useRouter();
     const [count, setCount] = useState(5);
@@ -27,6 +29,41 @@ export default function NotFound() {
         };
     }, [router, count]);
 
+    if (count === 0) {
+        return (
+            <div className="flex min-h-screen flex-col gap-8 items-center justify-center">
+                <h1 className="font-bold text-3xl">Đang chuyển hướng về trang chủ</h1>
+                <motion.div
+                    className="ml-2 flex"
+                    variants={{
+                        initial: { transition: { staggerChildren: 0 } },
+                        animate: { transition: { staggerChildren: 0.2 } },
+                    }}
+                    initial="initial"
+                    animate="animate"
+                >
+                    {[0, 1, 2].map((dot) => (
+                        <motion.span
+                            key={dot}
+                            variants={{
+                                initial: { opacity: 0.3, y: 0 },
+                                animate: { opacity: 1, y: [-2, -8, -2] }
+                            }}
+                            transition={{
+                                duration: 0.8,
+                                ease: "easeInOut",
+                                repeat: Infinity,
+                                delay: dot * 0.1  // Stagger the animation
+                            }}
+                            className="mx-1 h-2 w-2 rounded-full bg-primary inline-block"
+                        >
+                            &nbsp;
+                        </motion.span>
+                    ))}
+                </motion.div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">

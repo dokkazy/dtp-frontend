@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-sync-scripts */
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Quicksand } from "next/font/google";
+import { Quicksand } from "next/font/google";
 import { cookies } from "next/headers";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
@@ -20,12 +20,12 @@ import envConfig from "@/configs/envConfig";
 import { NavigationEvents } from "@/components/common/loading/NaviagationEvents";
 import LoadingOverlay from "@/components/common/loading/LoadingOverlay";
 
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-plex-sans",
-  subsets: ["vietnamese"],
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
+// const ibmPlexSans = IBM_Plex_Sans({
+//   variable: "--font-ibm-plex-sans",
+//   subsets: ["vietnamese"],
+//   weight: ["100", "200", "300", "400", "500", "600", "700"],
+//   style: ["normal", "italic"],
+// });
 
 const quicksand = Quicksand({
   variable: "--font-roboto-sans",
