@@ -11,11 +11,13 @@ export const tourApiRequest = {
       { cache: "no-store" },
     ),
   getById: (id: string) =>
-    http.get(`${apiEndpoint.tours}/${id}`, { cache: "no-store" }),
+    http.get(`${apiEndpoint.tours}/${id}`, { cache: "no-store"}),
   getTourScheduleByTourId: (id: string) =>
     http.get(`${apiEndpoint.tourSchedule}/${id}`, { cache: "no-store" }),
   getScheduleTicketByTourId: (id: string) =>
-    http.get(`${apiEndpoint.tourScheduleTicket}/${id}`, { cache: "no-store" }),
+    http.get(`${apiEndpoint.tourScheduleTicket}/${id}`, {
+      cache: "no-store",
+    }),
   getRatingByTourId: (id: string) =>
     http.get(`${apiEndpoint.rating}/${id}`, { cache: "no-store" }),
   postRating: (body: RatingRequest) => http.post(apiEndpoint.rating, body),

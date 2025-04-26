@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Calendar, Minus, Plus, ShieldAlert } from "lucide-react";
 import { vi } from "date-fns/locale";
 import { StyledElement } from "react-day-picker";
@@ -31,11 +31,12 @@ import {
 } from "@/components/ui/tooltip";
 import { links } from "@/configs/routes";
 import { sessionToken } from "@/lib/http";
-import { TourDetailType } from "@/app/(routes)/tour/[id]/page";
 import { formatPrice } from "@/lib/utils";
 import { useLoadingOverlayStore } from "@/stores/loadingStore";
+import { TourDetail } from "@/types/tours";
+import { tourApiRequest } from "@/apiRequests/tour";
 
-export default function ServiceSection({ data }: { data: TourDetailType }) {
+export default function ServiceSection({ data }: { data: TourDetail | null }) {
   const pathname = usePathname();
   const [fetchLoading, setFetchLoading] = React.useState(false);
   const { setLoading, setMessage } = useLoadingOverlayStore((state) => state);
@@ -64,16 +65,49 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   );
   console.log("ticketSchedule", ticketSchedule);
 
+  const fetchScheduleTicket = useCallback(
+    async (id: string) => {
+      setFetchLoading(true);
+
+      try {
+        const response = await tourApiRequest.getScheduleTicketByTourId(id);
+
+        if (!response || response.status !== 200) {
+          console.error(
+            "Schedule ticket API returned non-200 status:",
+            response?.status,
+          );
+          setTicketSchedule([]);
+        }
+
+        if (!response.payload || !response.payload.data) {
+          console.error(
+            "Schedule ticket API response missing expected data structure:",
+            response.payload,
+          );
+          setTicketSchedule([]);
+        }
+        setTicketSchedule(response.payload.data);
+        setFetchLoading(false);
+      } catch (error) {
+        console.error("Error fetching schedule tickets:", error);
+        setTicketSchedule([]);
+      }
+    },
+    [setTicketSchedule],
+  );
+
   useEffect(() => {
     clearAll();
-    setTicketSchedule([]);
-    setFetchLoading(true);
-    setTicketSchedule(data.tourSchedule);
-    setFetchLoading(false);
-  }, [data.tourSchedule, setTicketSchedule, clearAll]);
+    if (!data?.tour?.id) {
+      setTicketSchedule([]);
+      return;
+    }
+    fetchScheduleTicket(data?.tour?.id);
+  }, [setTicketSchedule, clearAll, data?.tour?.id, fetchScheduleTicket]);
 
   const handleAddToCart = () => {
-    if (data.tourDetail == null) return;
+    if (data == null) return;
     if (!sessionToken.value) {
       toast.warning("Vui lòng đăng nhập để tiếp tục");
       router.push(`${links.login.href}?redirect=${pathname}`);
@@ -107,7 +141,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
     const formattedDate = formatDateToDDMMYYYY(selectedDay.day);
     // Add to cart
     addToCart(
-      data.tourDetail,
+      data,
       tourScheduleId,
       formattedDate,
       selectedDayTickets,
@@ -118,7 +152,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
   };
 
   const handleOrderDirectly = () => {
-    if (data.tourDetail == null) return;
+    if (data == null) return;
     if (!sessionToken.value) {
       toast.warning("Vui lòng đăng nhập để tiếp tục");
       router.push(`${links.login.href}?redirect=${pathname}`);
@@ -155,7 +189,7 @@ export default function ServiceSection({ data }: { data: TourDetailType }) {
     setMessage("Đang xử lý đơn hàng...");
 
     setDirectCheckoutItem(
-      data.tourDetail,
+      data,
       tourScheduleId,
       formattedDate,
       selectedDayTickets,
