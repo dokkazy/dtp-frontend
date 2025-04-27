@@ -61,6 +61,7 @@ export default function RatingForm({
   const [selectedImages, setSelectedImages] = useState<
     { file: File; preview: string }[]
   >([]);
+  const [imageUploads, setImageUploads] = useState<string[]>([]);
 
   const form = useForm<RatingFormSchemaType>({
     resolver: zodResolver(ratingFormSchema),
@@ -163,7 +164,7 @@ export default function RatingForm({
     } catch (error) {
       if (error instanceof HttpError) {
         console.error("Error submitting rating:", error.message);
-        toast.error("Failed to submit rating. Please try again.");
+        toast.error(error.message);
       } else {
         toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
       }
@@ -173,7 +174,7 @@ export default function RatingForm({
 
   const handleFeedback = async (data: {
     tourScheduleId: string;
-    description: string;
+    description: string | undefined;
   }) => {
     try {
       const response = await tourApiRequest.postFeedback(data);
@@ -186,7 +187,7 @@ export default function RatingForm({
     } catch (error) {
       if (error instanceof HttpError) {
         console.error("Error submitting feedback:", error.message);
-        toast.error("Failed to submit feedback. Please try again.");
+        toast.error(error.message);
       } else {
         toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
       }
@@ -199,15 +200,18 @@ export default function RatingForm({
         const imageFiles = selectedImages.map((image) => image.file);
         const response = await uploadApiRequest.uploadRatingImages(imageFiles);
         if (response.urls && response.urls.length > 0) {
-          return response.urls;
+          setImageUploads(response.urls);
         } else {
           console.error("No URL returned from rating image upload");
-          return [];
+          toast.error(
+            "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
+          );
         }
       } catch (error) {
         console.error("Error uploading rating image:", error);
-        toast.error("Failed to upload rating image");
-        return [];
+        toast.error(
+          "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
+        );
       }
     }
   };
@@ -223,17 +227,17 @@ export default function RatingForm({
 
     const feedbackData = {
       tourScheduleId: tourScheduleId,
-      description: data.feedback || "không có",
+      description: data.feedback,
     };
-    handleImageUpload().then((imageUrls) => {
-      handleFeedback(feedbackData);
-      if (imageUrls !== undefined && imageUrls.length > 0) {
-        ratingData.images = imageUrls;
+    handleImageUpload().then(() => {
+      if (data.feedback) {
+        handleFeedback(feedbackData);
+      }
+
+      if (imageUploads.length > 0) {
+        ratingData.images = imageUploads;
         handleRating(ratingData);
       } else {
-        toast.error(
-          "Upload ảnh không thành công, đánh giá của bạn sẽ không có ảnh",
-        );
         handleRating(ratingData);
       }
     });
@@ -283,7 +287,9 @@ export default function RatingForm({
             name="comment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold">Đánh giá của bạn</FormLabel>
+                <FormLabel className="font-semibold">
+                  Đánh giá của bạn
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Chia sẻ cảm nhận của bạn về tour này..."
@@ -301,7 +307,9 @@ export default function RatingForm({
             name="feedback"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold">Góp ý thêm về tour (Tùy chọn)</FormLabel>
+                <FormLabel className="font-semibold">
+                  Góp ý thêm về tour (Tùy chọn)
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Góp ý..."
@@ -319,7 +327,9 @@ export default function RatingForm({
             name="images"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold">Thêm ảnh (Tùy chọn)</FormLabel>
+                <FormLabel className="font-semibold">
+                  Thêm ảnh (Tùy chọn)
+                </FormLabel>
                 <FormControl>
                   <div className="mt-2">
                     <div className="flex flex-wrap gap-2">
