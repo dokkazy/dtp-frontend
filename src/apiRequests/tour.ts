@@ -21,7 +21,7 @@ export const tourApiRequest = {
   getRatingByTourId: (id: string) =>
     http.get(`${apiEndpoint.rating}/${id}`, { cache: "no-store" }),
   postRating: (body: RatingRequest) => http.post(apiEndpoint.rating, body),
-  postFeedback: (body: { tourScheduleId: string; description: string }) =>
+  postFeedback: (body: { tourScheduleId: string; description: string | undefined }) =>
     http.post(apiEndpoint.feedback, body),
 
   //next server
