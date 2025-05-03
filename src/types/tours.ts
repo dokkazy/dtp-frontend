@@ -7,7 +7,7 @@ export interface Tour {
   avgStar: number;
   totalRating: number;
   onlyFromCost: number;
-  firstDestination: {
+  firstDestination?: {
     latitude: string;
     longitude: string;
   };

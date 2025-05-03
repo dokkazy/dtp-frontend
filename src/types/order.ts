@@ -59,4 +59,13 @@ export interface OrderDetailResponse {
   paymentLinkId: string;
 }
 
+export interface Voucher {
+  code: string;
+  maxDiscountAmount: number;
+  percent: number;
+  expiryDate: string;
+  quantity: number;
+  availableVoucher: number;
+}
 
+export type VoucherList = Voucher[];

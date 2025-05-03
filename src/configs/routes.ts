@@ -51,6 +51,7 @@ export const apiEndpoint = {
   //user
   profile: "/api/user/me",
   updateProfile: "/api/user",
+  changePassword: "/api/user/password",
 
   //tour
   tours: "/api/tour",
@@ -65,6 +66,7 @@ export const apiEndpoint = {
   //order
   order: "/api/order",
   payment: "/api/payment",
+  voucher: "/api/voucher",
 
   //wallet
   wallet: "/api/wallet",

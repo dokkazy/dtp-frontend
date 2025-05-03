@@ -24,7 +24,7 @@ import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
 import envConfig from "@/configs/envConfig";
 import { HttpError } from "@/lib/http";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLoadingOverlayStore } from "@/stores/loadingStore";
 
@@ -34,6 +34,7 @@ export function RegisterForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -50,6 +51,8 @@ export function RegisterForm({
     control: form.control,
     name: ["email"],
   });
+  const password = form.watch("password");
+  const confirmPassword = form.watch("confirmPassword");
 
   useLayoutEffect(() => {
     const userName = email.split("@")[0];
@@ -220,7 +223,28 @@ export function RegisterForm({
                     Mật khẩu
                   </FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showPassword ? "text" : "password"}
+                      />
+                      {password && (
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? "Hide password" : "Show password"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -235,7 +259,28 @@ export function RegisterForm({
                     Nhập lại mật khẩu
                   </FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showPassword ? "text" : "password"}
+                      />
+                      {confirmPassword && (
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? "Hide password" : "Show password"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

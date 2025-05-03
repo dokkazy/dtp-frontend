@@ -81,19 +81,19 @@ export const getTicketKind = (ticketKind: TicketKind) => {
 };
 
 export const getOrderStatus = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.SUBMITTED:
-        return "Đã tạo";
-      case OrderStatus.AWAITING_PAYMENT:
-        return "Chờ thanh toán";
-      case OrderStatus.COMPLETED:
-        return "Đã hoàn thành";
-      case OrderStatus.CANCELLED:
-        return "Đã hủy";
-      case OrderStatus.PAID:
-        return "Đã thanh toán";
-    }
-  };
+  switch (status) {
+    case OrderStatus.SUBMITTED:
+      return "Đã tạo";
+    case OrderStatus.AWAITING_PAYMENT:
+      return "Chờ thanh toán";
+    case OrderStatus.COMPLETED:
+      return "Đã hoàn thành";
+    case OrderStatus.CANCELLED:
+      return "Đã hủy";
+    case OrderStatus.PAID:
+      return "Đã thanh toán";
+  }
+};
 
 export const formatDateToDDMMYYYY = (dateString: string) => {
   const date = new Date(dateString);
@@ -113,4 +113,17 @@ export const formatDateTime = (dateString: string | undefined) => {
   if (!dateString) return "N/A";
   const date = parseISO(dateString);
   return format(date, "HH:mm 'ngày' dd/MM/yyyy", { locale: vi });
+};
+
+export const discountPrice = (
+  price: number,
+  voucherPercent: number,
+  maxDiscount: number,
+) => {
+  const discount = price * voucherPercent;
+  if (discount > maxDiscount) {
+    return Math.floor(price - maxDiscount);
+  } else {
+    return Math.floor(price - discount);
+  }
 };

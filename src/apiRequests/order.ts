@@ -18,6 +18,7 @@ export const orderApiRequest = {
     ),
   getOrderDetailClient: (orderId: string) =>
     http.get(`${apiEndpoint.order}/${orderId}`, { cache: "no-store" }),
+  getVouchers: () => http.get(apiEndpoint.voucher, { cache: "no-store" }),
 
   cancelPayment: (paymentId: string) =>
     http.put(`${apiEndpoint.payment}/${paymentId}`, {}),

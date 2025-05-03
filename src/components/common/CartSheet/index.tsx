@@ -65,7 +65,7 @@ export default function CartSheet({
                       <div className="h-20 min-w-20 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
                         <Image
                           src={
-                            item.tour.tourDestinations[0].imageUrls[0] ||
+                            item.tour.tour.imageUrls[0] ||
                             "/images/quynhonbanner.jpg"
                           }
                           alt={item.tour.tour.title || "Tour image"}

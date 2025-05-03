@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
+import {  useState } from "react";
 
 import { cn, handleErrorApi } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ import LoadingButton from "@/components/common/loading/LoadingButton";
 import authApiRequest from "@/apiRequests/auth";
 import { HttpError, refreshToken, sessionToken } from "@/lib/http";
 import { useLoadingOverlayStore } from "@/stores/loadingStore";
+import { Eye, EyeOff } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -29,8 +31,9 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
   const redirectUrl = searchParams.get("redirect") || links.home.href;
-  const { isLoading, setLoading, setMessage } = useLoadingOverlayStore(
+  const { setLoading, setMessage } = useLoadingOverlayStore(
     (state) => state,
   );
   const form = useForm<LoginSchemaType>({
@@ -40,6 +43,8 @@ export function LoginForm({
       password: "",
     },
   });
+
+  const password = form.watch("password");
 
   const onSubmit = async (values: LoginSchemaType) => {
     try {
@@ -114,13 +119,34 @@ export function LoginForm({
                     </Link>
                   </FormLabel>
                   <FormControl>
-                    <Input {...field} type={"password"} />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showPassword ? "text" : "password"}
+                      />
+                      {password && (
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? "Hide password" : "Show password"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <LoadingButton pending={isLoading}>Đăng nhập</LoadingButton>
+            <LoadingButton pending={form.formState.isSubmitting}>Đăng nhập</LoadingButton>
             {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
                 Hoặc tiếp tục với
