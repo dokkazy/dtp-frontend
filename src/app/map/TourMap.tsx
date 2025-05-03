@@ -54,13 +54,13 @@ export default function MapPage() {
         const response = await tourApiRequest.getAll();
         if (response.status === 200) {
           setTours(response.payload);
-          console.log(response.payload[6].firstDestination);
         }
       } catch (error) {
         if (error instanceof HttpError) {
           console.error("Error fetching tours:", error.message);
           toast.error(error.message);
         } else {
+          console.log(error)
           toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
         }
       } finally {
@@ -77,8 +77,8 @@ export default function MapPage() {
     if (mapRef.current) {
       mapRef.current.flyTo({
         center: [
-          Number(tour.firstDestination.longitude),
-          Number(tour.firstDestination.latitude),
+          Number(tour?.firstDestination?.longitude),
+          Number(tour?.firstDestination?.latitude),
         ],
         zoom: 12,
         duration: 1000,
@@ -122,8 +122,8 @@ export default function MapPage() {
   const MapMarker = ({ location }: { location: Tour }) => {
     return (
       <Marker
-        longitude={Number(location.firstDestination.longitude)}
-        latitude={Number(location.firstDestination.latitude)}
+        longitude={Number(location?.firstDestination?.longitude)}
+        latitude={Number(location?.firstDestination?.latitude)}
       >
         <div
           className="map-marker flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-core text-white shadow-md transition-transform hover:scale-110"
@@ -151,7 +151,7 @@ export default function MapPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       <div
-        className={`absolute top-1/2 z-10 left-0 flex max-w-full -translate-y-1/2 sm:right-10 transform transition-all duration-300 ease-in-out sm:left-10 md:w-auto ${isSidebarVisible ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-full opacity-0"}`}
+        className={`absolute top-1/2 z-10 left-0 flex max-w-prose -translate-y-1/2 sm:right-10 transform transition-all duration-300 ease-in-out sm:left-10 md:w-auto ${isSidebarVisible ? "translate-x-0 opacity-100" : "pointer-events-none -translate-x-full opacity-0"}`}
       >
         <div className="h-[calc(100vh-8rem)] w-full overflow-hidden rounded-lg shadow-lg sm:min-w-[400px] sm:w-[550px]">
           <div className="relative h-32 w-full">
@@ -275,8 +275,8 @@ export default function MapPage() {
 
           {selectedLocation && (
             <Popup
-              longitude={Number(selectedLocation.firstDestination.longitude)}
-              latitude={Number(selectedLocation.firstDestination.latitude)}
+              longitude={Number(selectedLocation?.firstDestination?.longitude)}
+              latitude={Number(selectedLocation?.firstDestination?.latitude)}
               offset={[0, -30]}
               closeButton={false}
               closeOnClick={false}

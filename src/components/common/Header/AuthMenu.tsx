@@ -190,65 +190,69 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       id: "settings",
       label: "Cài đặt",
       icon: Settings,
-      hasSubmenu: true,
-      submenu: [
-        {
-          id: "notifications",
-          label: "Notifications",
-          icon: Bell,
-          onClick: () => setOpen(false),
-        },
-        {
-          id: "appearance",
-          label: "Appearance",
-          icon: Moon,
-          onClick: () => setOpen(false),
-        },
-        {
-          id: "language",
-          label: "Language",
-          icon: Globe,
-          hasSubmenu: true,
-          submenu: [
-            {
-              id: "english",
-              label: "English",
-              icon: Check,
-              onClick: () => setOpen(false),
-            },
-            {
-              id: "spanish",
-              label: "Spanish",
-              icon: Check,
-              onClick: () => setOpen(false),
-            },
-            {
-              id: "french",
-              label: "French",
-              icon: Check,
-              onClick: () => setOpen(false),
-            },
-            {
-              id: "german",
-              label: "German",
-              icon: Check,
-              onClick: () => setOpen(false),
-            },
-            {
-              id: "japanese",
-              label: "Japanese",
-              icon: Check,
-              onClick: () => setOpen(false),
-            },
-          ],
-        },
-        {
-          id: "privacy",
-          label: "Privacy",
-          icon: Lock,
-          onClick: () => setOpen(false),
-        },
-      ],
+      onClick: () => {
+        router.push(links.account.href);
+        setOpen(false);
+      }
+      // hasSubmenu: true,
+      // submenu: [
+      //   {
+      //     id: "notifications",
+      //     label: "Notifications",
+      //     icon: Bell,
+      //     onClick: () => setOpen(false),
+      //   },
+      //   {
+      //     id: "appearance",
+      //     label: "Appearance",
+      //     icon: Moon,
+      //     onClick: () => setOpen(false),
+      //   },
+      //   {
+      //     id: "language",
+      //     label: "Language",
+      //     icon: Globe,
+      //     hasSubmenu: true,
+      //     submenu: [
+      //       {
+      //         id: "english",
+      //         label: "English",
+      //         icon: Check,
+      //         onClick: () => setOpen(false),
+      //       },
+      //       {
+      //         id: "spanish",
+      //         label: "Spanish",
+      //         icon: Check,
+      //         onClick: () => setOpen(false),
+      //       },
+      //       {
+      //         id: "french",
+      //         label: "French",
+      //         icon: Check,
+      //         onClick: () => setOpen(false),
+      //       },
+      //       {
+      //         id: "german",
+      //         label: "German",
+      //         icon: Check,
+      //         onClick: () => setOpen(false),
+      //       },
+      //       {
+      //         id: "japanese",
+      //         label: "Japanese",
+      //         icon: Check,
+      //         onClick: () => setOpen(false),
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     id: "privacy",
+      //     label: "Privacy",
+      //     icon: Lock,
+      //     onClick: () => setOpen(false),
+      //   },
+      // ],
     },
     {
       id: "logout",

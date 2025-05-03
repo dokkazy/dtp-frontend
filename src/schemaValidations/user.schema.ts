@@ -39,3 +39,37 @@ export const userUpdateResponseSchema = z
   .strict();
 
 export type UserUpdateResponseType = z.TypeOf<typeof userUpdateResponseSchema>;
+
+export const userChangePasswordRequestSchema = z
+  .object({
+    oldPassword: z
+      .string()
+      .min(1, {
+        message: "Mật khẩu cũ không được để trống",
+      }),
+    newPassword: z
+      .string()
+      .min(1, { message: "Mật khẩu không được để trống" })
+      .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" })
+      .max(50, { message: "Mật khẩu không được quá 50 kí tự" })
+      .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).+$/, {
+        message:
+          "Mật khẩu phải chứa ít nhất một chữ cái viết hoa và một ký tự đặc biệt",
+      }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Xác nhận mật khẩu không được để trống" }),
+  })
+  .strict()
+  .superRefine(({ newPassword, confirmPassword }, ctx) => {
+    if (newPassword !== confirmPassword) {
+      return ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Mật khẩu không khớp",
+        path: ["confirmPassword"],
+      });
+    }
+    return true;
+  });
+
+  export type UserChangePasswordRequestType = z.infer<typeof userChangePasswordRequestSchema>;

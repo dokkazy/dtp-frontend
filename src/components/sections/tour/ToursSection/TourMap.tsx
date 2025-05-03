@@ -63,8 +63,8 @@ export default function TourMap() {
           {tours.map((tour) => (
             <Marker
               key={tour.id}
-              longitude={Number(tour.firstDestination.longitude)}
-              latitude={Number(tour.firstDestination.latitude)}
+              longitude={Number(tour?.firstDestination?.longitude)}
+              latitude={Number(tour?.firstDestination?.latitude)}
             >
               <div className="map-marker flex h-5 w-5 items-center justify-center rounded-full bg-core text-white">
                 <MapPin size={12} />

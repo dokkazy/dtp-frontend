@@ -246,7 +246,7 @@ export default function Profile() {
                   )}
                 />
 
-                <LoadingButton pending={isLoading}>Lưu thay đổi</LoadingButton>
+                <LoadingButton pending={form.formState.isSubmitting}>Lưu thay đổi</LoadingButton>
               </div>
             </form>
           </Form>

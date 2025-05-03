@@ -17,9 +17,13 @@ import {
 import { Steps } from "./Steps";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/providers/CartProvider";
-import { formatCurrency, getTicketKind } from "@/lib/client/utils";
+import {
+  discountPrice,
+  formatCurrency,
+  getTicketKind,
+} from "@/lib/client/utils";
 import { toast } from "sonner";
-import { OrderRequest } from "@/types/order";
+import { OrderRequest, Voucher } from "@/types/order";
 import { orderApiRequest } from "@/apiRequests/order";
 import Spinner from "@/components/common/loading/Spinner";
 import { links } from "@/configs/routes";
@@ -28,6 +32,7 @@ import { PaymentRequest } from "@/types/checkout";
 import { AddContactSheet } from "./add-contact-sheet";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { useLoadingOverlayStore } from "@/stores/loadingStore";
+import VoucherButton from "@/components/sections/checkout/voucher-button";
 
 export type Contact = {
   name: string;
@@ -42,6 +47,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
   const [isContactSheetOpen, setIsContactSheetOpen] = useState(false);
   const [contact, setContact] = useState<Contact | null>(null);
   const { paymentItem, directCheckoutItem } = useCartStore((state) => state);
+  const [voucher, setVoucher] = useState<Voucher | null>(null);
   const checkoutItem = directCheckoutItem || paymentItem;
 
   useEffect(() => {
@@ -77,7 +83,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
         name: contact?.name ?? user?.name,
         phoneNumber: contact?.phoneNumber ?? user?.phoneNumber,
         email: contact?.email ?? user?.email,
-        voucherCode: "",
+        voucherCode: voucher?.code || "",
         tickets: checkoutItem.tickets.map((ticket) => ({
           ticketTypeId: ticket.ticketTypeId,
           quantity: ticket.quantity,
@@ -142,11 +148,12 @@ export default function Checkout({ itemId }: { itemId: string }) {
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex gap-4">
-                        <div className="h-24 w-28 flex-shrink-0">
+                        <div className="w-18 h-14 flex-shrink-0 sm:h-24 sm:w-28">
                           <Image
                             src={
-                              checkoutItem?.tour?.tourDestinations[0]
-                                ?.imageUrls[0] || "/images/quynhonbanner.jpg"
+                              checkoutItem?.tour?.tour.imageUrls?.length > 0
+                                ? checkoutItem?.tour?.tour.imageUrls[0]
+                                : "/images/quynhonbanner.jpg"
                             }
                             alt={""}
                             width={300}
@@ -155,10 +162,10 @@ export default function Checkout({ itemId }: { itemId: string }) {
                           />
                         </div>
                         <div>
-                          <h3 className="mb-1 text-base font-medium">
+                          <h3 className="mb-1 text-sm font-medium sm:text-base">
                             {checkoutItem?.tour?.tour?.title}
                           </h3>
-                          <p className="mb-1 line-clamp-2 text-sm text-gray-600">
+                          <p className="mb-1 line-clamp-2 text-xs text-gray-600 sm:text-sm">
                             {checkoutItem?.tour?.tour?.description}
                           </p>
                           <p className="text-sm text-gray-600">
@@ -313,6 +320,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
                       </div>
                     </div>
                     <Separator />
+                    <VoucherButton setVoucher={setVoucher} />
                   </CardContent>
                   <CardFooter className="flex justify-between text-sm">
                     <p className="text-gray-500">Tổng cộng</p>
@@ -329,10 +337,34 @@ export default function Checkout({ itemId }: { itemId: string }) {
                         ₫ {formatCurrency(checkoutItem?.totalPrice ?? 0)}
                       </p>
                     </div>
+                    {voucher && (
+                      <div className="flex justify-between text-sm">
+                        <p className="text-gray-500">Giảm giá</p>
+                        <p className="font-medium">
+                          ₫{" "}
+                          {formatCurrency(
+                            discountPrice(
+                              voucher.percent,
+                              checkoutItem.totalPrice,
+                              voucher.maxDiscountAmount,
+                            ),
+                          )}
+                        </p>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <p className="text-gray-500">Số tiền phải thanh toán</p>
                       <p className="text-xl font-medium text-core">
-                        ₫ {formatCurrency(checkoutItem?.totalPrice ?? 0)}
+                        ₫{" "}
+                        {formatCurrency(
+                          voucher
+                            ? discountPrice(
+                                checkoutItem.totalPrice,
+                                voucher.percent,
+                                voucher.maxDiscountAmount
+                              )
+                            : (checkoutItem?.totalPrice ?? 0),
+                        )}
                       </p>
                     </div>
                   </CardContent>

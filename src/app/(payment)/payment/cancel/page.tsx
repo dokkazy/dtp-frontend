@@ -1,7 +1,7 @@
 "use client";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { HttpError } from "@/lib/http";
 export default function CancelPaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const { removePaymentItem, clearDirectCheckoutItem } = useCartStore(
     (state) => state,
   );
@@ -41,6 +42,9 @@ export default function CancelPaymentPage() {
       } else {
         toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
       }
+    } finally {
+      hasCanceledRef.current = true;
+      setLoading(false);
     }
   }, []);
 
@@ -63,18 +67,18 @@ export default function CancelPaymentPage() {
     cancelPayment,
   ]);
 
-  if (cancel === null) {
+  if (loading || cancel === null) {
     return (
       <div className="container mx-auto my-12">
-      <div className="flex flex-col items-center justify-center py-32">
-        <div className="mb-6 flex items-center justify-center">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
+        <div className="flex flex-col items-center justify-center py-32">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
+          </div>
+          <p className="text-center text-gray-500">
+            Vui lòng đợi trong giây lát
+          </p>
         </div>
-        <p className="text-center text-gray-500">
-          Vui lòng đợi trong giây lát
-        </p>
       </div>
-    </div>
     );
   }
 

@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import HeroSection from "@/components/sections/landing/HeroSection";
 import BookNextTourSection from "@/components/sections/landing/BookNextTourSection";
 import { ActivityCardSkeleton } from "@/components/common/skeletons/activity-card-skeleton";
+import AdBanner from "@/components/sections/landing/AdBanner";
+import StickyAdBanner from "@/components/sections/landing/StickyAdBanner";
 const ChoosingSection = dynamic(
   () => import("@/components/sections/landing/ChoosingSection"),
   { ssr: false },
@@ -47,11 +49,13 @@ export default function Home() {
   return (
     <div className="pb-6 sm:pb-8 lg:pb-12">
       <HeroSection />
+      {/* <AdBanner /> */}
       <ChoosingSection />
       <ActivitySection />
       <BookNextTourSection />
       <GallerySection />
       <SubscribeSection />
+      {/* <StickyAdBanner /> */}
     </div>
   );
 }

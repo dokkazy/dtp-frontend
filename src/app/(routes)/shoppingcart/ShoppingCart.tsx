@@ -17,7 +17,12 @@ import {
 import { links } from "@/configs/routes";
 import { Label } from "@/components/ui/label";
 import { useCartStore } from "@/providers/CartProvider";
-import { formatCurrency, formatPrice, getTicketKind, isDateInPast } from "@/lib/client/utils";
+import {
+  formatCurrency,
+  formatPrice,
+  getTicketKind,
+  isDateInPast,
+} from "@/lib/client/utils";
 import { useSyncCartAcrossTabs } from "@/hooks/useSyncCartAcrossTabs";
 import { Input } from "@/components/ui/input";
 
@@ -221,16 +226,16 @@ export default function ShoppingCart() {
                         </div>
                         <div className="flex w-full">
                           <div className="flex basis-[70%] gap-6">
-                            <div className="flex-shrink-0 h-20 w-20">
+                            <div className="h-20 w-20 flex-shrink-0">
                               <Image
                                 src={
-                                  item.tour.tourDestinations[0].imageUrls[0] ||
+                                  item.tour.tour.imageUrls[0] ||
                                   "/images/quynhonbanner.jpg"
                                 }
                                 alt={""}
                                 width={300}
                                 height={300}
-                                className="rounded-md size-full object-cover"
+                                className="size-full rounded-md object-cover"
                               />
                             </div>
                             <div className="space-y-1">

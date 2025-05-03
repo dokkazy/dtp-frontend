@@ -1,6 +1,9 @@
 import { apiEndpoint } from "@/configs/routes";
 import http from "@/lib/http";
-import { UserUpdateRequestType } from "@/schemaValidations/user.schema";
+import {
+  UserChangePasswordRequestType,
+  UserUpdateRequestType,
+} from "@/schemaValidations/user.schema";
 
 const userApiRequest = {
   me: (sessionToken?: string) =>
@@ -15,6 +18,10 @@ const userApiRequest = {
 
   updateMe: (body: UserUpdateRequestType) =>
     http.put(apiEndpoint.updateProfile, body),
+
+  changePassword: (
+    body: Omit<UserChangePasswordRequestType, "confirmPassword">,
+  ) => http.put(apiEndpoint.changePassword, body),
 };
 
 export default userApiRequest;
