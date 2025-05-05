@@ -1,4 +1,4 @@
-import envConfig from "@/configs/envConfig"
+import { chatApiRequest } from "@/apiRequests/chat"
 import { create } from "zustand"
 
 export type Message = {
@@ -45,21 +45,7 @@ export const useChatStore = create<ChatState>()((set, get) => ({
     }))
 
     try {
-      const response = await fetch(`${envConfig.NEXT_PUBLIC_AI_AGENT_URL}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: message,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = await chatApiRequest.chat(message)
       console.log("Response from API:", data)
 
       // Add assistant message to the chat
