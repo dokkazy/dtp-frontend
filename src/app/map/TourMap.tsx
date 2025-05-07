@@ -122,8 +122,8 @@ export default function MapPage() {
   const MapMarker = ({ location }: { location: Tour }) => {
     return (
       <Marker
-        longitude={Number(location?.firstDestination?.longitude)}
-        latitude={Number(location?.firstDestination?.latitude)}
+        longitude={Number(location?.firstDestination?.longitude) || center.lng}
+        latitude={Number(location?.firstDestination?.latitude) || center.lat}
       >
         <div
           className="map-marker flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-core text-white shadow-md transition-transform hover:scale-110"
@@ -275,8 +275,8 @@ export default function MapPage() {
 
           {selectedLocation && (
             <Popup
-              longitude={Number(selectedLocation?.firstDestination?.longitude)}
-              latitude={Number(selectedLocation?.firstDestination?.latitude)}
+              longitude={Number(selectedLocation?.firstDestination?.longitude) || center.lng}
+              latitude={Number(selectedLocation?.firstDestination?.latitude) || center.lat}
               offset={[0, -30]}
               closeButton={false}
               closeOnClick={false}
