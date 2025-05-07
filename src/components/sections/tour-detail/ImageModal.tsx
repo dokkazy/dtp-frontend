@@ -75,7 +75,7 @@ export default function ImageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[95vw] h-[95vh] z-[9999991]  p-0 bg-black border-none">
+      <DialogContent className="max-w-[95vw] h-[95vh] p-0 bg-black border-none">
         <div className="flex flex-col h-full w-full relative">
           {/* Close button */}
           <button 
