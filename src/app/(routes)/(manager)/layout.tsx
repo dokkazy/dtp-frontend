@@ -1,4 +1,4 @@
-import AbortLayout from "@/app/(routes)/(manager)/AbortLayout";
+import AbortLayout from "./AbortLayout";
 
 export default function ManagerLayout({
   children,

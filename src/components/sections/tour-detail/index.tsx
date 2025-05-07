@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronRight, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import DOMPurify from "dompurify";
 
 import {
   Breadcrumb,
@@ -53,7 +54,10 @@ const ServiceDetail = dynamic(() => import("./ServiceDetail"), {
 });
 
 export default function TourDetail({ data }: { data: Tour | null }) {
-  const markup = { __html: `${data?.tour?.about}` };
+  const markupAbout = { __html: DOMPurify.sanitize(`${data?.tour?.about}`) };
+  const markupDescription = {
+    __html: DOMPurify.sanitize(`${data?.tour?.description}`),
+  };
   const handleServiceRef = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string,
@@ -112,9 +116,9 @@ export default function TourDetail({ data }: { data: Tour | null }) {
             <div className="col-span-full max-w-full space-y-8 md:col-span-8 md:space-y-16">
               <Card>
                 <CardContent className="relative h-32 space-y-4 overflow-hidden p-6 md:h-48">
-                  <p className="overflow-hidden text-sm md:text-base">
-                    {data?.tour?.description}
-                  </p>
+                  <div className="overflow-hidden text-sm md:text-base">
+                    <div dangerouslySetInnerHTML={markupDescription} />
+                  </div>
                   <div className="absolute bottom-0 left-0 right-0 flex h-[52px] items-center justify-between bg-gradient-to-t from-white to-transparent p-6 backdrop-blur-[6px] hover:underline">
                     <Drawer>
                       <DrawerTrigger asChild>
@@ -130,7 +134,7 @@ export default function TourDetail({ data }: { data: Tour | null }) {
                           <h1 className="text-xl font-bold">Điểm nổi bật</h1>
                         </DrawerHeader>
                         <ScrollArea className="h-[400px] w-full rounded-md p-4">
-                          <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
+                          {/* <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
                             {data?.tour?.description
                               .split(".")
                               .map((sentence) => sentence.trim())
@@ -144,6 +148,8 @@ export default function TourDetail({ data }: { data: Tour | null }) {
                                 </li>
                               ))}
                           </ul>
+                           */}
+                          <div dangerouslySetInnerHTML={markupDescription} />
                           <ScrollBar />
                         </ScrollArea>
                       </DrawerContent>
@@ -162,20 +168,10 @@ export default function TourDetail({ data }: { data: Tour | null }) {
                           <h1 className="text-xl font-bold">Điểm nổi bật</h1>
                         </DialogHeader>
                         <ScrollArea className="h-[400px] w-full rounded-md p-4">
-                          <ul className="list-disc space-y-2 pl-4 text-base text-muted-foreground">
-                            {data?.tour?.description
-                              .split(".")
-                              .map((sentence) => sentence.trim())
-                              .filter((sentence) => sentence)
-                              .map((sentence, index) => (
-                                <li
-                                  className="text-base text-black"
-                                  key={index}
-                                >
-                                  {sentence}
-                                </li>
-                              ))}
-                          </ul>
+                          <div
+                            dangerouslySetInnerHTML={markupDescription}
+                            className="px-4"
+                          />
                           <ScrollBar />
                         </ScrollArea>
                       </DialogContent>
@@ -200,7 +196,7 @@ export default function TourDetail({ data }: { data: Tour | null }) {
                 <h2 className="relative mb-4 pl-3 text-xl font-bold before:absolute before:left-0 before:top-1/2 before:mr-2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-core before:content-[''] md:text-3xl md:before:h-8">
                   Về dịch vụ này
                 </h2>
-                <div dangerouslySetInnerHTML={markup} className="px-4" />
+                <div dangerouslySetInnerHTML={markupAbout} className="px-4" />
               </div>
 
               <div className="mt-12">

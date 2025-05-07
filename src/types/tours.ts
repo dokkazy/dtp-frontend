@@ -118,6 +118,7 @@ export interface FeedbackRequest {
 
 export interface RatingRequest {
   tourId: string;
+  bookingId: string;
   star: number;
   comment: string;
   images: string[];

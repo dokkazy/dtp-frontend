@@ -112,6 +112,7 @@ export default async function RatingPage({
         </div>
       </div>
       <RatingForm
+        orderId={params.id}
         tourId={orderDetail.tourId}
         tourScheduleId={orderDetail.tourScheduleId}
       />

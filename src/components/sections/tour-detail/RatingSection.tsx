@@ -71,8 +71,7 @@ export default function RatingSection() {
     );
   };
 
-  const handleShowRatingModal = (rating: RatingResponse) => {
-    // setSelectedRating(rating);
+  const handleShowRatingModal = () => {
     setShowRatingModal(!showRatingModal);
   };
 
@@ -178,7 +177,7 @@ export default function RatingSection() {
                 setCurrentImageIndex(0);
                 setSelectedRating(item);
               }}
-              onClick={() => handleShowRatingModal(item)}
+              onClick={() => handleShowRatingModal()}
               className="mb-4 grid grid-cols-2 gap-2 hover:cursor-zoom-in sm:grid-cols-4 md:grid-cols-6"
             >
               {item.images.map((src, index) => {
