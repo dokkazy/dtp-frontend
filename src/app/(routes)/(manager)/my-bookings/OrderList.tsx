@@ -120,6 +120,7 @@ export default function OrderList() {
                 >
                   <Link href={`${links.bookings.href}/${order.orderId}`}>
                     <div className="flex items-start gap-4 p-4">
+                      
                       <div className="flex-1">
                         <div className="flex items-start gap-3">
                           <div className="rounded bg-teal-100 p-1 text-teal-600">

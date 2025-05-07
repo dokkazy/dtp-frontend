@@ -1,5 +1,6 @@
 import { MapPin, Sun, Coffee } from "lucide-react";
 import Image from "next/image";
+import DOMPurify from 'dompurify'
 
 import { Card, CardContent } from "@/components/ui/card";
 import { TourActivity, TourDestination, TourDetail } from "@/types/tours";
@@ -69,8 +70,8 @@ export default function ServiceDetail({ data }: { data: TourDetail | null }) {
     .map(Number)
     .sort((a, b) => a - b);
 
-  const markupPickInfor = { __html: `${data?.tour.pickinfor}` };
-  const markupInclude = { __html: `${data?.tour.include}` };
+  const markupPickInfor = { __html: DOMPurify.sanitize(`${data?.tour.pickinfor}`) };
+  const markupInclude = { __html: DOMPurify.sanitize(`${data?.tour.include}`) };
   return (
     <div className="w-full rounded-lg border p-6">
       <Accordion type="multiple" className="w-full pb-6">

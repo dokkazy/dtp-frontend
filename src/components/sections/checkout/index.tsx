@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import DOMPurify from "dompurify";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -165,9 +166,16 @@ export default function Checkout({ itemId }: { itemId: string }) {
                           <h3 className="mb-1 text-sm font-medium sm:text-base">
                             {checkoutItem?.tour?.tour?.title}
                           </h3>
-                          <p className="mb-1 line-clamp-2 text-xs text-gray-600 sm:text-sm">
-                            {checkoutItem?.tour?.tour?.description}
-                          </p>
+                          <div className="mb-1 line-clamp-2 text-xs text-gray-600 sm:text-sm">
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                  `${checkoutItem?.tour?.tour?.description}`,
+                                ),
+                              }}
+                              className="px-4"
+                            />
+                          </div>
                           <p className="text-sm text-gray-600">
                             {checkoutItem?.day}
                           </p>
@@ -361,7 +369,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
                             ? discountPrice(
                                 checkoutItem.totalPrice,
                                 voucher.percent,
-                                voucher.maxDiscountAmount
+                                voucher.maxDiscountAmount,
                               )
                             : (checkoutItem?.totalPrice ?? 0),
                         )}

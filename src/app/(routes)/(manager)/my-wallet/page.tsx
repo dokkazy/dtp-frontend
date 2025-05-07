@@ -1,4 +1,4 @@
-import WalletDataTable from "@/app/(routes)/(manager)/my-wallet/Wallet";
+import Wallet from "@/app/(routes)/(manager)/my-wallet/Wallet";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,7 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function WalletPage() {
-  return (
-    <WalletDataTable/>
-  )
+  return <Wallet />;
 }

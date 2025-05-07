@@ -49,11 +49,13 @@ const ratingFormSchema = z.object({
 type RatingFormSchemaType = z.infer<typeof ratingFormSchema>;
 
 export default function RatingForm({
+  orderId,
   tourId,
   tourScheduleId,
 }: {
   tourId: string;
   tourScheduleId: string;
+  orderId: string;
 }) {
   const router = useRouter();
   const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
@@ -220,6 +222,7 @@ export default function RatingForm({
     setLoading(true);
     const ratingData: RatingRequest = {
       tourId,
+      bookingId: orderId,
       star: data.star,
       comment: data.comment,
       images: data.images || [],
@@ -229,18 +232,17 @@ export default function RatingForm({
       tourScheduleId: tourScheduleId,
       description: data.feedback,
     };
-    handleImageUpload().then(() => {
-      if (data.feedback) {
-        handleFeedback(feedbackData);
-      }
-
-      if (imageUploads.length > 0) {
-        ratingData.images = imageUploads;
+    if (imageUploads.length > 0) {
+      ratingData.images = imageUploads;
+      handleRating(ratingData);
+    } else {
+      handleImageUpload().then(() => {
+        if (data.feedback) {
+          handleFeedback(feedbackData);
+        }
         handleRating(ratingData);
-      } else {
-        handleRating(ratingData);
-      }
-    });
+      });
+    }
   }
 
   return (
@@ -388,6 +390,7 @@ export default function RatingForm({
               variant="outline"
               className="[425px]:basis-1/2 w-full"
               size="lg"
+              disabled={isLoading}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();

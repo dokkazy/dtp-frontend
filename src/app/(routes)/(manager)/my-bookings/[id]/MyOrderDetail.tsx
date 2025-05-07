@@ -125,23 +125,23 @@ export default function MyOrderDetail({ id }: { id: string }) {
   if (loading) {
     return (
       <div className="container mx-auto my-12">
-      <div className="flex flex-col items-center justify-center py-32">
-        <div className="mb-6 flex items-center justify-center">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
+        <div className="flex flex-col items-center justify-center py-32">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-gray-200 border-t-core"></div>
+          </div>
+          <h2 className="mb-2 text-2xl font-semibold text-gray-700">
+            Đang tải thông tin booking...
+          </h2>
+          <p className="text-center text-gray-500">
+            Vui lòng đợi trong giây lát để xem chi tiết.
+          </p>
         </div>
-        <h2 className="mb-2 text-2xl font-semibold text-gray-700">
-          Đang tải thông tin booking...
-        </h2>
-        <p className="text-center text-gray-500">
-          Vui lòng đợi trong giây lát để xem chi tiết.
-        </p>
       </div>
-    </div>
     );
   }
   return (
-    <div className="mx-auto mb-12 mt-24 min-h-screen max-w-7xl pb-6 sm:pb-8 lg:pb-12">
-      <div className="container mx-auto grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-3">
+    <div className="mx-auto mb-12 min-h-screen max-w-7xl pb-6 sm:pb-8 lg:pb-12">
+      <div className="container mx-auto grid grid-cols-1 gap-6 px-4 py-6">
         <div className="space-y-6 lg:col-span-2">
           {(orderDetail?.status === OrderStatus.SUBMITTED ||
             orderDetail?.status === OrderStatus.AWAITING_PAYMENT) && (
@@ -270,20 +270,14 @@ export default function MyOrderDetail({ id }: { id: string }) {
                   <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
                     <li>
                       <p>
-                        Tour đã thanh toán sẽ không được hoàn tiền nếu hủy trong
-                        vòng 12h trước khi tour bắt đầu.
+                        Trong vòng 24h sau khi thanh toán, Khách hàng hủy tour
+                        sẽ được hoàn 100% số tiền và 70% cho thời gian sau đó.
                       </p>
                     </li>
                     <li>
                       <p>
-                        Nếu hủy trong vòng 24h trước khi tour bắt đầu, bạn sẽ
-                        được hoàn tiền 50% giá trị tour.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Tour đã thanh toán sẽ được hoàn tiền 100% nếu hủy trước
-                        3 ngày trước khi tour bắt đầu.
+                        Không được hoàn tiền đối với khách hàng hủy tour trước
+                        ngày khởi hành 4 ngày.
                       </p>
                     </li>
                   </ul>
