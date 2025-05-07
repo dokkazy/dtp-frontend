@@ -235,7 +235,7 @@ export default function RatingSection() {
         </div>
       )}
       <Dialog open={showRatingModal} onOpenChange={setShowRatingModal}>
-        <DialogContent className="z-[9999991] max-w-2xl sm:max-w-4xl lg:max-w-7xl h-[90vh] overflow-hidden rounded-lg">
+        <DialogContent className="max-w-2xl sm:max-w-4xl lg:max-w-7xl h-[90vh] overflow-hidden rounded-lg">
           <div className="flex h-full flex-col md:flex-row">
             {/* Main image section */}
             <div className="relative h-[300px] w-full md:h-[500px] md:w-2/3">

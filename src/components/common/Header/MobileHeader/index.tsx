@@ -51,7 +51,7 @@ export default function MobileHeader({
             <Menu />
           </Button>
           <Sheet open={isOpen} onOpenChange={() => setIsOpen(false)}>
-            <SheetContent side={"top"} className="w-full">
+            <SheetContent side={"top"} className="w-full z-[9999992]">
               <nav className="mb-6 flex flex-col gap-4 p-2">
                 {navLinks.map((link, index) => (
                   <div key={index}>
