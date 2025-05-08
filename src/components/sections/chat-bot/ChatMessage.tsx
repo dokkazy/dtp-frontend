@@ -1,6 +1,8 @@
+import { Bot, User } from "lucide-react";
+import DOMPurify from "dompurify";
+
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { Bot, User } from "lucide-react";
 import { Message } from "@/stores/chatStore";
 
 interface ChatMessageProps {
@@ -45,7 +47,16 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             : "bg-muted",
         )}
       >
-        {formatContent(message.content)}
+        {message.role === "assistant" ? (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(message.content),
+            }}
+            className="prose prose-sm dark:prose-invert max-w-none"
+          />
+        ) : (
+          formatContent(message.content)
+        )}
       </div>
     </div>
   );
