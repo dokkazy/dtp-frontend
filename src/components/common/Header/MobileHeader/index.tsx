@@ -32,7 +32,7 @@ export default function MobileHeader({
     <header
       className={cn(
         "header",
-        `fixed left-0 right-0 top-0 z-50 block transition-all duration-300 lg:hidden`,
+        `fixed left-0 right-0 top-0 z-10 block transition-all duration-300 lg:hidden`,
         `${specialLinks?.includes(pathname) ? "" : "bg-white"}`,
         `${scrolled ? "bg-background/80 shadow-sm backdrop-blur-md" : "bg-transparent"}`,
       )}

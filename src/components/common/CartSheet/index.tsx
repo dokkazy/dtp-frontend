@@ -27,7 +27,7 @@ export default function CartSheet({
   return (
     <Sheet open={openCart} onOpenChange={setOpenCart}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent side={side} className="z-[9999992] w-full md:w-10/12">
+      <SheetContent side={side} className="w-full md:w-10/12">
         <div className="relative h-full w-full space-y-3">
           <div className="border-b p-2">
             <h1 className="text-lg font-semibold text-primary">

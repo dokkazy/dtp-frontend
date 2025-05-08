@@ -270,7 +270,7 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
     <>
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
-        <PopoverContent autoFocus={false} className="z-[9999991] w-[240px] p-0">
+        <PopoverContent autoFocus={false} className="z-20 w-[240px] p-0">
           {menuStack.length > 0 && (
             <div className="flex items-center border-b p-2">
               <Button
