@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { type FormEvent, useRef, useEffect } from "react";
+import { type FormEvent, useRef, useEffect, useState } from "react";
 import {
   Send,
   Maximize2,
@@ -10,23 +10,13 @@ import {
   ArrowUpRight,
   X,
   RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatMessage from "./ChatMessage";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Message } from "@/stores/chatStore";
 
 interface ChatInterfaceProps {
@@ -57,11 +47,28 @@ export default function ChatInterface({
   resetChat,
 }: ChatInterfaceProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleResetChat = () => {
+    if (!resetChat) return;
+    setShowResetConfirmation(true);
+  };
+
+  const confirmReset = () => {
+    if (resetChat) {
+      resetChat();
+    }
+    setShowResetConfirmation(false);
+  };
+
+  const cancelReset = () => {
+    setShowResetConfirmation(false);
+  };
 
   return (
     <Card className="flex h-full flex-col rounded-none border-0">
@@ -69,36 +76,15 @@ export default function ChatInterface({
         <div className="font-semibold">Trợ lý AI</div>
         <div className="flex items-center gap-2">
           {resetChat && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  title="Reset Chat"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-red-500">Làm mới</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Làm mới sẽ xóa tất cả tin nhắn trong cuộc trò chuyện hiện
-                    tại. Hành động này không thể hoàn tác.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Hủy</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={resetChat}
-                    className="bg-red-500 text-white hover:bg-red-600 focus:ring-red-500"
-                  >
-                    Đồng ý
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              title="Reset Chat"
+              onClick={handleResetChat}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
           )}
           <Button
             variant="ghost"
@@ -141,6 +127,34 @@ export default function ChatInterface({
             messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))
+          )}
+          {showResetConfirmation && (
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900/50 dark:bg-yellow-900/20">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                <div className="flex-1">
+                  <h4 className="mb-2 font-medium text-yellow-800 dark:text-yellow-300">
+                    Làm mới cuộc trò chuyện
+                  </h4>
+                  <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-400">
+                    Làm mới sẽ xóa tất cả tin nhắn trong cuộc trò chuyện hiện
+                    tại. Hành động này không thể hoàn tác.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={confirmReset}
+                    >
+                      Đồng ý
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={cancelReset}>
+                      Hủy
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           {isLoading && (
             <div className="flex items-center space-x-2">
