@@ -66,7 +66,7 @@ export function AddContactSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="z-[9999992]">
+      <SheetContent>
         <SheetHeader>
           <SheetTitle>Thêm thông tin liên lạc</SheetTitle>
         </SheetHeader>

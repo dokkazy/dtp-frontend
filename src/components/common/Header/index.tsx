@@ -43,7 +43,7 @@ export default function Header() {
       <header
         className={cn(
           "header overflow-hidden",
-          `fixed left-0 right-0 top-0 z-[999999] block transition-all duration-300 max-lg:hidden`,
+          `fixed left-0 right-0 top-0 z-10 block transition-all duration-300 max-lg:hidden`,
           `${scrolled ? "bg-background/80 shadow-sm backdrop-blur-md" : "bg-transparent"}`,
         )}
       >

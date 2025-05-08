@@ -24,7 +24,7 @@ const LoadingBar = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 h-1 bg-core z-[9999991]"
+      className="fixed top-0 left-0 h-1 bg-core z-20"
       initial={{ width: "0%" }}
       animate={{ width: `${progress}%` }}
       transition={{ ease: "linear", duration: 0.3 }}
