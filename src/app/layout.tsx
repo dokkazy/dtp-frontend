@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import { cookies } from "next/headers";
-import { GoogleAnalytics } from "@next/third-parties/google";
 
 import "./globals.css";
 import LoadingBar from "@/components/common/loading/LoadingBar";
@@ -96,7 +95,6 @@ export default async function RootLayout({
           </CartProvider>
         </AuthProvider>
       </body>
-      <GoogleAnalytics gaId="G-XYZ" />
     </html>
   );
 }

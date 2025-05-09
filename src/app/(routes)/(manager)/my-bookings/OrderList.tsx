@@ -2,62 +2,24 @@
 "use client";
 import { ChevronDown, LandPlot } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect } from "react";
 
-import { OrderResponse, OrderStatus } from "@/types/order";
+import { OrderStatus } from "@/types/order";
 import { formatDate } from "@/lib/utils";
 import { formatPrice, getOrderStatus, getTicketKind } from "@/lib/client/utils";
 import { Button } from "@/components/ui/button";
-import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { links } from "@/configs/routes";
-import { HttpError } from "@/lib/http";
-
-const ORDERS_PER_PAGE = 5;
+import { useOrderStore } from "@/stores/orderStore";
 
 export default function OrderList() {
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
-  const [displayedOrders, setDisplayedOrders] = useState<OrderResponse[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const { displayedOrders, loading, hasMore, fetchOrders, loadMore } =
+    useOrderStore();
 
   useEffect(() => {
-    setLoading(true);
-    const fetchOrders = async () => {
-      try {
-        const response = await orderApiRequest.getOrders();
-        if (response.status === 200) {
-          const allOrders = response.payload;
-          console.log("Sorted Orders:", allOrders);
-          setOrders(allOrders);
-
-          const initialOrders = allOrders.slice(0, ORDERS_PER_PAGE);
-          setDisplayedOrders(initialOrders);
-          setHasMore(allOrders.length > ORDERS_PER_PAGE);
-          setLoading(false);
-        }
-      } catch (error) {
-        if (error instanceof HttpError) {
-          console.log("Error fetching orders:", error);
-        } else {
-          toast.error("Đã có lỗi xảy ra trong quá trình tải đơn hàng.");
-        }
-        setLoading(false);
-      }
-    };
     fetchOrders();
-  }, []);
-
-  const loadMore = () => {
-    const nextPage = currentPage + 1;
-    const nextBatch = orders.slice(0, nextPage * ORDERS_PER_PAGE);
-    setDisplayedOrders(nextBatch);
-    setCurrentPage(nextPage);
-    setHasMore(nextBatch.length < orders.length);
-  };
+  }, [fetchOrders]);
 
   if (loading) {
     return (
@@ -120,7 +82,6 @@ export default function OrderList() {
                 >
                   <Link href={`${links.bookings.href}/${order.orderId}`}>
                     <div className="flex items-start gap-4 p-4">
-                      
                       <div className="flex-1">
                         <div className="flex items-start gap-3">
                           <div className="rounded bg-teal-100 p-1 text-teal-600">

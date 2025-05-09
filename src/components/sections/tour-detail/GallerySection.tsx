@@ -66,7 +66,7 @@ export default function GallerySection({ data }: { data: TourDetail | null }) {
         <Button
           variant="outline"
           size="lg"
-          className="absolute bottom-4 right-4 z-10 border border-black"
+          className="absolute bottom-4 right-4 z-[5] border border-black"
           onClick={handleShowGallery}
         >
           Thư viện ảnh

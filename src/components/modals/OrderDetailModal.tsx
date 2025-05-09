@@ -22,6 +22,7 @@ import { links } from "@/configs/routes";
 import { PaymentRequest } from "@/types/checkout";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useOrderStore } from "@/stores/orderStore";
 
 interface OrderDetailModalProps {
   id: string;
@@ -29,6 +30,7 @@ interface OrderDetailModalProps {
 }
 
 export function OrderDetailModal({ id, isOpen }: OrderDetailModalProps) {
+  const fetchOrders = useOrderStore((state) => state.fetchOrders);
   const [loading, setLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
@@ -111,8 +113,9 @@ export function OrderDetailModal({ id, isOpen }: OrderDetailModalProps) {
         return;
       }
       toast.success("Hủy thanh toán thành công");
-      window.location.reload();
-      
+      await fetchOrders();
+      router.push(links.bookings.href);
+      setOpen(false);
     } catch (error) {
       if (error instanceof HttpError) {
         console.error("Error cancelling payment:", error.payload.message);
@@ -310,17 +313,17 @@ export function OrderDetailModal({ id, isOpen }: OrderDetailModalProps) {
               </h3>
               <div className="rounded-md bg-gray-50 p-3">
                 <div className="mb-2 text-sm text-gray-600">Tour Ghép</div>
-                <div className="flex flex-col gap-2 md:flex-row md:justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">
-                      {formatDate(orderDetail?.tourDate)}
-                    </span>
+                <div className="flex justify-between">
+                  <p className="text-base">
+                    {formatDate(orderDetail?.tourDate)}
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {orderDetail?.orderTickets.map((ticket) => (
+                      <div key={ticket.ticketTypeId} className="text-base">
+                        {ticket.quantity} x {getTicketKind(ticket.ticketKind)}
+                      </div>
+                    ))}
                   </div>
-                  {orderDetail?.orderTickets.map((ticket) => (
-                    <div key={ticket.ticketTypeId} className="text-base">
-                      {ticket.quantity} x {getTicketKind(ticket.ticketKind)}
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
