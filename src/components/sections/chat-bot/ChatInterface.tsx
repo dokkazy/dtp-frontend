@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ChatMessage from "./ChatMessage";
 import { Message } from "@/stores/chatStore";
+import { chatApiRequest } from "@/apiRequests/chat";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -59,11 +60,16 @@ export default function ChatInterface({
     setShowResetConfirmation(true);
   };
 
-  const confirmReset = () => {
+  const confirmReset = async () => {
     if (resetChat) {
       resetChat();
     }
     setShowResetConfirmation(false);
+    try {
+      await chatApiRequest.reset();
+    } catch (error) {
+      console.error("Error resetting chat:", error);
+    }
   };
 
   const cancelReset = () => {
