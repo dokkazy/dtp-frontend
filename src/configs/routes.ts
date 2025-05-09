@@ -73,4 +73,8 @@ export const apiEndpoint = {
   otp: "/api/wallet/otp",
   withdrawWithOtp: "/api/wallet/withdraw",
   deposit: "/api/wallet/deposit",
+
+  //chatbot
+  chat: "/api/Chat",
+  reset: "/api/Chat/reset",
 };
