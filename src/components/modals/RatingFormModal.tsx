@@ -152,6 +152,7 @@ export function RatingFormModal({ id, isOpen }: RatingFormModalProps) {
 
             {/* Rating Form */}
             <RatingForm
+              onClose={() => onOpenChange(false)}
               orderId={id}
               tourId={orderDetail.tourId}
               tourScheduleId={orderDetail.tourScheduleId}

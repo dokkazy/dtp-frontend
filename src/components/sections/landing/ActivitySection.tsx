@@ -51,9 +51,8 @@ const mockActivities = [
 async function getActivities() {
   try {
     const res = await tourApiRequest.getOdataTour({
-      $top: 3,
-      $filter: "isDeleted eq false",
-      $orderby: "createdAt desc",
+      $top:3,
+      $orderby: "CommissionRate desc"
     });
     if (res.status === 200) {
       return res.payload.value;
@@ -175,14 +174,14 @@ export default async function ActivitySection() {
                       {activity.title}
                     </p>
                     <p className="text-sm text-gray-400 line-through md:text-xs">
-                      {formatPrice(activity.onlyFromCost)}
+                      {formatPrice(activity.onlyFromCost * 1.2)}
                     </p>
                     <div className="flex items-center justify-between">
                       <p className="text-base text-core md:text-sm">
                         Đặt từ hôm nay
                       </p>
                       <p className="text-xl font-bold text-red-500 md:text-lg">
-                        700.000đ
+                        {formatPrice(activity.onlyFromCost)}
                       </p>
                     </div>
                     <div className="flex justify-between">

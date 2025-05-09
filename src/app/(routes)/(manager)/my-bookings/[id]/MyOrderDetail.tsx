@@ -21,7 +21,7 @@ export default function MyOrderDetail({ id }: { id: string }) {
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
     null,
   );
-
+  
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -286,45 +286,59 @@ export default function MyOrderDetail({ id }: { id: string }) {
             </div>
           )}
           <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-3 text-2xl font-medium">
+            <h3 className="mb-3 text-lg font-medium sm:text-2xl">
               {orderDetail?.tourName}
             </h3>
             <div className="rounded-md bg-gray-50 p-3">
-              <div className="mb-2 text-base text-gray-600">Tour Ghép</div>
-              <div className="flex flex-col gap-2 md:flex-row md:justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">
-                    {formatDate(orderDetail?.tourDate)}
-                  </span>
+              <div className="mb-2 text-sm text-gray-600 sm:text-base">
+                Tour Ghép
+              </div>
+              <div className="flex justify-between">
+                <p className="text-sm sm:text-base">
+                  {formatDate(orderDetail?.tourDate)}
+                </p>
+                <div className="text-sm sm:text-base">
+                  {orderDetail?.orderTickets.map((ticket) => (
+                    <div key={ticket.ticketTypeId}>
+                      {ticket.quantity} x {getTicketKind(ticket.ticketKind)}
+                    </div>
+                  ))}
                 </div>
-                {orderDetail?.orderTickets.map((ticket) => (
-                  <div key={ticket.ticketTypeId} className="text-base">
-                    {ticket.quantity} x {getTicketKind(ticket.ticketKind)}
-                  </div>
-                ))}
               </div>
             </div>
           </div>
           <div className="rounded-lg bg-white p-6 shadow">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-2xl font-medium">Thông tin khách hàng</h3>
+              <h3 className="text-lg font-medium sm:text-2xl">
+                Thông tin khách hàng
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-base text-gray-600">
+                  <span className="text-sm text-gray-600 sm:text-base">
                     Tên khách hàng
                   </span>
-                  <span className="text-base">{orderDetail?.name}</span>
+                  <span className="text-sm sm:text-base">
+                    {orderDetail?.name}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-base text-gray-600">Số điện thoại</span>
-                  <span className="text-base">{orderDetail?.phoneNumber}</span>
+                  <span className="text-sm text-gray-600 sm:text-base">
+                    Số điện thoại
+                  </span>
+                  <span className="text-sm sm:text-base">
+                    {orderDetail?.phoneNumber}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-base text-gray-600">Email</span>
-                  <span className="text-base">{orderDetail?.email}</span>
+                  <span className="text-sm text-gray-600 sm:text-base">
+                    Email
+                  </span>
+                  <span className="text-sm sm:text-base">
+                    {orderDetail?.email}
+                  </span>
                 </div>
               </div>
             </div>
@@ -333,7 +347,9 @@ export default function MyOrderDetail({ id }: { id: string }) {
 
         <div className="space-y-6">
           <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-2xl font-medium">Liên hệ nhà điều hành</h3>
+            <h3 className="mb-4 text-lg font-medium sm:text-2xl">
+              Liên hệ nhà điều hành
+            </h3>
             <div className="flex items-start gap-3">
               <Phone className="mt-0.5 h-5 w-5 text-gray-500" />
               <div>
@@ -346,7 +362,9 @@ export default function MyOrderDetail({ id }: { id: string }) {
           </div>
 
           <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-2xl font-medium">Liên hệ BinhDinhTour</h3>
+            <h3 className="mb-4 text-lg font-medium sm:text-2xl">
+              Liên hệ BinhDinhTour
+            </h3>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 hover:cursor-pointer">
                 <MessageCircle className="h-5 w-5 text-gray-500" />
@@ -357,16 +375,16 @@ export default function MyOrderDetail({ id }: { id: string }) {
           </div>
 
           <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="mb-4 text-2xl font-medium">
+            <h3 className="mb-4 text-lg font-medium sm:text-2xl">
               Thông tin cơ bản về đơn hàng
             </h3>
 
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-base">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm sm:text-base">
                 <span className="text-gray-600">Tour code:</span>
                 <span className="font-medium">{orderDetail?.code}</span>
               </div>
-              <div className="flex justify-between text-base">
+              <div className="flex justify-between text-sm sm:text-base">
                 <span className="text-gray-600">Ngày đặt đơn:</span>
                 <span>{formatDateTime(orderDetail?.orderDate)}</span>
               </div>

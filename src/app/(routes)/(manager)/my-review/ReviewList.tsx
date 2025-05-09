@@ -2,66 +2,23 @@
 "use client";
 import { ChevronDown, LandPlot, PenLine } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useEffect } from "react";
 import Link from "next/link";
 
-import { OrderResponse, OrderStatus } from "@/types/order";
 import { formatDate, getTicketKind } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { orderApiRequest } from "@/apiRequests/order";
 import { Skeleton } from "@/components/ui/skeleton";
-import { HttpError } from "@/lib/http";
 import { links } from "@/configs/routes";
+import { useOrderStore } from "@/stores/orderStore";
 
-const ORDERS_PER_PAGE = 5;
 
 export default function ReviewList() {
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
-  const [displayedOrders, setDisplayedOrders] = useState<OrderResponse[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const { displayedOrders, loading, hasMore, fetchOrders, loadMore } = useOrderStore();
 
-  useEffect(() => {
-    setLoading(true);
-    const fetchOrders = async () => {
-      try {
-        const response = await orderApiRequest.getOrders();
-        if (response.status === 200) {
-          const allOrders = response.payload;
-          const validOrders = allOrders.filter(
-            (order: OrderResponse) =>
-              order.status == OrderStatus.COMPLETED &&
-              order.canRating == true,
-          );
 
-          setOrders(validOrders);
-
-          const initialOrders = validOrders.slice(0, ORDERS_PER_PAGE);
-          setDisplayedOrders(initialOrders);
-          setHasMore(validOrders.length > ORDERS_PER_PAGE);
-          setLoading(false);
-        }
-      } catch (error) {
-        if (error instanceof HttpError) {
-          console.log("Error fetching orders:", error);
-        } else {
-          toast.error("Đã có lỗi xảy ra trong quá trình tải đơn hàng.");
-        }
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
-
-  const loadMore = () => {
-    const nextPage = currentPage + 1;
-    const nextBatch = orders.slice(0, nextPage * ORDERS_PER_PAGE);
-    setDisplayedOrders(nextBatch);
-    setCurrentPage(nextPage);
-    setHasMore(nextBatch.length < orders.length);
-  };
+    useEffect(() => {
+    fetchOrders(true);
+  }, [fetchOrders]);
 
   if (loading) {
     return (

@@ -6,6 +6,12 @@ import { sessionToken } from "@/lib/http";
 import authApiRequest from "@/apiRequests/auth";
 import { links } from "@/configs/routes";
 
+declare global {
+  interface Window {
+    notifyAuthChange?: () => void;
+  }
+}
+
 export const AUTH_SYNC_KEY = "auth_sync_timestamp";
 
 export default function UserInitializer() {

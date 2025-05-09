@@ -25,6 +25,7 @@ import { HttpError } from "@/lib/http";
 import { RatingRequest } from "@/types/tours";
 import { uploadApiRequest } from "@/apiRequests/upload";
 import { useLoadingOverlayStore } from "@/stores/loadingStore";
+import { useOrderStore } from "@/stores/orderStore";
 
 const MAX_PHOTOS = 6; // Maximum number of photos allowed
 const ALLOWED_IMAGE_TYPES = [
@@ -52,12 +53,15 @@ export default function RatingForm({
   orderId,
   tourId,
   tourScheduleId,
+  onClose,
 }: {
   tourId: string;
   tourScheduleId: string;
   orderId: string;
+  onClose?: () => void;
 }) {
   const router = useRouter();
+  const fetchOrders = useOrderStore((state) => state.fetchOrders);
   const { isLoading, setLoading } = useLoadingOverlayStore((state) => state);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [selectedImages, setSelectedImages] = useState<
@@ -157,7 +161,11 @@ export default function RatingForm({
       const response = await tourApiRequest.postRating(data);
       if (response.status === 200) {
         toast.success("Đánh giá thành công");
+        if (onClose) {
+          await fetchOrders();
+        }
         router.push(links.review.href);
+        onClose?.();
         setLoading(false);
       } else {
         toast.error("Đánh giá không thành công. Vui lòng thử lại.");
@@ -217,7 +225,7 @@ export default function RatingForm({
       }
     }
   };
-
+  
   function onSubmit(data: RatingFormSchemaType) {
     setLoading(true);
     const ratingData: RatingRequest = {
