@@ -33,7 +33,7 @@ export default function ReviewList() {
           const validOrders = allOrders.filter(
             (order: OrderResponse) =>
               order.status == OrderStatus.COMPLETED &&
-              order.canRating == false,
+              order.canRating == true,
           );
 
           setOrders(validOrders);
