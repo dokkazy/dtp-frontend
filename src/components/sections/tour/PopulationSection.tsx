@@ -144,7 +144,7 @@ export default function PopulationSection() {
     return (
       <section className="mx-auto mb-16 flex max-w-2xl flex-col gap-6 px-4 sm:pb-6 md:max-w-4xl lg:max-w-6xl lg:px-8">
         <h1 className="text-xl font-bold sm:text-3xl">
-          Vui chơi hết cỡ tại Quy Nhơn
+          Vui chơi hết cỡ tại Bình Định
         </h1>
         <ScrollArea className="w-full rounded-md md:hidden">
           <div className="flex w-fit gap-4 py-4">
@@ -167,7 +167,7 @@ export default function PopulationSection() {
                   <CardContent className="sm:p-2 lg:p-6">
                     <div className="flex flex-col gap-2">
                       <p className="text-gray-600 sm:text-xs lg:text-sm">
-                        Tour Quy Nhơn
+                        Tour Bình Định
                       </p>
                       <p
                         className="line-clamp-1 text-base font-semibold lg:text-lg"
@@ -215,7 +215,7 @@ export default function PopulationSection() {
                     <CardContent className="sm:p-2 lg:p-6">
                       <div className="flex flex-col gap-2">
                         <p className="text-gray-600 sm:text-xs lg:text-sm">
-                          Tour Quy Nhơn
+                          Tour Bình Định
                         </p>
                         <p
                           className="line-clamp-1 text-base font-semibold lg:text-lg"

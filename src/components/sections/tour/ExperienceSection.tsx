@@ -9,7 +9,7 @@ export default function ExperienceSection() {
     <section className="mx-auto mb-16 flex max-w-2xl flex-col gap-6 px-4 sm:pb-6 md:max-w-4xl lg:max-w-6xl lg:px-8">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          Kinh nghiệm du lịch Quy Nhơn
+          Kinh nghiệm du lịch Bình Định
         </h2>
         {/* Show link only on mobile, hide on md and above */}
         <Link

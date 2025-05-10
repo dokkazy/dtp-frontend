@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 export default function Blog() {
   return (
     <main className="pb-16">
-      <Banner title1="Cẩm nang du lịch" title2="Quy Nhơn" />
+      <Banner title1="Cẩm nang du lịch" title2="Bình Định" />
       <div className="container mx-auto mt-10 max-w-2xl md:max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <h2 className="text-2xl font-bold lg:text-3xl">Bài viết mới nhất</h2>

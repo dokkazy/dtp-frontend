@@ -79,7 +79,7 @@ export default function TourDetail({ data }: { data: Tour | null }) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/tour">Tour Quy Nhơn</BreadcrumbLink>
+              <BreadcrumbLink href="/tour">Tour Bình Định</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default async function Tour() {
   return (
     <>
-      <Banner title1="Tour du lịch" title2="Quy Nhơn" />
+      <Banner title1="Tour du lịch" title2="Bình Định" />
       {/* <CategorySection /> */}
       <PopulationSection />
       <ToursSection />
