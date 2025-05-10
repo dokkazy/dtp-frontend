@@ -1,4 +1,3 @@
-
 export const links = {
   login: { href: "/login", label: "Đăng nhập" },
   logout: { href: "/logout", label: "Đăng xuất" },
@@ -20,6 +19,10 @@ export const links = {
   privacy: { href: "/privacy", label: "Chính sách bảo mật" },
   wallet: { href: "/my-wallet", label: "Ví của tôi" },
   otpQrSetup: { href: "/my-wallet/otp-setup", label: "Thiết lập xác thực OTP" },
+  transactionHistory: {
+    href: "/my-transaction",
+    label: "Lịch sử giao dịch",
+  },
 
   shoppingCart: { href: "/shoppingcart", label: "Giỏ hàng" },
   checkout: { href: "/checkout", label: "Thanh toán" },
@@ -73,8 +76,12 @@ export const apiEndpoint = {
   otp: "/api/wallet/otp",
   withdrawWithOtp: "/api/wallet/withdraw",
   deposit: "/api/wallet/deposit",
+  transaction: "/odata/wallet",
 
   //chatbot
   chat: "/api/Chat",
   reset: "/api/Chat/reset",
+
+  //system
+  system: "/api/system",
 };

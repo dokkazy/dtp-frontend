@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import envConfig from "@/configs/envConfig";
 import { links } from "@/configs/routes";
 import { PaymentRequest } from "@/types/checkout";
+import { systemApiRequest, SystemSettings } from "@/apiRequests/system";
 
 export default function MyOrderDetail({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,8 @@ export default function MyOrderDetail({ id }: { id: string }) {
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
     null,
   );
-  
+  const [systemSettings, setSystemSettings] = useState<SystemSettings[]>([]);
+
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -39,6 +41,28 @@ export default function MyOrderDetail({ id }: { id: string }) {
       }
     };
     fetchData();
+
+    const fetchSettings = async () => {
+      try {
+        const response = await systemApiRequest.getSystemSettings();
+        console.log(response.payload);
+        if (response.status === 200) {
+          setSystemSettings(response.payload);
+        } else {
+          console.error("Error fetching system settings:", response);
+        }
+      } catch (error) {
+        if (error instanceof HttpError) {
+          console.error(
+            "Error fetching system settings:",
+            error.payload.message,
+          );
+        } else {
+          console.error("Error fetching system settings:", error);
+        }
+      }
+    };
+    fetchSettings();
   }, [id]);
 
   const handlePayment = async () => {
@@ -239,18 +263,35 @@ export default function MyOrderDetail({ id }: { id: string }) {
                 </Button>
                 <div>
                   <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
-                    <li>
-                      <p>
-                        Trong vòng 24h sau khi thanh toán, Khách hàng hủy tour
-                        sẽ được hoàn 100% số tiền và 70% cho thời gian sau đó.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Không được hoàn tiền đối với khách hàng hủy tour trước
-                        ngày khởi hành 4 ngày.
-                      </p>
-                    </li>
+                    {systemSettings.length > 0 ? (
+                      <>
+                        {systemSettings.map((setting: SystemSettings) => {
+                          return (
+                            <li key={setting.id}>
+                              <p>
+                                {setting.settingValue}: {setting.settingKey}
+                              </p>
+                            </li>
+                          );
+                        })}
+                      </>
+                    ) : (
+                      <>
+                        <li>
+                          <p>
+                            Trong vòng 24h sau khi thanh toán, Khách hàng hủy
+                            tour sẽ được hoàn 100% số tiền và 70% cho thời gian
+                            sau đó.
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            Không được hoàn tiền đối với khách hàng hủy tour
+                            trước ngày khởi hành 4 ngày.
+                          </p>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -268,18 +309,48 @@ export default function MyOrderDetail({ id }: { id: string }) {
                 </Button>
                 <div>
                   <ul className="list-disc space-y-2 pl-4 text-sm text-gray-600">
-                    <li>
-                      <p>
-                        Trong vòng 24h sau khi thanh toán, Khách hàng hủy tour
-                        sẽ được hoàn 100% số tiền và 70% cho thời gian sau đó.
-                      </p>
-                    </li>
-                    <li>
-                      <p>
-                        Không được hoàn tiền đối với khách hàng hủy tour trước
-                        ngày khởi hành 4 ngày.
-                      </p>
-                    </li>
+                    {systemSettings.length > 0 ? (
+                      <>
+                        {systemSettings.map((setting: SystemSettings) => {
+                          return (
+                            <li key={setting.id}>
+                              <p>
+                                {setting.settingValue}: {setting.settingKey}
+                              </p>
+                            </li>
+                          );
+                        })}
+                        <li>
+                          <p>
+                            Trong vòng 24h sau khi thanh toán, Khách hàng hủy
+                            tour sẽ được hoàn 100% số tiền và {systemSettings[2].settingValue}% cho thời gian
+                            sau đó.
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            Không được hoàn tiền đối với khách hàng hủy tour
+                            trước ngày khởi hành {systemSettings[0].settingValue} ngày.
+                          </p>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li>
+                          <p>
+                            Trong vòng 24h sau khi thanh toán, Khách hàng hủy
+                            tour sẽ được hoàn 100% số tiền và 70% cho thời gian
+                            sau đó.
+                          </p>
+                        </li>
+                        <li>
+                          <p>
+                            Không được hoàn tiền đối với khách hàng hủy tour
+                            trước ngày khởi hành 4 ngày.
+                          </p>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
