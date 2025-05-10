@@ -73,7 +73,7 @@ export function WalletWithdrawSheet({
   const form = useForm<WithDrawType>({
     resolver: zodResolver(WithDrawSchema),
     defaultValues: {
-      amount: 100000,
+      amount: 5000,
       bankAccountNumber: "",
       bankAccount: "",
       otp: "",
@@ -206,7 +206,7 @@ export function WalletWithdrawSheet({
                       />
                     </FormControl>
                     <FormDescription>
-                      Số tiền tối thiểu là 100,000 VNĐ
+                      Số tiền tối thiểu là 5,000 VNĐ
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
