@@ -19,6 +19,7 @@ import { formatDate, formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/providers/CartProvider";
 import { PaymentStatus } from "@/types/checkout";
 import { links } from "@/configs/routes";
+import { formatDateTime, getTicketKind } from "@/lib/client/utils";
 
 export default function PaymentSuccess() {
   const [orderDetail, setOrderDetail] = useState<OrderDetailResponse | null>(
@@ -141,11 +142,11 @@ export default function PaymentSuccess() {
               <div className="space-y-2 rounded-lg border p-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tour code:</span>
-                  <span className="font-medium">{orderDetail?.refCode}</span>
+                  <span className="font-medium">{orderDetail?.code}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Ngày đặt:</span>
-                  <span>{formatDate(orderDetail?.orderDate)}</span>
+                  <span>{formatDateTime(orderDetail?.orderDate)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
@@ -188,18 +189,20 @@ export default function PaymentSuccess() {
             <h3 className="mb-3 text-lg font-medium">Thông tin thanh toán</h3>
             <div className="rounded-lg border p-4">
               <div className="space-y-2">
+                <p className="text-muted-foreground">Vé</p>
                 {orderDetail?.orderTickets.map((ticket, index) => (
-                  <div key={index} className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Vé ({ticket.quantity})
-                    </span>
-                    <span>{formatPrice(ticket.grossCost)}</span>
-                  </div>
+                  <>
+                    <div key={index} className="flex justify-between">
+                      <p>
+                        {getTicketKind(ticket.ticketKind)} ({ticket.quantity})
+                      </p>
+                      <p>{formatPrice(ticket.grossCost)}</p>
+                    </div>
+                  </>
                 ))}
-
                 {orderDetail?.discountAmount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount</span>
+                    <span>Giảm giá</span>
                     <span>-{formatPrice(orderDetail?.discountAmount)}</span>
                   </div>
                 )}
@@ -208,7 +211,7 @@ export default function PaymentSuccess() {
 
                 <div className="flex justify-between font-medium">
                   <span>Tổng cộng</span>
-                  <span>{formatPrice(orderDetail?.grossCost)}</span>
+                  <span>{formatPrice(orderDetail?.netCost)}</span>
                 </div>
 
                 <div className="mt-2 flex items-center gap-2 rounded-md bg-green-50 p-2 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
