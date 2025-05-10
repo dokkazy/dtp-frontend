@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import {
+  List,
   MessageSquareText,
   Package,
   Settings,
@@ -48,6 +49,11 @@ export default function Sidebar() {
       label: links.wallet.label,
       icon: Wallet,
       href: links.wallet.href,
+    },
+    {
+      label: links.transactionHistory.label,
+      icon: List,
+      href: links.transactionHistory.href,
     },
     {
       label: links.account.label,

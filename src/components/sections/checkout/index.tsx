@@ -94,7 +94,10 @@ export default function Checkout({ itemId }: { itemId: string }) {
       const orderResponse = await orderApiRequest.order(orderData);
       if (orderResponse.status !== 201) {
         console.error("Error creating order:", orderResponse);
-        toast.error("Có lỗi xảy ra trong quá trình thanh toán");
+        toast.error(
+          orderResponse.payload.title ||
+            "Có lỗi xảy ra trong quá trình tạo đơn hàng",
+        );
         return;
       }
 
@@ -122,7 +125,7 @@ export default function Checkout({ itemId }: { itemId: string }) {
         console.error("Không tìm thấy đường dẫn thanh toán");
       }
     } catch (error: any) {
-      console.error("Error during payment:", error?.title || error);
+      console.error("Error during payment:", error);
       toast.error("Có lỗi xảy ra trong quá trình thanh toán");
     } finally {
       setLoading(false);

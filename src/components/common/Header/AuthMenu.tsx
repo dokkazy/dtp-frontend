@@ -4,17 +4,13 @@
 import * as React from "react";
 import {
   ChevronLeft,
-  Globe,
-  Lock,
   LogOut,
-  Moon,
   Settings,
   User,
-  Bell,
-  Check,
   MessageSquareText,
   CalendarCheck,
   Wallet,
+  List,
 } from "lucide-react";
 import { toast } from "sonner";
 import { usePathname, useRouter } from "next/navigation";
@@ -187,13 +183,22 @@ export default function AuthMenu({ children }: { children: React.ReactNode }) {
       },
     },
     {
+      id: "transactions",
+      label: "Lịch sử giao dịch",
+      icon: List,
+      onClick: () => {
+        router.push(links.transactionHistory.href);
+        setOpen(false);
+      },
+    },
+    {
       id: "settings",
       label: "Cài đặt",
       icon: Settings,
       onClick: () => {
         router.push(links.account.href);
         setOpen(false);
-      }
+      },
       // hasSubmenu: true,
       // submenu: [
       //   {
