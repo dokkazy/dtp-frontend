@@ -162,7 +162,7 @@ export default function RatingForm({
       if (response.status === 200) {
         toast.success("Đánh giá thành công");
         if (onClose) {
-          await fetchOrders();
+          await fetchOrders(true);
         }
         router.push(links.review.href);
         onClose?.();
