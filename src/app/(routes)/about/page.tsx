@@ -240,11 +240,11 @@ export default function About() {
                   </div>
                 </div>
 
-                {/* <div className="mt-8 flex justify-center">
-                  <Button size="lg" asChild>
-                    <Link href="#partner">Become a Partner</Link>
+                <div className="mt-8 flex justify-center">
+                  <Button variant={"core"} size="lg" asChild>
+                    <Link href="https://dtp-control-center.vercel.app/partner">Đăng ký ngay</Link>
                   </Button>
-                </div> */}
+                </div>
               </TabsContent>
             </Tabs>
           </div>
