@@ -6,7 +6,7 @@ export const WalletResSchema = z.object({
 });
 
 export const WithDrawSchema = z.object({
-  amount: z.number().positive().min(100000, "Số tiền tối thiểu là 100,000 VNĐ"),
+  amount: z.number().positive().min(5000, "Số tiền tối thiểu là 5,000 VNĐ"),
   otp: z
     .string()
     .min(6, "Mã OTP phải có ít nhất 6 ký tự")
