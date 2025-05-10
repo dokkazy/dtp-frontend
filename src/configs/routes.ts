@@ -6,7 +6,7 @@ export const links = {
   forgotPassword: { href: "/forgot-password", label: "Quên mật khẩu" },
   accountConfirm: { href: "/account-confirm", label: "Xác thực tài khoản" },
   home: { href: "/", label: "Trang chủ" },
-  tour: { href: "/tour", label: "Tour Quy Nhơn" },
+  tour: { href: "/tour", label: "Tour Bình Định" },
   allTour: { href: "/tour/all", label: "Tất cả tour" },
   blog: { href: "/blog", label: "Cẩm nang du lịch" },
   about: { href: "/about", label: "Về chúng tôi" },

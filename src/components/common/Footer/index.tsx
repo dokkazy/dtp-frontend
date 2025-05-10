@@ -73,7 +73,7 @@ export default function Footer() {
       <div className="mt-6 md:mt-0">
         <h2 className="mb-2 font-semibold md:mb-6 md:text-lg">Liên hệ</h2>
         <div className="flex gap-4 text-sm text-gray-600 md:flex-col md:text-base">
-          <p>Email: example@gmail.com</p>
+          <p>Email: vivubinhdinh@gmail.com</p>
           <p>Phone: 0123456789</p>
         </div>
       </div>

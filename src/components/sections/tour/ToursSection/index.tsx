@@ -177,7 +177,7 @@ export default function ToursSection() {
         className="mx-auto mb-16 flex w-full max-w-2xl flex-col gap-6 p-4 md:hidden"
       >
         <h1 className="text-xl font-bold sm:text-3xl">
-          Tất cả hoạt động ở Quy Nhơn
+          Tất cả hoạt động ở Bình Định
         </h1>
         {loading ? (
           <div className="flex flex-col items-center justify-center py-8">
@@ -209,7 +209,7 @@ export default function ToursSection() {
                 variant="outline"
                 className="w-full"
               >
-                Xem {totalItems} ở Quy Nhơn
+                Xem {totalItems} ở Bình Định
               </Button>
             </div>
           </>
