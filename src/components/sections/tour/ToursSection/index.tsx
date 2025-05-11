@@ -132,7 +132,7 @@ export default function ToursSection() {
   return (
     <>
       <section className="mx-auto mb-16 hidden max-w-2xl flex-col gap-6 px-4 sm:pb-6 md:flex md:max-w-4xl lg:max-w-6xl lg:px-8">
-        <h1 className="text-3xl font-bold">Tất cả hoạt động ở Quy Nhơn</h1>
+        <h1 className="text-3xl font-bold">Tất cả hoạt động ở Bình Định</h1>
 
         <div className="container">
           <div className="flex flex-col gap-6 md:flex-row">
