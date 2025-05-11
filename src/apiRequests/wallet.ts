@@ -17,6 +17,6 @@ export const walletApiRequest = {
       { headers: { "X-OTP": body.otp } },
     ),
 
-  getTransaction: () => http.get(`${apiEndpoint.transaction}`, { cache: "no-store" }),
+  getTransaction: () => http.get(`${apiEndpoint.transaction}?$orderby=createdAt desc`, { cache: "no-store" }),
   
 };
